@@ -101,7 +101,3 @@ This repository includes expanded project documentation describing both the work
 - PCA and result organization
 - methodological appendix and design decisions
 
-If the static HTML documentation has been built locally, start with:
-
-```text
-cut_tag_docs/build/html/index.html
