@@ -1,0 +1,269 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A0. How Spike-In Absence Was Evaluated in This Project &mdash; Cut and Tag Pipeline 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="A1. ChIPseqSpikeInFree in This Project" href="a1_chipseqspikeinfree_in_this_project.html" />
+    <link rel="prev" title="Appendix: Methodological Discussions and Design Decisions" href="appendix_index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Cut and Tag Pipeline
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step2_qc.html">Step 2: Quality Control &amp; Adapter Trimming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step3_alignment.html">Step 3: Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing &amp; Quality Filtering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak &amp; Signal</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step5_dual_track_signal.html">Step 5: Dual-Track Signal Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step6_seacr.html">Step 6: SEACR Peak Calling</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 3: DE Analysis</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step7_cps_generation.html">Step 7: Consensus Peak Set (CPS) Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step8_quantification.html">Step 8: Master Counts Matrix Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step9_manorm2_de.html">Step 9: Differential Enrichment Analysis (MAnorm2)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step10_annotation.html">Step 10: Genomic Annotation (ChIPseeker)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step11_summarize_organize.html">Step 11: Result Aggregation and CPS-Based File Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step12_PCA.html">Step 12: CPS-Level PCA Quality Assessment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="appendix_index.html">Appendix: Methodological Discussions and Design Decisions</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">A0. How Spike-In Absence Was Evaluated in This Project</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-this-evaluation-was-necessary">Why This Evaluation Was Necessary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#evaluation-logic">Evaluation Logic</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#no-deliberate-spike-in-design-was-built-into-the-primary-experiment">1. No deliberate spike-in design was built into the primary experiment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#accidental-carry-over-is-not-equivalent-to-a-true-spike-in">2. Accidental carry-over is not equivalent to a true spike-in</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#absence-must-be-interpreted-biologically-and-technically">3. Absence must be interpreted biologically and technically</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#practical-assessment-strategy">Practical Assessment Strategy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#project-conclusion">Project Conclusion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relationship-to-later-appendix-sections">Relationship to Later Appendix Sections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#key-take-home-message">Key Take-Home Message</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="a1_chipseqspikeinfree_in_this_project.html">A1. ChIPseqSpikeInFree in This Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a2_seacr_threshold_comparison.html">A2. Comparison of SEACR Thresholds: 0.01 vs 0.005 vs 0.05</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a3_why_negative_controls_were_excluded.html">A3. Why Negative-Control Libraries Were Excluded from SEACR and CPS Construction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a4_why_dual_track_signal_generation_was_necessary.html">A4. Why Browser Visualization and Peak Calling Require Two Different Signal Tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a5_why_cpm_bigwig_is_ok_for_visualization.html">A5. Why CPM-Normalized BigWig Tracks Are Acceptable for Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b1_why_master_matrix_replaced_individual_matrices.html">B1. Why the Workflow Moved From Individual Comparison Count Matrices to a Master Count Matrix Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b2_why_combined_occupancy_ge_2.html">B2. Why the Occupancy Filter Was Set to Combined Occupancy &gt;= 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b3_why_autosomal_fully_occupied_anchors.html">B3. Why Autosomal Fully Occupied Peaks Were Used as MAnorm2 Normalization Anchors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b4_parametric_vs_local_regression.html">B4. Parametric vs Local Regression in MAnorm2, Including Modified Local Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b5_why_parametric_warnings_not_auto_failure.html">B5. Why Parametric Warnings Were Not Automatically Treated as Fit Failure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b6_profile_bins_pairing_diagnostics.html">B6. Pairing Integrity and <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c1_why_custom_gencode_annotation.html">C1. Why Custom GENCODE-Matched Annotation Was Preferred Over Generic Annotation Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c2_why_restricted_gene_type_annotation.html">C2. Why Restricted Gene-Type Annotation Was Chosen Instead of a Fully Generic Annotation Set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c3_preflight_validation_before_cps_generation.html">C3. Pre-Flight Validation Before CPS Generation</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cut and Tag Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="appendix_index.html">Appendix: Methodological Discussions and Design Decisions</a></li>
+      <li class="breadcrumb-item active">A0. How Spike-In Absence Was Evaluated in This Project</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/appendix/a0_spikein_absence_evaluation.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="a0-how-spike-in-absence-was-evaluated-in-this-project">
+<h1>A0. How Spike-In Absence Was Evaluated in This Project<a class="headerlink" href="#a0-how-spike-in-absence-was-evaluated-in-this-project" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>Before considering any spike-in-based or spike-in-free global scaling strategy, it was first necessary to determine whether this project actually contained usable exogenous spike-in signal. In CUT&amp;Tag workflows, this question is important because normalization strategies based on external DNA require either:</p>
+<ul class="simple">
+<li><p>a deliberately added spike-in control</p></li>
+<li><p>or a detectable and sufficiently stable carry-over signal from an exogenous source such as <em>E. coli</em></p></li>
+</ul>
+<p>In this project, we explicitly evaluated whether such signal was present and suitable for normalization. This assessment ultimately shaped the decision not to treat accidental bacterial carry-over as a valid spike-in surrogate and not to build the primary workflow around spike-in-based normalization.</p>
+</section>
+<hr class="docutils" />
+<section id="why-this-evaluation-was-necessary">
+<h2>Why This Evaluation Was Necessary<a class="headerlink" href="#why-this-evaluation-was-necessary" title="Link to this heading"></a></h2>
+<p>Several downstream decisions depended on this initial check:</p>
+<ol class="arabic simple">
+<li><p>whether an external scaling framework could be applied at all</p></li>
+<li><p>whether accidental <em>E. coli</em> carry-over could be treated as a pseudo-spike-in</p></li>
+<li><p>whether spike-in-aware tools such as <code class="docutils literal notranslate"><span class="pre">ChIPseqSpikeInFree</span></code> should be used as a core normalization backbone or only as an exploratory comparison tool</p></li>
+</ol>
+<p>Because spike-in-based normalization can strongly affect global interpretation, it was important to establish whether spike-in-like reads were truly present and sufficiently reliable before using them in formal downstream analysis.</p>
+</section>
+<hr class="docutils" />
+<section id="evaluation-logic">
+<h2>Evaluation Logic<a class="headerlink" href="#evaluation-logic" title="Link to this heading"></a></h2>
+<p>The spike-in absence evaluation in this project was based on the following logic:</p>
+<section id="no-deliberate-spike-in-design-was-built-into-the-primary-experiment">
+<h3>1. No deliberate spike-in design was built into the primary experiment<a class="headerlink" href="#no-deliberate-spike-in-design-was-built-into-the-primary-experiment" title="Link to this heading"></a></h3>
+<p>The project was not originally designed around a formal exogenous spike-in normalization framework. Therefore, any spike-in-like signal would have had to come from:</p>
+<ul class="simple">
+<li><p>accidental bacterial carry-over</p></li>
+<li><p>residual contaminating DNA</p></li>
+<li><p>or some other unintended exogenous source</p></li>
+</ul>
+<p>This means that the presence of spike-in-like reads could not be assumed and had to be checked explicitly.</p>
+</section>
+<section id="accidental-carry-over-is-not-equivalent-to-a-true-spike-in">
+<h3>2. Accidental carry-over is not equivalent to a true spike-in<a class="headerlink" href="#accidental-carry-over-is-not-equivalent-to-a-true-spike-in" title="Link to this heading"></a></h3>
+<p>Even if a small number of exogenous reads are present, that does not automatically make them suitable for normalization. A usable spike-in signal should be:</p>
+<ul class="simple">
+<li><p>detectable across samples</p></li>
+<li><p>sufficiently abundant</p></li>
+<li><p>relatively stable across libraries</p></li>
+<li><p>interpretable as an external reference rather than random contamination</p></li>
+</ul>
+<p>Accidental carry-over does not reliably satisfy these criteria.</p>
+</section>
+<section id="absence-must-be-interpreted-biologically-and-technically">
+<h3>3. Absence must be interpreted biologically and technically<a class="headerlink" href="#absence-must-be-interpreted-biologically-and-technically" title="Link to this heading"></a></h3>
+<p>A low or undetectable exogenous signal can mean several different things:</p>
+<ul class="simple">
+<li><p>true absence of spike-in material</p></li>
+<li><p>successful cleanup with minimal carry-over</p></li>
+<li><p>sequencing depth too low to recover exogenous reads</p></li>
+<li><p>inconsistent contamination that is not reproducible enough for normalization</p></li>
+</ul>
+<p>Therefore, the question was not only “are any exogenous reads present?” but also “are they reliable enough to support normalization?”</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="practical-assessment-strategy">
+<h2>Practical Assessment Strategy<a class="headerlink" href="#practical-assessment-strategy" title="Link to this heading"></a></h2>
+<p>The project treated spike-in absence evaluation as a pre-normalization diagnostic question. The practical criteria were:</p>
+<ul class="simple">
+<li><p>whether exogenous reads were detectably present at all</p></li>
+<li><p>whether they were present consistently across the relevant samples</p></li>
+<li><p>whether they were abundant enough to support stable scaling</p></li>
+<li><p>whether their behavior was plausible as a normalization reference rather than random contamination</p></li>
+</ul>
+<p>If these conditions were not met, spike-in-based normalization would not be considered reliable for the main workflow.</p>
+</section>
+<hr class="docutils" />
+<section id="project-conclusion">
+<h2>Project Conclusion<a class="headerlink" href="#project-conclusion" title="Link to this heading"></a></h2>
+<p>Based on the project-level evaluation, usable spike-in signal was not established strongly enough to justify treating this dataset as a spike-in-driven normalization workflow.</p>
+<p>As a result:</p>
+<ul class="simple">
+<li><p>accidental bacterial carry-over was <strong>not</strong> adopted as a formal spike-in surrogate</p></li>
+<li><p>spike-in-like scaling was <strong>not</strong> used as the default normalization backbone</p></li>
+<li><p>the main analytical framework remained centered on:</p>
+<ul>
+<li><p>CPS-based quantification</p></li>
+<li><p>MAnorm2-based normalization and differential analysis</p></li>
+<li><p>CPM-normalized browser tracks for visualization</p></li>
+<li><p>raw fragment BedGraphs for SEACR peak calling</p></li>
+</ul>
+</li>
+</ul>
+<p>This decision helped keep the primary workflow grounded in signals that were directly supported by the actual experimental design and detectable target-mark data.</p>
+</section>
+<hr class="docutils" />
+<section id="relationship-to-later-appendix-sections">
+<h2>Relationship to Later Appendix Sections<a class="headerlink" href="#relationship-to-later-appendix-sections" title="Link to this heading"></a></h2>
+<p>This spike-in absence evaluation provides the foundation for the discussions in the following sections:</p>
+<ul class="simple">
+<li><p><strong>A1. ChIPseqSpikeInFree in this project</strong></p></li>
+<li><p><strong>A2. Comparison of SEACR thresholds: 0.01 vs 0.005 vs 0.05</strong></p></li>
+<li><p><strong>A5. Why CPM-normalized BigWig tracks are acceptable for visualization</strong></p></li>
+</ul>
+<p>In other words, the project did not reject spike-in-aware methods arbitrarily; rather, it first evaluated whether a reliable spike-in-like signal existed and then built the main workflow accordingly.</p>
+</section>
+<hr class="docutils" />
+<section id="key-take-home-message">
+<h2>Key Take-Home Message<a class="headerlink" href="#key-take-home-message" title="Link to this heading"></a></h2>
+<p>Spike-in-based normalization should not be assumed simply because exogenous or bacterial reads might exist in principle. In this project, spike-in absence was treated as an explicit methodological question. Because no sufficiently reliable spike-in-like signal was established for use as a formal normalization reference, the main CUT&amp;Tag workflow was intentionally built without relying on a spike-in-centered normalization design.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="appendix_index.html" class="btn btn-neutral float-left" title="Appendix: Methodological Discussions and Design Decisions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="a1_chipseqspikeinfree_in_this_project.html" class="btn btn-neutral float-right" title="A1. ChIPseqSpikeInFree in This Project" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yizhou Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,347 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A2. Comparison of SEACR Thresholds: 0.01 vs 0.005 vs 0.05 &mdash; Cut and Tag Pipeline 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="A3. Why Negative-Control Libraries Were Excluded from SEACR and CPS Construction" href="a3_why_negative_controls_were_excluded.html" />
+    <link rel="prev" title="A1. ChIPseqSpikeInFree in This Project" href="a1_chipseqspikeinfree_in_this_project.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Cut and Tag Pipeline
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step2_qc.html">Step 2: Quality Control &amp; Adapter Trimming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step3_alignment.html">Step 3: Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing &amp; Quality Filtering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak &amp; Signal</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step5_dual_track_signal.html">Step 5: Dual-Track Signal Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step6_seacr.html">Step 6: SEACR Peak Calling</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 3: DE Analysis</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step7_cps_generation.html">Step 7: Consensus Peak Set (CPS) Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step8_quantification.html">Step 8: Master Counts Matrix Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step9_manorm2_de.html">Step 9: Differential Enrichment Analysis (MAnorm2)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step10_annotation.html">Step 10: Genomic Annotation (ChIPseeker)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step11_summarize_organize.html">Step 11: Result Aggregation and CPS-Based File Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step12_PCA.html">Step 12: CPS-Level PCA Quality Assessment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="appendix_index.html">Appendix: Methodological Discussions and Design Decisions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="a0_spikein_absence_evaluation.html">A0. How Spike-In Absence Was Evaluated in This Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a1_chipseqspikeinfree_in_this_project.html">A1. ChIPseqSpikeInFree in This Project</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">A2. Comparison of SEACR Thresholds: 0.01 vs 0.005 vs 0.05</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-threshold-comparison-was-necessary">Why Threshold Comparison Was Necessary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#conceptual-meaning-of-the-tested-thresholds">Conceptual Meaning of the Tested Thresholds</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">0.005</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">0.01</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">0.05</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#why-threshold-choice-matters-downstream">Why Threshold Choice Matters Downstream</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cps-construction">1. CPS construction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#occupancy-patterns">2. Occupancy patterns</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#master-matrix-burden">3. Master matrix burden</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#manorm2-filtering-and-statistical-testing">4. MAnorm2 filtering and statistical testing</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#raw-bedgraph-vs-scaling-factor-adjusted-bedgraph">Raw BedGraph vs Scaling-Factor-Adjusted BedGraph</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#why-raw-bedgraph-was-preferred">Why raw BedGraph was preferred</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#why-the-final-setting-was-chosen">Why the Final Setting Was Chosen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relationship-to-other-workflow-components">Relationship to Other Workflow Components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#key-take-home-message">Key Take-Home Message</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="a3_why_negative_controls_were_excluded.html">A3. Why Negative-Control Libraries Were Excluded from SEACR and CPS Construction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a4_why_dual_track_signal_generation_was_necessary.html">A4. Why Browser Visualization and Peak Calling Require Two Different Signal Tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a5_why_cpm_bigwig_is_ok_for_visualization.html">A5. Why CPM-Normalized BigWig Tracks Are Acceptable for Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b1_why_master_matrix_replaced_individual_matrices.html">B1. Why the Workflow Moved From Individual Comparison Count Matrices to a Master Count Matrix Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b2_why_combined_occupancy_ge_2.html">B2. Why the Occupancy Filter Was Set to Combined Occupancy &gt;= 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b3_why_autosomal_fully_occupied_anchors.html">B3. Why Autosomal Fully Occupied Peaks Were Used as MAnorm2 Normalization Anchors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b4_parametric_vs_local_regression.html">B4. Parametric vs Local Regression in MAnorm2, Including Modified Local Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b5_why_parametric_warnings_not_auto_failure.html">B5. Why Parametric Warnings Were Not Automatically Treated as Fit Failure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b6_profile_bins_pairing_diagnostics.html">B6. Pairing Integrity and <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c1_why_custom_gencode_annotation.html">C1. Why Custom GENCODE-Matched Annotation Was Preferred Over Generic Annotation Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c2_why_restricted_gene_type_annotation.html">C2. Why Restricted Gene-Type Annotation Was Chosen Instead of a Fully Generic Annotation Set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c3_preflight_validation_before_cps_generation.html">C3. Pre-Flight Validation Before CPS Generation</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cut and Tag Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="appendix_index.html">Appendix: Methodological Discussions and Design Decisions</a></li>
+      <li class="breadcrumb-item active">A2. Comparison of SEACR Thresholds: 0.01 vs 0.005 vs 0.05</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/appendix/a2_seacr_threshold_comparison.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="a2-comparison-of-seacr-thresholds-0-01-vs-0-005-vs-0-05">
+<h1>A2. Comparison of SEACR Thresholds: 0.01 vs 0.005 vs 0.05<a class="headerlink" href="#a2-comparison-of-seacr-thresholds-0-01-vs-0-005-vs-0-05" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>SEACR peak calling in this project was performed in numeric-threshold, control-free mode. Because the choice of threshold directly influences peak number, peak stringency, downstream CPS structure, and ultimately the feature space used for quantification, the threshold parameter was treated as a major workflow design choice rather than a minor tuning detail.</p>
+<p>In practice, the project focused on comparing three thresholds:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">0.01</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">0.005</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">0.05</span></code></p></li>
+</ul>
+<p>This section summarizes why these thresholds were compared, how they differ conceptually, and why the final SEACR setting was chosen in the context of the broader CUT&amp;Tag workflow.</p>
+</section>
+<hr class="docutils" />
+<section id="why-threshold-comparison-was-necessary">
+<h2>Why Threshold Comparison Was Necessary<a class="headerlink" href="#why-threshold-comparison-was-necessary" title="Link to this heading"></a></h2>
+<p>In a SEACR workflow based on numeric thresholding, the threshold affects much more than the size of the peak set.</p>
+<p>It can influence:</p>
+<ul class="simple">
+<li><p>how permissive or conservative peak calling becomes</p></li>
+<li><p>how many weak regions enter downstream consensus construction</p></li>
+<li><p>how stable or unstable the occupancy matrix becomes</p></li>
+<li><p>how large the CPS feature universe grows</p></li>
+<li><p>how much noise is propagated into master matrix generation and MAnorm2 testing</p></li>
+</ul>
+<p>Because this project used SEACR peak calls to define the CPS and then built all later quantification on top of that CPS, threshold choice had consequences well beyond the peak-calling step itself.</p>
+</section>
+<hr class="docutils" />
+<section id="conceptual-meaning-of-the-tested-thresholds">
+<h2>Conceptual Meaning of the Tested Thresholds<a class="headerlink" href="#conceptual-meaning-of-the-tested-thresholds" title="Link to this heading"></a></h2>
+<p>Although the exact numerical behavior of SEACR depends on the signal structure of the dataset, the tested values can be interpreted approximately as follows.</p>
+<section id="id1">
+<h3><code class="docutils literal notranslate"><span class="pre">0.005</span></code><a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>This threshold is the most permissive among the three tested settings.</p>
+<p>Expected practical behavior:</p>
+<ul class="simple">
+<li><p>more peaks retained</p></li>
+<li><p>greater sensitivity</p></li>
+<li><p>more weak or borderline regions entering downstream CPS construction</p></li>
+<li><p>higher risk of carrying low-confidence intervals into quantification and occupancy tracking</p></li>
+</ul>
+<p>Potential benefit:</p>
+<ul class="simple">
+<li><p>may recover weaker true biological regions</p></li>
+</ul>
+<p>Potential risk:</p>
+<ul class="simple">
+<li><p>enlarges the feature universe and increases the chance that noisy or unstable loci enter later analysis</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id2">
+<h3><code class="docutils literal notranslate"><span class="pre">0.01</span></code><a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p>This threshold represents an intermediate, moderately conservative setting.</p>
+<p>Expected practical behavior:</p>
+<ul class="simple">
+<li><p>retains strong and moderate target-mark regions</p></li>
+<li><p>avoids some of the weakest background-like intervals admitted by more permissive settings</p></li>
+<li><p>produces a feature universe that is broad enough for comparison while still reasonably controlled</p></li>
+</ul>
+<p>In this project, <code class="docutils literal notranslate"><span class="pre">0.01</span></code> served as the key candidate because it offered a practical balance between sensitivity and specificity for CPS construction and downstream differential analysis.</p>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h3><code class="docutils literal notranslate"><span class="pre">0.05</span></code><a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>This threshold is the most stringent among the three tested values.</p>
+<p>Expected practical behavior:</p>
+<ul class="simple">
+<li><p>fewer peaks retained</p></li>
+<li><p>stronger emphasis on high-confidence enrichment</p></li>
+<li><p>cleaner but smaller feature universe</p></li>
+<li><p>higher risk of excluding real but moderate-strength biological signal</p></li>
+</ul>
+<p>Potential benefit:</p>
+<ul class="simple">
+<li><p>reduces weak-feature burden</p></li>
+</ul>
+<p>Potential risk:</p>
+<ul class="simple">
+<li><p>may become too restrictive for a project intended to support multiple comparative analyses across CPS groups</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="why-threshold-choice-matters-downstream">
+<h2>Why Threshold Choice Matters Downstream<a class="headerlink" href="#why-threshold-choice-matters-downstream" title="Link to this heading"></a></h2>
+<p>A SEACR threshold is not isolated to Step 6. It changes the behavior of later stages in several important ways.</p>
+<section id="cps-construction">
+<h3>1. CPS construction<a class="headerlink" href="#cps-construction" title="Link to this heading"></a></h3>
+<p>A more permissive threshold sends more intervals into the union-and-merge stage, which can enlarge the CPS and make the consensus feature space less selective.</p>
+<p>A more stringent threshold keeps the CPS smaller and cleaner, but risks excluding real signal early.</p>
+</section>
+<section id="occupancy-patterns">
+<h3>2. Occupancy patterns<a class="headerlink" href="#occupancy-patterns" title="Link to this heading"></a></h3>
+<p>Because occupancy is defined using original peak calls, threshold choice directly affects whether a CPS interval is recorded as occupied or unoccupied in each sample.</p>
+<p>Thus, threshold changes influence not only the CPS interval set, but also the occupancy matrix used later in filtering and normalization.</p>
+</section>
+<section id="master-matrix-burden">
+<h3>3. Master matrix burden<a class="headerlink" href="#master-matrix-burden" title="Link to this heading"></a></h3>
+<p>A larger, more permissive CPS increases the number of intervals entering quantification, which can increase:</p>
+<ul class="simple">
+<li><p>storage burden</p></li>
+<li><p>matrix complexity</p></li>
+<li><p>the number of weakly informative rows</p></li>
+<li><p>downstream multiple-testing burden</p></li>
+</ul>
+</section>
+<section id="manorm2-filtering-and-statistical-testing">
+<h3>4. MAnorm2 filtering and statistical testing<a class="headerlink" href="#manorm2-filtering-and-statistical-testing" title="Link to this heading"></a></h3>
+<p>If more weak or unstable intervals enter the master matrix, later filters must work harder to remove them. In some cases, permissive peak calling can shift the burden of quality control downstream rather than solving it at the peak-calling stage.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="raw-bedgraph-vs-scaling-factor-adjusted-bedgraph">
+<h2>Raw BedGraph vs Scaling-Factor-Adjusted BedGraph<a class="headerlink" href="#raw-bedgraph-vs-scaling-factor-adjusted-bedgraph" title="Link to this heading"></a></h2>
+<p>A related methodological question was whether SEACR should operate on:</p>
+<ul class="simple">
+<li><p>raw fragment pileup BedGraphs</p></li>
+<li><p>or scaling-factor-adjusted BedGraphs</p></li>
+</ul>
+<p>This question became especially relevant when considering ChIPseqSpikeInFree-like scaling or other global normalization ideas.</p>
+<section id="why-raw-bedgraph-was-preferred">
+<h3>Why raw BedGraph was preferred<a class="headerlink" href="#why-raw-bedgraph-was-preferred" title="Link to this heading"></a></h3>
+<p>In this project, raw fragment-level BedGraphs were retained as the preferred SEACR input for several reasons:</p>
+<ol class="arabic">
+<li><p><strong>SEACR was intended to see the empirical fragment pileup directly</strong><br />
+The project treated peak calling as a signal-definition step rather than as a normalization-driven step. Raw fragment BedGraphs therefore better preserved the intended peak-calling substrate.</p></li>
+<li><p><strong>Peak calling was intentionally separated from later formal normalization</strong><br />
+The main workflow was designed so that:</p>
+<ul class="simple">
+<li><p>raw fragment BedGraphs define peaks</p></li>
+<li><p>CPS / master matrices define the quantitative feature space</p></li>
+<li><p>MAnorm2 handles differential normalization and testing</p></li>
+</ul>
+<p>Using adjusted BedGraphs for SEACR would blur the boundary between peak definition and formal comparative normalization.</p>
+</li>
+<li><p><strong>Scaling-factor adjustment at the SEACR stage would impose another layer of model dependence</strong><br />
+If externally adjusted BedGraphs were used for peak calling, then the peak universe itself would become dependent on that scaling choice, not just the later quantitative interpretation.</p></li>
+</ol>
+<p>For these reasons, the project treated raw fragment BedGraphs as the cleaner and more interpretable SEACR input.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="why-the-final-setting-was-chosen">
+<h2>Why the Final Setting Was Chosen<a class="headerlink" href="#why-the-final-setting-was-chosen" title="Link to this heading"></a></h2>
+<p>The final SEACR threshold was chosen not because one threshold is universally correct for all CUT&amp;Tag projects, but because one setting provided the most practical balance for this dataset and this workflow.</p>
+<p>The chosen setting was favored because it offered a reasonable compromise between:</p>
+<ul class="simple">
+<li><p>retaining biologically meaningful enrichment</p></li>
+<li><p>avoiding excessive admission of weak background-like intervals</p></li>
+<li><p>preserving a manageable CPS feature universe</p></li>
+<li><p>supporting stable downstream occupancy behavior</p></li>
+<li><p>aligning with the project’s broader CPS–master matrix–MAnorm2 architecture</p></li>
+</ul>
+<p>In other words, the final setting was selected as a <strong>workflow-compatible threshold</strong>, not just a peak-count optimization.</p>
+</section>
+<hr class="docutils" />
+<section id="relationship-to-other-workflow-components">
+<h2>Relationship to Other Workflow Components<a class="headerlink" href="#relationship-to-other-workflow-components" title="Link to this heading"></a></h2>
+<p>This threshold discussion is tightly connected to several other methodological decisions in the project:</p>
+<ul class="simple">
+<li><p>why SEACR used raw fragment BedGraphs instead of browser-style normalized tracks</p></li>
+<li><p>why negative-control libraries were excluded from target-mark CPS construction</p></li>
+<li><p>why browser visualization and peak calling were treated as separate signal layers</p></li>
+<li><p>why MAnorm2 filtering and normalization were kept downstream of CPS construction rather than imposed during peak calling</p></li>
+</ul>
+<p>Thus, the threshold comparison should be understood as part of the larger workflow architecture rather than as a standalone parameter sweep.</p>
+</section>
+<hr class="docutils" />
+<section id="key-take-home-message">
+<h2>Key Take-Home Message<a class="headerlink" href="#key-take-home-message" title="Link to this heading"></a></h2>
+<p>SEACR threshold choice has direct consequences for peak stringency, CPS size, occupancy behavior, and downstream differential analysis. In this project, comparison of <code class="docutils literal notranslate"><span class="pre">0.01</span></code>, <code class="docutils literal notranslate"><span class="pre">0.005</span></code>, and <code class="docutils literal notranslate"><span class="pre">0.05</span></code> was used to identify a threshold that balanced sensitivity and specificity while preserving a stable, interpretable feature universe for the later CPS–master matrix–MAnorm2 workflow.</p>
+<p>Equally important, this comparison was evaluated in the context of <strong>raw fragment BedGraph input</strong>, because peak calling and formal normalization were intentionally kept as separate analytical layers in the final design.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="a1_chipseqspikeinfree_in_this_project.html" class="btn btn-neutral float-left" title="A1. ChIPseqSpikeInFree in This Project" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="a3_why_negative_controls_were_excluded.html" class="btn btn-neutral float-right" title="A3. Why Negative-Control Libraries Were Excluded from SEACR and CPS Construction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yizhou Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

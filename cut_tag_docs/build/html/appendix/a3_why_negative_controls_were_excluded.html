@@ -1,0 +1,331 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A3. Why Negative-Control Libraries Were Excluded from SEACR and CPS Construction &mdash; Cut and Tag Pipeline 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="A4. Why Browser Visualization and Peak Calling Require Two Different Signal Tracks" href="a4_why_dual_track_signal_generation_was_necessary.html" />
+    <link rel="prev" title="A2. Comparison of SEACR Thresholds: 0.01 vs 0.005 vs 0.05" href="a2_seacr_threshold_comparison.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Cut and Tag Pipeline
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step2_qc.html">Step 2: Quality Control &amp; Adapter Trimming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step3_alignment.html">Step 3: Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing &amp; Quality Filtering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak &amp; Signal</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step5_dual_track_signal.html">Step 5: Dual-Track Signal Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step6_seacr.html">Step 6: SEACR Peak Calling</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 3: DE Analysis</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step7_cps_generation.html">Step 7: Consensus Peak Set (CPS) Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step8_quantification.html">Step 8: Master Counts Matrix Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step9_manorm2_de.html">Step 9: Differential Enrichment Analysis (MAnorm2)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step10_annotation.html">Step 10: Genomic Annotation (ChIPseeker)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step11_summarize_organize.html">Step 11: Result Aggregation and CPS-Based File Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step12_PCA.html">Step 12: CPS-Level PCA Quality Assessment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="appendix_index.html">Appendix: Methodological Discussions and Design Decisions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="a0_spikein_absence_evaluation.html">A0. How Spike-In Absence Was Evaluated in This Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a1_chipseqspikeinfree_in_this_project.html">A1. ChIPseqSpikeInFree in This Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a2_seacr_threshold_comparison.html">A2. Comparison of SEACR Thresholds: 0.01 vs 0.005 vs 0.05</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">A3. Why Negative-Control Libraries Were Excluded from SEACR and CPS Construction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-was-excluded">What Was Excluded</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-they-were-not-treated-as-ordinary-peak-calling-targets">Why They Were Not Treated as Ordinary Peak-Calling Targets</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#the-projects-main-goal-was-to-define-target-mark-enrichment-not-generic-signal-structure">1. The project’s main goal was to define <strong>target-mark enrichment</strong>, not generic signal structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#control-libraries-are-often-sparse-and-structurally-unstable">2. Control libraries are often sparse and structurally unstable</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#peak-calling-output-from-controls-is-not-the-desired-final-feature-universe">3. Peak-calling output from controls is not the desired final feature universe</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#why-they-were-excluded-from-cps-construction">Why They Were Excluded From CPS Construction</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cps-was-intended-to-represent-a-target-mark-feature-universe">1. CPS was intended to represent a target-mark feature universe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#control-derived-intervals-would-propagate-into-all-downstream-analysis-layers">2. Control-derived intervals would propagate into all downstream analysis layers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-project-wanted-control-libraries-to-inform-interpretation-not-define-the-main-feature-universe">3. The project wanted control libraries to inform interpretation, not define the main feature universe</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#why-this-exclusion-was-applied-consistently-across-multiple-steps">Why This Exclusion Was Applied Consistently Across Multiple Steps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-this-decision-was-especially-important-in-this-project">Why This Decision Was Especially Important in This Project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-this-decision-does-not-mean">What This Decision Does <em>Not</em> Mean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relationship-to-other-workflow-decisions">Relationship to Other Workflow Decisions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#key-take-home-message">Key Take-Home Message</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="a4_why_dual_track_signal_generation_was_necessary.html">A4. Why Browser Visualization and Peak Calling Require Two Different Signal Tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a5_why_cpm_bigwig_is_ok_for_visualization.html">A5. Why CPM-Normalized BigWig Tracks Are Acceptable for Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b1_why_master_matrix_replaced_individual_matrices.html">B1. Why the Workflow Moved From Individual Comparison Count Matrices to a Master Count Matrix Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b2_why_combined_occupancy_ge_2.html">B2. Why the Occupancy Filter Was Set to Combined Occupancy &gt;= 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b3_why_autosomal_fully_occupied_anchors.html">B3. Why Autosomal Fully Occupied Peaks Were Used as MAnorm2 Normalization Anchors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b4_parametric_vs_local_regression.html">B4. Parametric vs Local Regression in MAnorm2, Including Modified Local Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b5_why_parametric_warnings_not_auto_failure.html">B5. Why Parametric Warnings Were Not Automatically Treated as Fit Failure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b6_profile_bins_pairing_diagnostics.html">B6. Pairing Integrity and <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c1_why_custom_gencode_annotation.html">C1. Why Custom GENCODE-Matched Annotation Was Preferred Over Generic Annotation Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c2_why_restricted_gene_type_annotation.html">C2. Why Restricted Gene-Type Annotation Was Chosen Instead of a Fully Generic Annotation Set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c3_preflight_validation_before_cps_generation.html">C3. Pre-Flight Validation Before CPS Generation</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cut and Tag Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="appendix_index.html">Appendix: Methodological Discussions and Design Decisions</a></li>
+      <li class="breadcrumb-item active">A3. Why Negative-Control Libraries Were Excluded from SEACR and CPS Construction</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/appendix/a3_why_negative_controls_were_excluded.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="a3-why-negative-control-libraries-were-excluded-from-seacr-and-cps-construction">
+<h1>A3. Why Negative-Control Libraries Were Excluded from SEACR and CPS Construction<a class="headerlink" href="#a3-why-negative-control-libraries-were-excluded-from-seacr-and-cps-construction" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>Negative-control libraries such as <code class="docutils literal notranslate"><span class="pre">IgG</span></code>, <code class="docutils literal notranslate"><span class="pre">nAb</span></code>, and <code class="docutils literal notranslate"><span class="pre">CTnAb</span></code> were part of the broader experimental context of this project, but they were intentionally excluded from the core target-mark peak-calling and consensus-feature-definition workflow.</p>
+<p>At first glance, one might ask why control libraries should not simply be processed in parallel with the target-mark libraries and allowed to participate in SEACR peak calling or CPS construction. After all, they are real sequencing libraries generated from the same experimental system.</p>
+<p>However, the project ultimately treated these control libraries as <strong>background-reference and QC resources</strong>, not as feature-defining inputs for the target-mark analytical backbone.</p>
+<p>This section explains why.</p>
+</section>
+<hr class="docutils" />
+<section id="what-was-excluded">
+<h2>What Was Excluded<a class="headerlink" href="#what-was-excluded" title="Link to this heading"></a></h2>
+<p>The following classes of negative-control libraries were intentionally excluded from the target-mark feature-definition workflow:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">IgG</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nAb</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CTnAb</span></code></p></li>
+</ul>
+<p>This exclusion was applied not only at one isolated step, but consistently across multiple parts of the pipeline, including:</p>
+<ul class="simple">
+<li><p>SEACR peak calling for target-mark peak definition</p></li>
+<li><p>CPS construction</p></li>
+<li><p>BAM-to-BED generation for target-mark quantification</p></li>
+<li><p>matrix generation steps intended for target-mark enrichment analysis</p></li>
+</ul>
+<p>In other words, the project treated control exclusion as a structural design choice rather than a single local convenience.</p>
+</section>
+<hr class="docutils" />
+<section id="why-they-were-not-treated-as-ordinary-peak-calling-targets">
+<h2>Why They Were Not Treated as Ordinary Peak-Calling Targets<a class="headerlink" href="#why-they-were-not-treated-as-ordinary-peak-calling-targets" title="Link to this heading"></a></h2>
+<section id="the-projects-main-goal-was-to-define-target-mark-enrichment-not-generic-signal-structure">
+<h3>1. The project’s main goal was to define <strong>target-mark enrichment</strong>, not generic signal structure<a class="headerlink" href="#the-projects-main-goal-was-to-define-target-mark-enrichment-not-generic-signal-structure" title="Link to this heading"></a></h3>
+<p>The role of SEACR in the main workflow was to identify regions of bona fide enrichment for biological target marks such as H3K27ac or H3K4me1.</p>
+<p>Negative-control libraries do not represent the same signal class. They are not expected to define the same biological feature universe as a target-mark library. Allowing them to enter the same feature-definition stage as if they were target-mark datasets would blur the distinction between:</p>
+<ul class="simple">
+<li><p>true target-associated enrichment</p></li>
+<li><p>negative-control background behavior</p></li>
+</ul>
+<p>This would undermine the biological meaning of the resulting peak universe.</p>
+</section>
+<section id="control-libraries-are-often-sparse-and-structurally-unstable">
+<h3>2. Control libraries are often sparse and structurally unstable<a class="headerlink" href="#control-libraries-are-often-sparse-and-structurally-unstable" title="Link to this heading"></a></h3>
+<p>In CUT&amp;Tag and related chromatin assays, negative-control libraries are often highly sparse. In this project, that sparsity made them poorly suited as direct drivers of target-region definition.</p>
+<p>Even if a control library yields some nonzero signal or even some called intervals under a peak caller, those intervals are not the intended targets of the formal downstream enrichment analysis. They are more appropriately interpreted as:</p>
+<ul class="simple">
+<li><p>background structure</p></li>
+<li><p>nonspecific binding</p></li>
+<li><p>assay noise</p></li>
+<li><p>technical context</p></li>
+</ul>
+<p>rather than as constituents of the target-mark CPS.</p>
+</section>
+<section id="peak-calling-output-from-controls-is-not-the-desired-final-feature-universe">
+<h3>3. Peak-calling output from controls is not the desired final feature universe<a class="headerlink" href="#peak-calling-output-from-controls-is-not-the-desired-final-feature-universe" title="Link to this heading"></a></h3>
+<p>A control library may produce intervals under SEACR, but that does <strong>not</strong> mean those intervals should be promoted into the shared feature universe used for target-mark quantification.</p>
+<p>The project’s CPS was intended to represent a marker-specific consensus universe of biologically meaningful enriched regions from target libraries. Control-derived intervals would not serve that purpose well and would risk introducing non-target structure into the final matrix.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="why-they-were-excluded-from-cps-construction">
+<h2>Why They Were Excluded From CPS Construction<a class="headerlink" href="#why-they-were-excluded-from-cps-construction" title="Link to this heading"></a></h2>
+<p>The logic for CPS exclusion was even stronger than the logic for peak-calling exclusion.</p>
+<section id="cps-was-intended-to-represent-a-target-mark-feature-universe">
+<h3>1. CPS was intended to represent a target-mark feature universe<a class="headerlink" href="#cps-was-intended-to-represent-a-target-mark-feature-universe" title="Link to this heading"></a></h3>
+<p>The CPS was constructed as the shared interval space for downstream quantification, occupancy tracking, and differential enrichment analysis. That feature universe needed to be grounded in target-mark biology.</p>
+<p>If negative-control intervals were merged into the CPS, the feature universe would no longer represent only target-mark enrichment. Instead, it would become a hybrid of:</p>
+<ul class="simple">
+<li><p>target-specific signal</p></li>
+<li><p>background-control structure</p></li>
+<li><p>potentially sparse or noisy control-specific intervals</p></li>
+</ul>
+<p>That would weaken the biological meaning of the CPS itself.</p>
+</section>
+<section id="control-derived-intervals-would-propagate-into-all-downstream-analysis-layers">
+<h3>2. Control-derived intervals would propagate into all downstream analysis layers<a class="headerlink" href="#control-derived-intervals-would-propagate-into-all-downstream-analysis-layers" title="Link to this heading"></a></h3>
+<p>Once a control-derived interval enters the CPS, it does not remain isolated. It then propagates into:</p>
+<ul class="simple">
+<li><p>master matrix generation</p></li>
+<li><p>occupancy tracking</p></li>
+<li><p>PCA</p></li>
+<li><p>MAnorm2 filtering</p></li>
+<li><p>normalization-anchor logic</p></li>
+<li><p>differential testing</p></li>
+</ul>
+<p>This means that letting control intervals enter CPS is not a small local choice; it changes the quantitative substrate of the entire downstream workflow.</p>
+</section>
+<section id="the-project-wanted-control-libraries-to-inform-interpretation-not-define-the-main-feature-universe">
+<h3>3. The project wanted control libraries to inform interpretation, not define the main feature universe<a class="headerlink" href="#the-project-wanted-control-libraries-to-inform-interpretation-not-define-the-main-feature-universe" title="Link to this heading"></a></h3>
+<p>Control libraries were still useful, but their role was interpretive rather than feature-defining.</p>
+<p>They helped with:</p>
+<ul class="simple">
+<li><p>QC</p></li>
+<li><p>background inspection</p></li>
+<li><p>assessing nonspecific signal</p></li>
+<li><p>understanding assay context</p></li>
+</ul>
+<p>But they were not used to decide which intervals should enter the formal target-mark CPS.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="why-this-exclusion-was-applied-consistently-across-multiple-steps">
+<h2>Why This Exclusion Was Applied Consistently Across Multiple Steps<a class="headerlink" href="#why-this-exclusion-was-applied-consistently-across-multiple-steps" title="Link to this heading"></a></h2>
+<p>One important project-level realization was that control exclusion had to be applied <strong>consistently</strong>, not only at the CPS step.</p>
+<p>If control libraries are excluded from CPS construction but still allowed to enter other quantification-preparation stages, they can still create confusion in file matching, BED generation, matrix assembly, or metadata interpretation.</p>
+<p>For this reason, exclusion was enforced across several stages of the main target-mark workflow.</p>
+<p>This consistency served two purposes:</p>
+<ol class="arabic simple">
+<li><p>it reduced the chance of accidentally carrying control-derived files into feature-definition or quantification steps</p></li>
+<li><p>it made the project’s analytical logic easier to interpret and document</p></li>
+</ol>
+<p>The rule became simple:</p>
+<blockquote>
+<div><p>control libraries may be inspected, but they do not define the target-mark feature universe.</p>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="why-this-decision-was-especially-important-in-this-project">
+<h2>Why This Decision Was Especially Important in This Project<a class="headerlink" href="#why-this-decision-was-especially-important-in-this-project" title="Link to this heading"></a></h2>
+<p>This project involved:</p>
+<ul class="simple">
+<li><p>multiple histone marks</p></li>
+<li><p>multiple CPS groups</p></li>
+<li><p>metadata-driven file discovery</p></li>
+<li><p>automated peak calling and merging</p></li>
+<li><p>downstream master matrix construction</p></li>
+</ul>
+<p>In such a workflow, even a small file-matching mistake could allow control-derived intervals to enter the target-mark pipeline and silently contaminate downstream results.</p>
+<p>That risk made explicit control exclusion especially important. It was not just a theoretical preference; it was a practical safeguard for the integrity of the whole pipeline.</p>
+</section>
+<hr class="docutils" />
+<section id="what-this-decision-does-not-mean">
+<h2>What This Decision Does <em>Not</em> Mean<a class="headerlink" href="#what-this-decision-does-not-mean" title="Link to this heading"></a></h2>
+<p>Excluding <code class="docutils literal notranslate"><span class="pre">IgG</span></code>, <code class="docutils literal notranslate"><span class="pre">nAb</span></code>, and <code class="docutils literal notranslate"><span class="pre">CTnAb</span></code> from SEACR and CPS does <strong>not</strong> imply that those libraries were unimportant or should never be inspected.</p>
+<p>Instead, it means they were assigned a different analytical role.</p>
+<p>They remained useful for:</p>
+<ul class="simple">
+<li><p>evaluating nonspecific background</p></li>
+<li><p>contextualizing target-mark signal</p></li>
+<li><p>troubleshooting assay behavior</p></li>
+<li><p>supporting methodological comparisons</p></li>
+</ul>
+<p>But they were intentionally kept outside the formal target-mark feature-definition backbone.</p>
+</section>
+<hr class="docutils" />
+<section id="relationship-to-other-workflow-decisions">
+<h2>Relationship to Other Workflow Decisions<a class="headerlink" href="#relationship-to-other-workflow-decisions" title="Link to this heading"></a></h2>
+<p>This decision is tightly connected to several other project-level design choices:</p>
+<ul class="simple">
+<li><p>why browser visualization and peak calling were treated as separate signal layers</p></li>
+<li><p>why raw fragment BedGraphs were used for SEACR</p></li>
+<li><p>why the CPS was intended to represent a target-mark consensus universe</p></li>
+<li><p>why the master matrix and MAnorm2 workflow were designed around target-mark occupancy and quantification rather than control-defined intervals</p></li>
+</ul>
+<p>Thus, control exclusion should be understood as part of the larger workflow architecture rather than as an isolated filtering preference.</p>
+</section>
+<hr class="docutils" />
+<section id="key-take-home-message">
+<h2>Key Take-Home Message<a class="headerlink" href="#key-take-home-message" title="Link to this heading"></a></h2>
+<p>Negative-control libraries (<code class="docutils literal notranslate"><span class="pre">IgG</span></code>, <code class="docutils literal notranslate"><span class="pre">nAb</span></code>, <code class="docutils literal notranslate"><span class="pre">CTnAb</span></code>) were excluded from SEACR and CPS construction because the project’s main workflow was designed to define and quantify <strong>target-mark enrichment</strong>, not background structure.</p>
+<p>These control libraries remained valuable for QC and interpretive context, but they were intentionally prevented from entering the feature-definition backbone of the target-mark analysis. This preserved the biological meaning of the CPS, protected downstream quantification from control-derived contamination, and made the entire metadata-driven workflow more robust and interpretable.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="a2_seacr_threshold_comparison.html" class="btn btn-neutral float-left" title="A2. Comparison of SEACR Thresholds: 0.01 vs 0.005 vs 0.05" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="a4_why_dual_track_signal_generation_was_necessary.html" class="btn btn-neutral float-right" title="A4. Why Browser Visualization and Peak Calling Require Two Different Signal Tracks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yizhou Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

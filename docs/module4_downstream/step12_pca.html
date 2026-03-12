@@ -1,0 +1,356 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Step 12: CPS-Level PCA Quality Assessment &mdash; Cut and Tag Pipeline 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Appendix: ChIPseqSpikeInFree Normalization" href="../appendix/spike_in_free.html" />
+    <link rel="prev" title="Step 11: Result Aggregation and CPS-Based File Organization" href="step11_summarize_organize.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Cut and Tag Pipeline
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step2_qc.html">Step 2: Quality Control &amp; Adapter Trimming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step3_alignment.html">Step 3: Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing &amp; Quality Filtering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak &amp; Signal</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step5_dual_track_signal.html">Step 5: Dual-Track Signal Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step6_seacr.html">Step 6: SEACR Peak Calling</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 3: DE Analysis</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step7_cps_generation.html">Step 7: Consensus Peak Set (CPS) Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step8_quantification.html">Step 8: Master Counts Matrix Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step9_manorm2_de.html">Step 9: Differential Enrichment Analysis (MAnorm2)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="step10_annotation.html">Step 10: Genomic Annotation (ChIPseeker)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="step11_summarize_organize.html">Step 11: Result Aggregation and CPS-Based File Organization</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Step 12: CPS-Level PCA Quality Assessment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#execution-strategy">Execution Strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#key-analytical-logic">Key Analytical Logic</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#input-matrix-discovery">1. Input matrix discovery</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#removal-of-problematic-chromosomes-and-contigs">2. Removal of problematic chromosomes and contigs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rationale">Rationale</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#simplified-global-qc-filtering">3. Simplified global QC filtering</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Rationale</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#manorm2-based-normalization-prior-to-pca">4. MAnorm2-based normalization prior to PCA</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">Rationale</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#variance-based-feature-selection">5. Variance-based feature selection</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id3">Rationale</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pca-computation">6. PCA computation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id4">Rationale</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sample-and-group-labeling">7. Sample and group labeling</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id5">Rationale</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#multi-panel-pca-reporting">8. Multi-panel PCA reporting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id6">Rationale</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#output">Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#key-take-home-message">Key Take-Home Message</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/spike_in_free.html">Appendix: ChIPseqSpikeInFree Normalization</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cut and Tag Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Step 12: CPS-Level PCA Quality Assessment</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/module4_downstream/step12_PCA.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="step-12-cps-level-pca-quality-assessment">
+<h1>Step 12: CPS-Level PCA Quality Assessment<a class="headerlink" href="#step-12-cps-level-pca-quality-assessment" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>In addition to formal differential enrichment analysis, it is useful to assess global sample relationships within each CPS-defined feature space. To accomplish this, we performed principal component analysis (PCA) on the CPS-specific master count matrices generated earlier in the workflow.</p>
+<p>This PCA step serves as a <strong>global quality-control and sample-structure assessment</strong>, rather than a formal differential test. Its purpose is to visualize how samples cluster within each CPS, identify broad signal patterns, assess replicate consistency, and detect possible outliers or batch-like separations.</p>
+<p>Unlike Step 9, this PCA workflow does <strong>not</strong> use comparison-specific <code class="docutils literal notranslate"><span class="pre">normBioCond()</span></code> normalization or the full comparison-specific multi-tier filtering strategy. Instead, it applies a simplified global filtering scheme across all samples within each CPS matrix, followed by MAnorm2-based count normalization and variance-based feature selection.</p>
+</section>
+<hr class="docutils" />
+<section id="execution-strategy">
+<h2>Execution Strategy<a class="headerlink" href="#execution-strategy" title="Link to this heading"></a></h2>
+<p>The PCA workflow is implemented as an automated R script that iterates through all CPS-specific master matrices.</p>
+<p>At a high level, the workflow performs the following steps for each CPS:</p>
+<ol class="arabic simple">
+<li><p>Load the CPS-specific master counts matrix</p></li>
+<li><p>Remove problematic chromosomes and contigs</p></li>
+<li><p>Apply a simplified global QC filter</p></li>
+<li><p>Normalize the retained intervals using <code class="docutils literal notranslate"><span class="pre">MAnorm2::normalize()</span></code></p></li>
+<li><p>Select the top 2000 most variable CPS intervals</p></li>
+<li><p>Perform PCA</p></li>
+<li><p>Export a three-page PDF containing pairwise PC plots</p></li>
+</ol>
+<p>The full implementation is maintained in the project repository; only the key analytical logic is summarized here.</p>
+</section>
+<hr class="docutils" />
+<section id="key-analytical-logic">
+<h2>Key Analytical Logic<a class="headerlink" href="#key-analytical-logic" title="Link to this heading"></a></h2>
+<section id="input-matrix-discovery">
+<h3>1. Input matrix discovery<a class="headerlink" href="#input-matrix-discovery" title="Link to this heading"></a></h3>
+<p>All CPS-specific master matrices are collected automatically from the master-count directory:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">all_matrix_files</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list.files</span><span class="p">(</span>
+<span class="w">  </span><span class="n">master_dir</span><span class="p">,</span>
+<span class="w">  </span><span class="n">pattern</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;_master_counts_profile_bins\\.xls$&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">full.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This ensures that PCA is run systematically across all available CPS matrices without manual file specification.</p>
+</section>
+<hr class="docutils" />
+<section id="removal-of-problematic-chromosomes-and-contigs">
+<h3>2. Removal of problematic chromosomes and contigs<a class="headerlink" href="#removal-of-problematic-chromosomes-and-contigs" title="Link to this heading"></a></h3>
+<p>Before PCA, intervals located on <code class="docutils literal notranslate"><span class="pre">chrM</span></code>, <code class="docutils literal notranslate"><span class="pre">chrUn</span></code>, or contigs containing <code class="docutils literal notranslate"><span class="pre">_random</span></code> are removed:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data</span><span class="p">[</span><span class="o">!</span><span class="p">(</span><span class="n">data</span><span class="o">$</span><span class="n">chrom</span><span class="w"> </span><span class="o">%in%</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;chrM&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;chrUn&quot;</span><span class="p">))</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">!</span><span class="nf">grepl</span><span class="p">(</span><span class="s">&quot;_random&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">$</span><span class="n">chrom</span><span class="p">),</span><span class="w"> </span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="rationale">
+<h4>Rationale<a class="headerlink" href="#rationale" title="Link to this heading"></a></h4>
+<p>These regions often behave atypically and can distort global sample-structure visualization. Removing them improves the interpretability of PCA and prevents mitochondrial or poorly assembled contigs from dominating the first principal components.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="simplified-global-qc-filtering">
+<h3>3. Simplified global QC filtering<a class="headerlink" href="#simplified-global-qc-filtering" title="Link to this heading"></a></h3>
+<p>To stabilize the PCA input matrix, we apply a simplified global filtering strategy across all samples within a CPS matrix:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">raw_counts</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data</span><span class="p">[,</span><span class="w"> </span><span class="n">count_cols</span><span class="p">]</span>
+<span class="n">raw_mean</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">rowMeans</span><span class="p">(</span><span class="n">raw_counts</span><span class="p">)</span>
+<span class="n">global_occ_sum</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">rowSums</span><span class="p">(</span><span class="n">data</span><span class="p">[,</span><span class="w"> </span><span class="n">occ_cols</span><span class="p">])</span>
+
+<span class="n">keep_idx</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">(</span><span class="n">raw_mean</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">10</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">global_occ_sum</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span>
+<span class="n">data_filtered</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data</span><span class="p">[</span><span class="n">keep_idx</span><span class="p">,</span><span class="w"> </span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="id1">
+<h4>Rationale<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
+<p>An interval is retained only if:</p>
+<ul class="simple">
+<li><p>its mean count across all samples in the CPS matrix is greater than 10</p></li>
+<li><p>its total occupancy across all samples is at least 2</p></li>
+</ul>
+<p>This differs from the formal comparison-specific filtering used in Step 9. Here, the goal is not hypothesis testing, but rather construction of a stable global signal matrix suitable for exploratory PCA.</p>
+<p>This filtering strategy removes very weak and poorly supported intervals while preserving enough global structure for meaningful sample-level clustering.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="manorm2-based-normalization-prior-to-pca">
+<h3>4. MAnorm2-based normalization prior to PCA<a class="headerlink" href="#manorm2-based-normalization-prior-to-pca" title="Link to this heading"></a></h3>
+<p>After filtering, the retained intervals are normalized using <code class="docutils literal notranslate"><span class="pre">MAnorm2::normalize()</span></code>:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">norm_data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">MAnorm2</span><span class="o">::</span><span class="nf">normalize</span><span class="p">(</span><span class="n">data_filtered</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">count_cols</span><span class="p">,</span><span class="w"> </span><span class="n">occupancy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">occ_cols</span><span class="p">)</span>
+<span class="n">pca_input_full</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">norm_data</span><span class="p">[,</span><span class="w"> </span><span class="n">count_cols</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="id2">
+<h4>Rationale<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
+<p>This step provides a consistent transformed count matrix for PCA input. However, unlike Step 9, this PCA workflow does <strong>not</strong> perform comparison-specific anchor-based normalization with <code class="docutils literal notranslate"><span class="pre">normBioCond()</span></code>.</p>
+<p>Therefore, the PCA plots should be interpreted as a <strong>global exploratory QC visualization</strong>, not as a direct representation of the comparison-specific normalization used for differential enrichment analysis.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="variance-based-feature-selection">
+<h3>5. Variance-based feature selection<a class="headerlink" href="#variance-based-feature-selection" title="Link to this heading"></a></h3>
+<p>To focus PCA on the most informative regions, only the top 2000 most variable CPS intervals are used:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">row_vars</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">pca_input_full</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">var</span><span class="p">)</span>
+<span class="n">top_peaks</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">order</span><span class="p">(</span><span class="n">row_vars</span><span class="p">,</span><span class="w"> </span><span class="n">decreasing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2000</span><span class="p">]</span>
+<span class="n">pca_input</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">pca_input_full</span><span class="p">[</span><span class="n">top_peaks</span><span class="p">,</span><span class="w"> </span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="id3">
+<h4>Rationale<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
+<p>Using all intervals can dilute the PCA signal with large numbers of invariant or weakly informative features. Restricting the analysis to the top 2000 most variable CPS intervals enriches for the strongest genome-wide sources of variation and improves visualization of sample relationships.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="pca-computation">
+<h3>6. PCA computation<a class="headerlink" href="#pca-computation" title="Link to this heading"></a></h3>
+<p>PCA is then performed on the transposed feature matrix:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">pca_res</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">prcomp</span><span class="p">(</span><span class="nf">t</span><span class="p">(</span><span class="n">pca_input</span><span class="p">),</span><span class="w"> </span><span class="n">scale.</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The percentage of variance explained by each principal component is calculated and used directly in the plot axis labels.</p>
+<section id="id4">
+<h4>Rationale<a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
+<p>Samples are treated as observations and CPS intervals as features. PCA therefore summarizes the dominant axes of genome-wide variation across samples within each CPS-defined feature universe.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="sample-and-group-labeling">
+<h3>7. Sample and group labeling<a class="headerlink" href="#sample-and-group-labeling" title="Link to this heading"></a></h3>
+<p>Sample labels are preserved, and group labels are derived by removing the replicate suffix:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">pca_df</span><span class="o">$</span><span class="n">Sample</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sample_names</span>
+<span class="n">pca_df</span><span class="o">$</span><span class="n">Group</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sub</span><span class="p">(</span><span class="s">&quot;_[0-9]+$&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">pca_df</span><span class="o">$</span><span class="n">Sample</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="id5">
+<h4>Rationale<a class="headerlink" href="#id5" title="Link to this heading"></a></h4>
+<p>This allows visualization of both:</p>
+<ul class="simple">
+<li><p>individual sample-level replicate structure</p></li>
+<li><p>broader group-level clustering patterns</p></li>
+</ul>
+<p>It also makes it easier to identify whether replicate samples cluster together as expected.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="multi-panel-pca-reporting">
+<h3>8. Multi-panel PCA reporting<a class="headerlink" href="#multi-panel-pca-reporting" title="Link to this heading"></a></h3>
+<p>For each CPS, three pairwise PCA plots are generated and written into a single PDF:</p>
+<ul class="simple">
+<li><p>PC1 vs PC2</p></li>
+<li><p>PC1 vs PC3</p></li>
+<li><p>PC2 vs PC3</p></li>
+</ul>
+<p>Each plot includes:</p>
+<ul class="simple">
+<li><p>colored sample points by group</p></li>
+<li><p>direct sample labels using <code class="docutils literal notranslate"><span class="pre">ggrepel</span></code></p></li>
+<li><p>variance-explained percentages in the axis titles</p></li>
+</ul>
+<section id="id6">
+<h4>Rationale<a class="headerlink" href="#id6" title="Link to this heading"></a></h4>
+<p>A single two-dimensional PCA plot may miss important structure contained in the third principal component. Exporting all three pairwise combinations provides a more complete overview of sample relationships and improves outlier detection.</p>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section id="output">
+<h2>Output<a class="headerlink" href="#output" title="Link to this heading"></a></h2>
+<p>For each CPS matrix, this workflow generates one PDF file:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CPS##_PCA.pdf</span></code></p></li>
+</ul>
+<p>Each PDF contains three PCA panels:</p>
+<ol class="arabic simple">
+<li><p>PC1 vs PC2</p></li>
+<li><p>PC1 vs PC3</p></li>
+<li><p>PC2 vs PC3</p></li>
+</ol>
+<p>These plots are intended for:</p>
+<ul class="simple">
+<li><p>global sample-structure assessment</p></li>
+<li><p>replicate consistency inspection</p></li>
+<li><p>outlier detection</p></li>
+<li><p>broad batch-effect or biological-pattern screening</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="key-take-home-message">
+<h2>Key Take-Home Message<a class="headerlink" href="#key-take-home-message" title="Link to this heading"></a></h2>
+<p>This PCA workflow provides a CPS-level exploratory quality-control view of the CUT&amp;Tag dataset by combining:</p>
+<ul class="simple">
+<li><p>simplified global feature filtering</p></li>
+<li><p>MAnorm2-based count normalization</p></li>
+<li><p>top-variable interval selection</p></li>
+<li><p>multi-panel PCA visualization</p></li>
+</ul>
+<p>It is therefore complementary to, but distinct from, the formal differential enrichment analysis performed in Step 9.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="step11_summarize_organize.html" class="btn btn-neutral float-left" title="Step 11: Result Aggregation and CPS-Based File Organization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../appendix/spike_in_free.html" class="btn btn-neutral float-right" title="Appendix: ChIPseqSpikeInFree Normalization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yizhou Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,93 @@
+01. Raw Read Alignment
+1.1 Overview
+This step marks the beginning of the CUT&Tag data analysis pipeline. We align the quality-controlled and adapter-trimmed paired-end FASTQ files to the mouse reference genome (mm39). To maximize the computational efficiency of the HPC cluster, we employ a "two-tier script architecture": an outer wrapper script iterates through the samples and submits batch jobs, while the inner core script utilizes Bowtie2 for high-precision alignment and samtools for on-the-fly coordinate sorting.
+
+1.2 Pipeline Scripts
+Batch Submission Script (1_sub_alignment_slurm.sh)
+This script automatically scans the trim_fastqs directory and submits a dedicated Slurm compute node job for each sample.
+
+Bash
+#!/bin/bash
+
+FASTQ_DIR="/common/lix5lab/Li_Xue_Cut_Tag_06162022/Analysis_WYZ/mm39/trim_fastqs"
+SCRIPT_DIR="/common/lix5lab/Li_Xue_Cut_Tag_06162022/Analysis_WYZ/mm39/scripts" 
+
+SAMPLES=$(ls $FASTQ_DIR/*_R1.fastq.gz | xargs -n 1 basename | sed 's/_R1.fastq.gz//')
+
+for SAMPLE in $SAMPLES
+do
+    echo "Submitting sample: $SAMPLE"
+    sbatch --job-name="aln_$SAMPLE" ./alignment.sh $SAMPLE
+done
+Core Alignment Script (alignment.sh)
+This is the workhorse script executed on the compute nodes, running the Bowtie2 alignment engine.
+
+Bash
+#!/bin/bash
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=10
+#SBATCH -p defq
+#SBATCH -t 80:00:00
+#SBATCH --mem=64GB
+#SBATCH --mail-type=FAIL,END
+#SBATCH --mail-user=yizhou.wang@cshs.org
+#SBATCH -o /common/lix5lab/Li_Xue_Cut_Tag_06162022/Analysis_WYZ/mm39/log/%x_%j.log
+
+# 1. Environment and Path Initialization
+source /common/compbiomed-dsn/anaconda3/anaconda/etc/profile.d/conda.sh
+conda activate /common/compbiomed-dsn/anaconda3/anaconda/envs/CnT_env
+module load samtools
+
+Genome_Ref="/common/lix5lab/reference/Mus_musculus/GENCODE/mm39/Bowtie2Index/GRCm39"
+trim_fastq_path="/common/lix5lab/Li_Xue_Cut_Tag_06162022/Analysis_WYZ/mm39/trim_fastqs"
+bam_path="/common/lix5lab/Li_Xue_Cut_Tag_06162022/Analysis_WYZ/mm39/bam"
+mkdir -p $bam_path
+
+SAMPLE_ID=$1
+
+# 2. Bowtie2 Core Alignment & Samtools Sorting Stream
+bowtie2 --dovetail --very-sensitive-local -p 10 \
+    --no-unal --no-mixed --no-discordant --phred33 \
+    -I 10 -X 700 -x $Genome_Ref \
+    -1 $trim_fastq_path/${SAMPLE_ID}_R1.fastq.gz \
+    -2 $trim_fastq_path/${SAMPLE_ID}_R2.fastq.gz \
+    2>$bam_path/${SAMPLE_ID}_bowtie2.log | \
+samtools sort -@ 4 -o $bam_path/${SAMPLE_ID}.coordsorted.bam -
+
+# 3. Build BAM Index
+samtools index $bam_path/${SAMPLE_ID}.coordsorted.bam
+1.3 Parameter Rationale
+The parameter selection for Bowtie2 in CUT&Tag data differs fundamentally from traditional RNA-seq or ChIP-seq pipelines:
+
+--dovetail: A critical parameter for CUT&Tag. Due to the nature of Tn5 transposase cleavage, CUT&Tag frequently generates extremely short DNA insert fragments (< 50bp). Consequently, the 150bp Read 1 and Read 2 will read through each other (i.e., Read 1 contains the Read 2 adapter and vice versa). This flag allows such "dovetailing" alignments to be considered valid concordant pairs.
+
+-I 10 -X 700 (Insert Size Window): We restrict the valid fragment span from 10bp to 700bp. The 10bp minimum ensures we capture ultra-short fragments flanking Transcription Factor (TF) footprints, while the 700bp maximum comfortably spans regions encompassing multiple consecutive nucleosomes.
+
+--no-mixed --no-discordant (Strict Pairing Barrier): We strictly discard singletons and reads with abnormal distances or orientations during the alignment phase. This guarantees the cleanest possible baseline data for accurately extracting the physical span of Tn5 cuts in downstream BED conversions.
+
+--very-sensitive-local: This local alignment strategy ensures high-quality mapping of the core biological sequence, even if minuscule adapter remnants were missed during the trimming phase and are present at the read termini (soft-clipping).
+
+1.4 Troubleshooting & Discussions
+During the pipeline execution, we documented two classic environment-level pitfalls and their solutions:
+
+🛑 Pitfall 1: Bowtie2 AVX2 Instruction Set Warning
+Symptom: You may notice the following warning in the standard output logs:
+
+[WARNING] Failed to launch x86-64-v3 version, staying with default
+
+Root Cause: This typically occurs when the underlying C++ standard libraries (e.g., libstdcxx) are updated via Conda/Micromamba. The newer Bowtie2 version attempts to leverage highly aggressive CPU vectorization instruction sets (AVX2 / v3) for acceleration. If there is a mismatch with the compute node's hardware architecture or kernel libraries, it gracefully falls back to the default mode.
+Conclusion: This warning has absolutely zero impact on the biological conclusions or alignment accuracy. The only consequence is a slight "bit-wise irreproducibility"—meaning floating-point calculations for multi-mappers might truncate differently at the 10th decimal place, leading to a single-digit fluctuation in the final number of significant peaks. It can be safely ignored.
+
+🛑 Pitfall 2: The Picard 3.x Upgrade Crash
+Symptom: If you use a recent version of Picard (e.g., v3.4.0 or higher) in the downstream deduplication step (MarkDuplicates), the system will throw a fatal Java error:
+
+NullPointerException: Cannot invoke "htsjdk.samtools.SAMReadGroupRecord.getReadGroupId()"...
+
+Root Cause: By default, Bowtie2 does not inject @RG (Read Group) tags into the BAM file header. Picard 3.x overhauled its underlying optical duplication and scoring logic, now strictly mandating the presence of @RG tags. When it attempts to parse a non-existent tag, the Java environment crashes.
+Solutions:
+
+Option A (The Safe Downgrade): Downgrade Picard in your Conda environment back to a stable 2.x version (e.g., 2.27.5).
+
+Option B (Patching the Alignment): If you must use Picard 3.4.0+, you must manually inject the Read Group information during the bowtie2 step by adding the following flags to the core command:
+--rg-id "${SAMPLE_ID}" --rg "SM:${SAMPLE_ID}"

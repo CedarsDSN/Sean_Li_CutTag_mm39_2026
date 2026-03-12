@@ -1,0 +1,274 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C3. Pre-Flight Validation Before CPS Generation &mdash; Cut and Tag Pipeline 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="C2. Why Restricted Gene-Type Annotation Was Chosen Instead of a Fully Generic Annotation Set" href="c2_why_restricted_gene_type_annotation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Cut and Tag Pipeline
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step2_qc.html">Step 2: Quality Control &amp; Adapter Trimming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step3_alignment.html">Step 3: Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing &amp; Quality Filtering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak &amp; Signal</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step5_dual_track_signal.html">Step 5: Dual-Track Signal Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step6_seacr.html">Step 6: SEACR Peak Calling</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 3: DE Analysis</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step7_cps_generation.html">Step 7: Consensus Peak Set (CPS) Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step8_quantification.html">Step 8: Master Counts Matrix Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step9_manorm2_de.html">Step 9: Differential Enrichment Analysis (MAnorm2)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step10_annotation.html">Step 10: Genomic Annotation (ChIPseeker)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step11_summarize_organize.html">Step 11: Result Aggregation and CPS-Based File Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step12_PCA.html">Step 12: CPS-Level PCA Quality Assessment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="appendix_index.html">Appendix: Methodological Discussions and Design Decisions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="a0_spikein_absence_evaluation.html">A0. How Spike-In Absence Was Evaluated in This Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a1_chipseqspikeinfree_in_this_project.html">A1. ChIPseqSpikeInFree in This Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a2_seacr_threshold_comparison.html">A2. Comparison of SEACR Thresholds: 0.01 vs 0.005 vs 0.05</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a3_why_negative_controls_were_excluded.html">A3. Why Negative-Control Libraries Were Excluded from SEACR and CPS Construction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a4_why_dual_track_signal_generation_was_necessary.html">A4. Why Browser Visualization and Peak Calling Require Two Different Signal Tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a5_why_cpm_bigwig_is_ok_for_visualization.html">A5. Why CPM-Normalized BigWig Tracks Are Acceptable for Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b1_why_master_matrix_replaced_individual_matrices.html">B1. Why the Workflow Moved From Individual Comparison Count Matrices to a Master Count Matrix Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b2_why_combined_occupancy_ge_2.html">B2. Why the Occupancy Filter Was Set to Combined Occupancy &gt;= 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b3_why_autosomal_fully_occupied_anchors.html">B3. Why Autosomal Fully Occupied Peaks Were Used as MAnorm2 Normalization Anchors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b4_parametric_vs_local_regression.html">B4. Parametric vs Local Regression in MAnorm2, Including Modified Local Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b5_why_parametric_warnings_not_auto_failure.html">B5. Why Parametric Warnings Were Not Automatically Treated as Fit Failure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b6_profile_bins_pairing_diagnostics.html">B6. Pairing Integrity and <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c1_why_custom_gencode_annotation.html">C1. Why Custom GENCODE-Matched Annotation Was Preferred Over Generic Annotation Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c2_why_restricted_gene_type_annotation.html">C2. Why Restricted Gene-Type Annotation Was Chosen Instead of a Fully Generic Annotation Set</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">C3. Pre-Flight Validation Before CPS Generation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-cps-generation-was-a-sensitive-step">Why CPS Generation Was a Sensitive Step</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-needed-to-be-validated-before-cps-generation">What Needed To Be Validated Before CPS Generation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#file-existence">1. File existence</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#marker-consistency">2. Marker consistency</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#metadata-integrity">3. Metadata integrity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#negative-control-exclusion">4. Negative-control exclusion</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#why-these-checks-were-important-in-a-metadata-driven-workflow">Why These Checks Were Important in a Metadata-Driven Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-this-was-not-just-a-technical-convenience">Why This Was Not Just a Technical Convenience</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-this-was-especially-important-in-this-project">Why This Was Especially Important in This Project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relationship-to-the-master-matrix-design">Relationship to the Master Matrix Design</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#key-take-home-message">Key Take-Home Message</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cut and Tag Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="appendix_index.html">Appendix: Methodological Discussions and Design Decisions</a></li>
+      <li class="breadcrumb-item active">C3. Pre-Flight Validation Before CPS Generation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/appendix/c3_preflight_validation_before_cps_generation.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="c3-pre-flight-validation-before-cps-generation">
+<h1>C3. Pre-Flight Validation Before CPS Generation<a class="headerlink" href="#c3-pre-flight-validation-before-cps-generation" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>Before running CPS generation, the project benefited from explicit pre-flight validation of metadata and input files. This was especially important because CPS construction in this workflow was metadata driven: if metadata entries, filenames, marker identities, or control exclusions were inconsistent, those errors could propagate into all downstream analyses.</p>
+<p>This section explains why pre-flight validation mattered and why it was treated as a practical safeguard rather than an optional convenience.</p>
+</section>
+<hr class="docutils" />
+<section id="why-cps-generation-was-a-sensitive-step">
+<h2>Why CPS Generation Was a Sensitive Step<a class="headerlink" href="#why-cps-generation-was-a-sensitive-step" title="Link to this heading"></a></h2>
+<p>CPS generation sits near the center of the workflow. It defines the shared interval universe that later feeds into:</p>
+<ul class="simple">
+<li><p>master count matrix generation</p></li>
+<li><p>occupancy tracking</p></li>
+<li><p>PCA</p></li>
+<li><p>MAnorm2 filtering and normalization</p></li>
+<li><p>differential enrichment analysis</p></li>
+</ul>
+<p>Because so many later steps depend on the CPS, small errors at the CPS stage can propagate widely and become difficult to diagnose later.</p>
+<p>This made pre-flight validation especially important.</p>
+</section>
+<hr class="docutils" />
+<section id="what-needed-to-be-validated-before-cps-generation">
+<h2>What Needed To Be Validated Before CPS Generation<a class="headerlink" href="#what-needed-to-be-validated-before-cps-generation" title="Link to this heading"></a></h2>
+<section id="file-existence">
+<h3>1. File existence<a class="headerlink" href="#file-existence" title="Link to this heading"></a></h3>
+<p>Before merging sample-level peak files, the project needed to confirm that all expected target-mark peak files actually existed.</p>
+<p>If expected files were missing, then the CPS would be built from an incomplete sample set, potentially without obvious failure at the merge stage itself.</p>
+</section>
+<section id="marker-consistency">
+<h3>2. Marker consistency<a class="headerlink" href="#marker-consistency" title="Link to this heading"></a></h3>
+<p>Each CPS was intended to represent a marker-specific feature universe. Therefore, it was necessary to ensure that only files corresponding to the intended histone mark were included.</p>
+<p>Without this check, it would be possible for a CPS merge step to accidentally combine peak files from mismatched target marks, which would fundamentally distort the resulting feature universe.</p>
+</section>
+<section id="metadata-integrity">
+<h3>3. Metadata integrity<a class="headerlink" href="#metadata-integrity" title="Link to this heading"></a></h3>
+<p>Because the workflow was metadata driven, it was important to verify that:</p>
+<ul class="simple">
+<li><p>CPS identifiers were correct</p></li>
+<li><p>comparison structures were parsed correctly</p></li>
+<li><p>semicolon-delimited sample groups expanded as intended</p></li>
+<li><p>sample names matched the naming conventions used in the actual peak files</p></li>
+</ul>
+<p>If metadata parsing is wrong, then the workflow may silently build the wrong CPS even if all files are present.</p>
+</section>
+<section id="negative-control-exclusion">
+<h3>4. Negative-control exclusion<a class="headerlink" href="#negative-control-exclusion" title="Link to this heading"></a></h3>
+<p>The project also needed to ensure that negative-control libraries such as <code class="docutils literal notranslate"><span class="pre">IgG</span></code>, <code class="docutils literal notranslate"><span class="pre">nAb</span></code>, and <code class="docutils literal notranslate"><span class="pre">CTnAb</span></code> did not accidentally enter target-mark CPS construction through permissive filename matching or metadata confusion.</p>
+<p>This was particularly important in an automated workflow where broad wildcard matching can otherwise pick up unintended files.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="why-these-checks-were-important-in-a-metadata-driven-workflow">
+<h2>Why These Checks Were Important in a Metadata-Driven Workflow<a class="headerlink" href="#why-these-checks-were-important-in-a-metadata-driven-workflow" title="Link to this heading"></a></h2>
+<p>A metadata-driven design is powerful because it enables large-scale automation. But that same strength also means that one inconsistency can propagate across many outputs.</p>
+<p>For example, if a metadata row:</p>
+<ul class="simple">
+<li><p>points to the wrong sample name</p></li>
+<li><p>implies the wrong marker</p></li>
+<li><p>fails to exclude a control file</p></li>
+<li><p>omits an expected replicate</p></li>
+</ul>
+<p>then the CPS can be wrong before any downstream quantification even begins.</p>
+<p>Thus, pre-flight validation was essential for protecting the logic of the metadata-driven workflow itself.</p>
+</section>
+<hr class="docutils" />
+<section id="why-this-was-not-just-a-technical-convenience">
+<h2>Why This Was Not Just a Technical Convenience<a class="headerlink" href="#why-this-was-not-just-a-technical-convenience" title="Link to this heading"></a></h2>
+<p>It would be easy to treat pre-flight validation as a purely engineering-oriented step. In reality, it had direct methodological importance.</p>
+<p>If the CPS is wrong, then later analyses may appear numerically valid while actually operating on the wrong feature universe.</p>
+<p>That means pre-flight validation protects not only:</p>
+<ul class="simple">
+<li><p>computational correctness</p></li>
+<li><p>file-matching correctness</p></li>
+</ul>
+<p>but also:</p>
+<ul class="simple">
+<li><p>biological interpretability</p></li>
+<li><p>validity of downstream comparisons</p></li>
+<li><p>trustworthiness of summary tables and differential results</p></li>
+</ul>
+<p>In this sense, pre-flight validation was part of the project’s methodological rigor, not just its scripting hygiene.</p>
+</section>
+<hr class="docutils" />
+<section id="why-this-was-especially-important-in-this-project">
+<h2>Why This Was Especially Important in This Project<a class="headerlink" href="#why-this-was-especially-important-in-this-project" title="Link to this heading"></a></h2>
+<p>This project involved:</p>
+<ul class="simple">
+<li><p>multiple CPS groups</p></li>
+<li><p>multiple histone markers</p></li>
+<li><p>repeated sample reuse across comparisons</p></li>
+<li><p>metadata-driven automation</p></li>
+<li><p>exclusion of negative controls</p></li>
+<li><p>downstream matrix reuse across many analyses</p></li>
+</ul>
+<p>In a workflow of this complexity, silent structural errors are more dangerous than obvious crashes, because they can survive for multiple downstream steps before being noticed.</p>
+<p>That is why validating the CPS inputs before merge was especially worthwhile.</p>
+</section>
+<hr class="docutils" />
+<section id="relationship-to-the-master-matrix-design">
+<h2>Relationship to the Master Matrix Design<a class="headerlink" href="#relationship-to-the-master-matrix-design" title="Link to this heading"></a></h2>
+<p>Pre-flight validation also became more important after the workflow moved to CPS-level master matrices.</p>
+<p>Because each master matrix became a shared quantitative substrate for multiple downstream analyses, an upstream CPS mistake would no longer affect only one local comparison. It could affect an entire CPS-level analytical branch.</p>
+<p>Thus, validating CPS inputs before merge helped protect the integrity of everything built on top of the CPS.</p>
+</section>
+<hr class="docutils" />
+<section id="key-take-home-message">
+<h2>Key Take-Home Message<a class="headerlink" href="#key-take-home-message" title="Link to this heading"></a></h2>
+<p>Pre-flight validation before CPS generation was important because CPS construction defines the shared feature universe for many downstream analyses. Checking file existence, marker consistency, metadata integrity, and control exclusion before merging helped prevent silent structural errors from propagating into master matrices, PCA, filtering, and differential analysis.</p>
+<p>In this project, pre-flight validation was therefore an important methodological safeguard built into the metadata-driven workflow.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="c2_why_restricted_gene_type_annotation.html" class="btn btn-neutral float-left" title="C2. Why Restricted Gene-Type Annotation Was Chosen Instead of a Fully Generic Annotation Set" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yizhou Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

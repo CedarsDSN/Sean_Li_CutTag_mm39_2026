@@ -1,0 +1,309 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Step 11: Result Aggregation and CPS-Based File Organization &mdash; Cut and Tag Pipeline 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Step 12: CPS-Level PCA Quality Assessment" href="step12_PCA.html" />
+    <link rel="prev" title="Step 10: Genomic Annotation (ChIPseeker)" href="step10_annotation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Cut and Tag Pipeline
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step2_qc.html">Step 2: Quality Control &amp; Adapter Trimming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step3_alignment.html">Step 3: Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing &amp; Quality Filtering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak &amp; Signal</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step5_dual_track_signal.html">Step 5: Dual-Track Signal Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step6_seacr.html">Step 6: SEACR Peak Calling</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 3: DE Analysis</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step7_cps_generation.html">Step 7: Consensus Peak Set (CPS) Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step8_quantification.html">Step 8: Master Counts Matrix Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step9_manorm2_de.html">Step 9: Differential Enrichment Analysis (MAnorm2)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="step10_annotation.html">Step 10: Genomic Annotation (ChIPseeker)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Step 11: Result Aggregation and CPS-Based File Organization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#execution-command">Execution Command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aggregated-output-files">Aggregated Output Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#all-comparisons-summary-csv">1. <code class="docutils literal notranslate"><span class="pre">All_Comparisons_Summary.csv</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#all-filter-stats-csv">2. <code class="docutils literal notranslate"><span class="pre">All_Filter_Stats.csv</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#all-chromosome-dist-csv">3. <code class="docutils literal notranslate"><span class="pre">All_Chromosome_Dist.csv</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#cps-based-file-organization">CPS-Based File Organization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#key-design-rationale">Key Design Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#centralized-project-level-summaries">1. Centralized project-level summaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#preservation-of-per-comparison-provenance">2. Preservation of per-comparison provenance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cleaner-downstream-navigation">3. Cleaner downstream navigation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#output-structure">Output Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#root-level-project-summaries">Root-level project summaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cps-specific-subdirectories">CPS-specific subdirectories</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#key-take-home-message">Key Take-Home Message</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="step12_PCA.html">Step 12: CPS-Level PCA Quality Assessment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/spike_in_free.html">Appendix: ChIPseqSpikeInFree Normalization</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cut and Tag Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Step 11: Result Aggregation and CPS-Based File Organization</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/module4_downstream/step11_summarize_organize.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="step-11-result-aggregation-and-cps-based-file-organization">
+<h1>Step 11: Result Aggregation and CPS-Based File Organization<a class="headerlink" href="#step-11-result-aggregation-and-cps-based-file-organization" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>After all comparison-specific MAnorm2 analyses have completed, the resulting output files must be consolidated into project-level summary tables and then organized into CPS-specific directories for easier downstream review.</p>
+<p>This step performs two tasks:</p>
+<ol class="arabic simple">
+<li><p><strong>Aggregation of comparison-level result summaries</strong> into three master CSV files</p></li>
+<li><p><strong>Automatic CPS-based file organization</strong> of comparison-specific outputs</p></li>
+</ol>
+<p>Because each comparison generates its own summary, filter-statistics, and chromosome-distribution files, this aggregation step creates a reproducible project-wide overview while preserving the original per-comparison outputs.</p>
+</section>
+<hr class="docutils" />
+<section id="execution-command">
+<h2>Execution Command<a class="headerlink" href="#execution-command" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>/common/lix5lab/Li_Xue_Cut_Tag_06162022/Analysis_WYZ/mm39/manorm2_master_results/<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
+
+rm<span class="w"> </span>-f<span class="w"> </span>All_Comparisons_Summary.csv<span class="w"> </span>All_Filter_Stats.csv<span class="w"> </span>All_Chromosome_Dist.csv
+
+<span class="nv">first_summary</span><span class="o">=</span><span class="k">$(</span>ls<span class="w"> </span>CPS*_Comp*_summary.csv<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="k">)</span>
+head<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$first_summary</span><span class="s2">&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>All_Comparisons_Summary.csv
+awk<span class="w"> </span><span class="s1">&#39;FNR&gt;1&#39;</span><span class="w"> </span>CPS*_Comp*_summary.csv<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-t,<span class="w"> </span>-k1,1n<span class="w"> </span>&gt;&gt;<span class="w"> </span>All_Comparisons_Summary.csv
+
+<span class="nv">first_filter</span><span class="o">=</span><span class="k">$(</span>ls<span class="w"> </span>CPS*_Comp*_filter_stats.csv<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="k">)</span>
+head<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$first_filter</span><span class="s2">&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>All_Filter_Stats.csv
+awk<span class="w"> </span><span class="s1">&#39;FNR&gt;1&#39;</span><span class="w"> </span>CPS*_Comp*_filter_stats.csv<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-t,<span class="w"> </span>-k1,1n<span class="w"> </span>&gt;&gt;<span class="w"> </span>All_Filter_Stats.csv
+
+<span class="nv">first_dist</span><span class="o">=</span><span class="k">$(</span>ls<span class="w"> </span>CPS*_Comp*_dist.csv<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="k">)</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$first_dist</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$first_dist</span><span class="s2">&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>All_Chromosome_Dist.csv
+<span class="w">    </span>awk<span class="w"> </span><span class="s1">&#39;FNR&gt;1&#39;</span><span class="w"> </span>CPS*_Comp*_dist.csv<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-t,<span class="w"> </span>-k1,1n<span class="w"> </span>&gt;&gt;<span class="w"> </span>All_Chromosome_Dist.csv
+<span class="k">fi</span>
+
+<span class="k">for</span><span class="w"> </span>f<span class="w"> </span><span class="k">in</span><span class="w"> </span>CPS*_Comp*<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="o">[</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$f</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="k">continue</span>
+<span class="w">    </span><span class="nv">cps</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$f</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d<span class="s1">&#39;_&#39;</span><span class="w"> </span>-f1<span class="k">)</span>
+<span class="w">    </span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$cps</span><span class="s2">&quot;</span>
+<span class="w">    </span>mv<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$f</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$cps</span><span class="s2">&quot;</span>/
+<span class="k">done</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="aggregated-output-files">
+<h2>Aggregated Output Files<a class="headerlink" href="#aggregated-output-files" title="Link to this heading"></a></h2>
+<p>This step generates up to three master summary files in the root <code class="docutils literal notranslate"><span class="pre">manorm2_master_results/</span></code> directory:</p>
+<section id="all-comparisons-summary-csv">
+<h3>1. <code class="docutils literal notranslate"><span class="pre">All_Comparisons_Summary.csv</span></code><a class="headerlink" href="#all-comparisons-summary-csv" title="Link to this heading"></a></h3>
+<p>This file combines all comparison-level summary tables into one project-wide table. It records high-level differential-analysis results for each comparison, including:</p>
+<ul class="simple">
+<li><p>comparison identifier</p></li>
+<li><p>CPS identifier</p></li>
+<li><p>histone marker</p></li>
+<li><p>group names</p></li>
+<li><p>total number of significant regions</p></li>
+<li><p>counts of regions higher in each group</p></li>
+<li><p>top genes</p></li>
+<li><p>annotation distribution summaries</p></li>
+</ul>
+<p>This table is useful for rapid screening across all completed comparisons.</p>
+</section>
+<section id="all-filter-stats-csv">
+<h3>2. <code class="docutils literal notranslate"><span class="pre">All_Filter_Stats.csv</span></code><a class="headerlink" href="#all-filter-stats-csv" title="Link to this heading"></a></h3>
+<p>This file combines all per-comparison filtering diagnostics into a single master table. It records:</p>
+<ul class="simple">
+<li><p>group identities</p></li>
+<li><p>matched count and occupancy columns</p></li>
+<li><p>total intervals before filtering</p></li>
+<li><p>number of intervals retained after each filtering stage</p></li>
+<li><p>basic filtering thresholds</p></li>
+<li><p>occupancy and variance thresholds</p></li>
+<li><p>normalization-anchor counts and fractions</p></li>
+<li><p>final mean-variance fitting method used</p></li>
+</ul>
+<p>This table provides a reproducible audit trail of the comparison-specific filtering and normalization logic used in Step 9.</p>
+</section>
+<section id="all-chromosome-dist-csv">
+<h3>3. <code class="docutils literal notranslate"><span class="pre">All_Chromosome_Dist.csv</span></code><a class="headerlink" href="#all-chromosome-dist-csv" title="Link to this heading"></a></h3>
+<p>If chromosome-direction summary files were generated, they are merged into a single chromosome-level overview table. This file records, for each comparison:</p>
+<ul class="simple">
+<li><p>chromosome name</p></li>
+<li><p>count of regions higher in Group 2</p></li>
+<li><p>count of regions higher in Group 1</p></li>
+<li><p>comparison identifier</p></li>
+<li><p>CPS</p></li>
+<li><p>histone marker</p></li>
+<li><p>comparison name</p></li>
+</ul>
+<p>This file is particularly useful for quickly identifying chromosome-biased enrichment patterns, including sex-chromosome effects.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="cps-based-file-organization">
+<h2>CPS-Based File Organization<a class="headerlink" href="#cps-based-file-organization" title="Link to this heading"></a></h2>
+<p>After the aggregated summary tables are created, all comparison-specific files matching the pattern <code class="docutils literal notranslate"><span class="pre">CPS*_Comp*</span></code> are moved into directories grouped by CPS identifier.</p>
+<p>For example:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CPS1_Comp1_...</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CPS1_Comp2_...</span></code></p></li>
+</ul>
+<p>are moved into:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CPS1/</span></code></p></li>
+</ul>
+<p>This organization improves project readability by grouping all outputs associated with the same CPS into a single folder.</p>
+</section>
+<hr class="docutils" />
+<section id="key-design-rationale">
+<h2>Key Design Rationale<a class="headerlink" href="#key-design-rationale" title="Link to this heading"></a></h2>
+<section id="centralized-project-level-summaries">
+<h3>1. Centralized project-level summaries<a class="headerlink" href="#centralized-project-level-summaries" title="Link to this heading"></a></h3>
+<p>Comparison-specific files are useful for detailed inspection, but they are inconvenient for global review across dozens of analyses. Aggregating the outputs into three master CSV files provides an immediate project-level summary without modifying the original comparison-level results.</p>
+</section>
+<section id="preservation-of-per-comparison-provenance">
+<h3>2. Preservation of per-comparison provenance<a class="headerlink" href="#preservation-of-per-comparison-provenance" title="Link to this heading"></a></h3>
+<p>This step does not overwrite or compress the original comparison-specific outputs. Instead, it preserves them exactly as generated and simply reorganizes them into CPS-based subdirectories.</p>
+</section>
+<section id="cleaner-downstream-navigation">
+<h3>3. Cleaner downstream navigation<a class="headerlink" href="#cleaner-downstream-navigation" title="Link to this heading"></a></h3>
+<p>By grouping all <code class="docutils literal notranslate"><span class="pre">CPS*_Comp*</span></code> files into their corresponding CPS folders, the result directory becomes much easier to navigate. This is especially useful when reviewing multiple histone markers and many related comparisons within the same CPS framework.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="output-structure">
+<h2>Output Structure<a class="headerlink" href="#output-structure" title="Link to this heading"></a></h2>
+<p>After this step, the result directory contains:</p>
+<section id="root-level-project-summaries">
+<h3>Root-level project summaries<a class="headerlink" href="#root-level-project-summaries" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">All_Comparisons_Summary.csv</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">All_Filter_Stats.csv</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">All_Chromosome_Dist.csv</span></code> (if applicable)</p></li>
+</ul>
+</section>
+<section id="cps-specific-subdirectories">
+<h3>CPS-specific subdirectories<a class="headerlink" href="#cps-specific-subdirectories" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CPS1/</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CPS2/</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CPS3/</span></code></p></li>
+<li><p>…</p></li>
+</ul>
+<p>Each CPS directory contains the original comparison-level files for that CPS, including result tables, summaries, filter statistics, and chromosome-distribution outputs.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="key-take-home-message">
+<h2>Key Take-Home Message<a class="headerlink" href="#key-take-home-message" title="Link to this heading"></a></h2>
+<p>This step converts a large collection of comparison-level MAnorm2 outputs into a structured result system consisting of:</p>
+<ol class="arabic simple">
+<li><p>project-level aggregate summary tables</p></li>
+<li><p>CPS-based organized comparison folders</p></li>
+</ol>
+<p>Together, these outputs make the full CUT&amp;Tag differential analysis more auditable, easier to review, and more manageable for downstream interpretation.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="step10_annotation.html" class="btn btn-neutral float-left" title="Step 10: Genomic Annotation (ChIPseeker)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="step12_PCA.html" class="btn btn-neutral float-right" title="Step 12: CPS-Level PCA Quality Assessment" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yizhou Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

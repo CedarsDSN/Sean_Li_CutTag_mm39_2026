@@ -1,0 +1,344 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>B4. Parametric vs Local Regression in MAnorm2, Including Modified Local Settings &mdash; Cut and Tag Pipeline 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="B5. Why Parametric Warnings Were Not Automatically Treated as Fit Failure" href="b5_why_parametric_warnings_not_auto_failure.html" />
+    <link rel="prev" title="B3. Why Autosomal Fully Occupied Peaks Were Used as MAnorm2 Normalization Anchors" href="b3_why_autosomal_fully_occupied_anchors.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Cut and Tag Pipeline
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step2_qc.html">Step 2: Quality Control &amp; Adapter Trimming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step3_alignment.html">Step 3: Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing &amp; Quality Filtering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak &amp; Signal</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step5_dual_track_signal.html">Step 5: Dual-Track Signal Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step6_seacr.html">Step 6: SEACR Peak Calling</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 3: DE Analysis</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step7_cps_generation.html">Step 7: Consensus Peak Set (CPS) Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step8_quantification.html">Step 8: Master Counts Matrix Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step9_manorm2_de.html">Step 9: Differential Enrichment Analysis (MAnorm2)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step10_annotation.html">Step 10: Genomic Annotation (ChIPseeker)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step11_summarize_organize.html">Step 11: Result Aggregation and CPS-Based File Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step12_PCA.html">Step 12: CPS-Level PCA Quality Assessment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="appendix_index.html">Appendix: Methodological Discussions and Design Decisions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="a0_spikein_absence_evaluation.html">A0. How Spike-In Absence Was Evaluated in This Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a1_chipseqspikeinfree_in_this_project.html">A1. ChIPseqSpikeInFree in This Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a2_seacr_threshold_comparison.html">A2. Comparison of SEACR Thresholds: 0.01 vs 0.005 vs 0.05</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a3_why_negative_controls_were_excluded.html">A3. Why Negative-Control Libraries Were Excluded from SEACR and CPS Construction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a4_why_dual_track_signal_generation_was_necessary.html">A4. Why Browser Visualization and Peak Calling Require Two Different Signal Tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a5_why_cpm_bigwig_is_ok_for_visualization.html">A5. Why CPM-Normalized BigWig Tracks Are Acceptable for Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b1_why_master_matrix_replaced_individual_matrices.html">B1. Why the Workflow Moved From Individual Comparison Count Matrices to a Master Count Matrix Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b2_why_combined_occupancy_ge_2.html">B2. Why the Occupancy Filter Was Set to Combined Occupancy &gt;= 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b3_why_autosomal_fully_occupied_anchors.html">B3. Why Autosomal Fully Occupied Peaks Were Used as MAnorm2 Normalization Anchors</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">B4. Parametric vs Local Regression in MAnorm2, Including Modified Local Settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-this-comparison-was-necessary">Why This Comparison Was Necessary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-three-fitting-strategies-considered">The Three Fitting Strategies Considered</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#parametric-fitting">1. Parametric fitting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#default-local-regression">2. Default local regression</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modified-local-regression">3. Modified local regression</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#what-the-project-observed-in-practice">What the Project Observed in Practice</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#parametric-fitting-often-behaved-well">Parametric fitting often behaved well</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#default-local-regression-was-not-uniformly-better">Default local regression was not uniformly better</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modified-local-regression-was-useful-as-a-fallback">Modified local regression was useful as a fallback</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#why-the-comparison-was-biologically-important">Why the Comparison Was Biologically Important</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-parametric-was-retained-as-the-primary-model">Why Parametric Was Retained as the Primary Model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#it-often-converged-successfully">1. It often converged successfully</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#it-produced-biologically-sensible-results">2. It produced biologically sensible results</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#local-regression-was-not-uniformly-superior">3. Local regression was not uniformly superior</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-workflow-already-had-a-robust-fallback">4. The workflow already had a robust fallback</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#why-modified-local-was-kept-as-the-fallback">Why Modified Local Was Kept as the Fallback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relationship-to-the-warning-convergence-decision">Relationship to the Warning / Convergence Decision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#key-take-home-message">Key Take-Home Message</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="b5_why_parametric_warnings_not_auto_failure.html">B5. Why Parametric Warnings Were Not Automatically Treated as Fit Failure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b6_profile_bins_pairing_diagnostics.html">B6. Pairing Integrity and <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c1_why_custom_gencode_annotation.html">C1. Why Custom GENCODE-Matched Annotation Was Preferred Over Generic Annotation Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c2_why_restricted_gene_type_annotation.html">C2. Why Restricted Gene-Type Annotation Was Chosen Instead of a Fully Generic Annotation Set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c3_preflight_validation_before_cps_generation.html">C3. Pre-Flight Validation Before CPS Generation</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cut and Tag Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="appendix_index.html">Appendix: Methodological Discussions and Design Decisions</a></li>
+      <li class="breadcrumb-item active">B4. Parametric vs Local Regression in MAnorm2, Including Modified Local Settings</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/appendix/b4_parametric_vs_local_regression.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="b4-parametric-vs-local-regression-in-manorm2-including-modified-local-settings">
+<h1>B4. Parametric vs Local Regression in MAnorm2, Including Modified Local Settings<a class="headerlink" href="#b4-parametric-vs-local-regression-in-manorm2-including-modified-local-settings" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>A major methodological issue in this project was how to fit the mean-variance relationship in MAnorm2 for differential enrichment analysis. In principle, MAnorm2 supports both parametric and local-regression-based fitting strategies, but in practice these approaches did not behave identically on this dataset.</p>
+<p>Because the project included:</p>
+<ul class="simple">
+<li><p>multiple CPS-defined comparison spaces</p></li>
+<li><p>limited replicate numbers in many comparisons</p></li>
+<li><p>strong biological differences in some contexts</p></li>
+<li><p>sex-linked loci with highly asymmetric signal behavior</p></li>
+</ul>
+<p>it was important to compare the available fitting strategies rather than assume that one default option would always be best.</p>
+<p>This section summarizes how parametric fitting, default local regression, and modified local regression were compared in this project, and why the final workflow retained parametric fitting as the primary model with modified local regression reserved as a fallback.</p>
+</section>
+<hr class="docutils" />
+<section id="why-this-comparison-was-necessary">
+<h2>Why This Comparison Was Necessary<a class="headerlink" href="#why-this-comparison-was-necessary" title="Link to this heading"></a></h2>
+<p>In MAnorm2, the mean-variance fit directly affects downstream empirical Bayes moderation and therefore influences:</p>
+<ul class="simple">
+<li><p>standard error estimation</p></li>
+<li><p>test statistic behavior</p></li>
+<li><p>p-values and adjusted p-values</p></li>
+<li><p>the apparent significance of biologically important loci</p></li>
+</ul>
+<p>This means that the choice of fitting strategy is not a cosmetic implementation detail. It can materially influence which loci appear significant and how biologically plausible the final differential results look.</p>
+<p>Because this project involved several comparisons with uneven variance structure and limited replicate counts, fitting behavior had to be evaluated empirically rather than accepted uncritically.</p>
+</section>
+<hr class="docutils" />
+<section id="the-three-fitting-strategies-considered">
+<h2>The Three Fitting Strategies Considered<a class="headerlink" href="#the-three-fitting-strategies-considered" title="Link to this heading"></a></h2>
+<section id="parametric-fitting">
+<h3>1. Parametric fitting<a class="headerlink" href="#parametric-fitting" title="Link to this heading"></a></h3>
+<p>This was the primary model considered by the workflow.</p>
+<p>Representative implementation:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">conds_param</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">fitMeanVarCurve</span><span class="p">(</span>
+<span class="w">  </span><span class="n">conds</span><span class="p">,</span>
+<span class="w">  </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;parametric&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">occupy.only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span>
+<span class="w">  </span><span class="n">max.iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">,</span>
+<span class="w">  </span><span class="n">init.coef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.1</span><span class="p">,</span><span class="w"> </span><span class="m">10</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Conceptually, the parametric approach imposes a specific functional form on the mean-variance relationship. When the data behave sufficiently well, this can provide a stable and interpretable fit.</p>
+</section>
+<section id="default-local-regression">
+<h3>2. Default local regression<a class="headerlink" href="#default-local-regression" title="Link to this heading"></a></h3>
+<p>This was evaluated as a nonparametric alternative.</p>
+<p>Representative implementation:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">conds_local</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">fitMeanVarCurve</span><span class="p">(</span>
+<span class="w">  </span><span class="n">conds</span><span class="p">,</span>
+<span class="w">  </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;local regression&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">occupy.only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This approach is more flexible and can adapt to irregular mean-variance structure, but it may also behave more conservatively or less stably depending on how the local fit is shaped by the data.</p>
+</section>
+<section id="modified-local-regression">
+<h3>3. Modified local regression<a class="headerlink" href="#modified-local-regression" title="Link to this heading"></a></h3>
+<p>The project did not rely only on default local regression. A modified local fallback strategy was also tested:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">tmp_conds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">fitMeanVarCurve</span><span class="p">(</span>
+<span class="w">  </span><span class="n">conds</span><span class="p">,</span>
+<span class="w">  </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;local regression&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">occupy.only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span>
+<span class="p">)</span>
+
+<span class="n">tmp_conds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">estimatePriorDf</span><span class="p">(</span>
+<span class="w">  </span><span class="n">tmp_conds</span><span class="p">,</span>
+<span class="w">  </span><span class="n">occupy.only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This modified local configuration was designed to improve the stability of local regression in difficult comparisons and to provide a more robust fallback than the default local setting alone.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="what-the-project-observed-in-practice">
+<h2>What the Project Observed in Practice<a class="headerlink" href="#what-the-project-observed-in-practice" title="Link to this heading"></a></h2>
+<p>The main conclusion from project-level testing was that these models were <strong>not interchangeable</strong>.</p>
+<section id="parametric-fitting-often-behaved-well">
+<h3>Parametric fitting often behaved well<a class="headerlink" href="#parametric-fitting-often-behaved-well" title="Link to this heading"></a></h3>
+<p>In many comparisons, parametric fitting converged successfully and produced results that were:</p>
+<ul class="simple">
+<li><p>stable</p></li>
+<li><p>interpretable</p></li>
+<li><p>biologically plausible</p></li>
+</ul>
+<p>This was especially important because the project did not want to abandon a working parametric fit merely because a nonparametric option was available.</p>
+</section>
+<section id="default-local-regression-was-not-uniformly-better">
+<h3>Default local regression was not uniformly better<a class="headerlink" href="#default-local-regression-was-not-uniformly-better" title="Link to this heading"></a></h3>
+<p>Although local regression is often attractive in principle because of its flexibility, default local regression did not always produce the most convincing results in this dataset. In some contexts, it appeared to behave too conservatively or to weaken signal at loci that were biologically expected to be strong.</p>
+</section>
+<section id="modified-local-regression-was-useful-as-a-fallback">
+<h3>Modified local regression was useful as a fallback<a class="headerlink" href="#modified-local-regression-was-useful-as-a-fallback" title="Link to this heading"></a></h3>
+<p>The modified local configuration improved the usefulness of the local-regression family in difficult cases. It gave the workflow a more fault-tolerant nonparametric alternative without making local regression the default for all comparisons.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="why-the-comparison-was-biologically-important">
+<h2>Why the Comparison Was Biologically Important<a class="headerlink" href="#why-the-comparison-was-biologically-important" title="Link to this heading"></a></h2>
+<p>This was not only a statistical or numerical question. The fitting strategy affected biologically important loci.</p>
+<p>In particular, project-level review showed that some sex-linked loci behaved differently depending on whether parametric or local regression was used. For example, male-specific chrY-associated genes such as <strong>Sry</strong> and <strong>Eif2s3y</strong> could appear much more significant under the parametric fit than under default local regression.</p>
+<p>This mattered because:</p>
+<ul class="simple">
+<li><p>these loci had strong biological expectations</p></li>
+<li><p>they served as useful sanity checks for model behavior</p></li>
+<li><p>the project did not want to adopt a model that systematically weakened obviously plausible biology without strong justification</p></li>
+</ul>
+<p>Thus, model comparison was grounded not only in abstract fit theory but also in locus-level biological interpretability.</p>
+</section>
+<hr class="docutils" />
+<section id="why-parametric-was-retained-as-the-primary-model">
+<h2>Why Parametric Was Retained as the Primary Model<a class="headerlink" href="#why-parametric-was-retained-as-the-primary-model" title="Link to this heading"></a></h2>
+<p>After comparison, the workflow retained parametric fitting as the primary strategy for several reasons.</p>
+<section id="it-often-converged-successfully">
+<h3>1. It often converged successfully<a class="headerlink" href="#it-often-converged-successfully" title="Link to this heading"></a></h3>
+<p>When the parametric model converged, it usually provided a clean and usable fit.</p>
+</section>
+<section id="it-produced-biologically-sensible-results">
+<h3>2. It produced biologically sensible results<a class="headerlink" href="#it-produced-biologically-sensible-results" title="Link to this heading"></a></h3>
+<p>In several important loci and comparisons, parametric fitting preserved stronger biologically plausible signal than default local regression.</p>
+</section>
+<section id="local-regression-was-not-uniformly-superior">
+<h3>3. Local regression was not uniformly superior<a class="headerlink" href="#local-regression-was-not-uniformly-superior" title="Link to this heading"></a></h3>
+<p>The project did not find evidence that local regression should replace parametric fitting as the universal default.</p>
+</section>
+<section id="the-workflow-already-had-a-robust-fallback">
+<h3>4. The workflow already had a robust fallback<a class="headerlink" href="#the-workflow-already-had-a-robust-fallback" title="Link to this heading"></a></h3>
+<p>Because modified local regression was available as a fallback, the workflow did not need to make local regression the primary strategy just to achieve robustness.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="why-modified-local-was-kept-as-the-fallback">
+<h2>Why Modified Local Was Kept as the Fallback<a class="headerlink" href="#why-modified-local-was-kept-as-the-fallback" title="Link to this heading"></a></h2>
+<p>Even though parametric was retained as primary, the project still needed a strategy for difficult comparisons where parametric fitting genuinely failed.</p>
+<p>Modified local regression served this role because it:</p>
+<ul class="simple">
+<li><p>allowed difficult comparisons to complete</p></li>
+<li><p>reduced dependence on default local settings alone</p></li>
+<li><p>provided a more robust nonparametric alternative when necessary</p></li>
+<li><p>preserved pipeline continuity without forcing all comparisons into the same model class</p></li>
+</ul>
+<p>Thus, the project’s final logic was not “parametric only” but rather:</p>
+<ul class="simple">
+<li><p><strong>parametric by default</strong></p></li>
+<li><p><strong>modified local when true failure requires fallback</strong></p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="relationship-to-the-warning-convergence-decision">
+<h2>Relationship to the Warning / Convergence Decision<a class="headerlink" href="#relationship-to-the-warning-convergence-decision" title="Link to this heading"></a></h2>
+<p>This section is closely related to the separate question of whether warnings should automatically invalidate the parametric fit.</p>
+<p>The workflow’s final logic was:</p>
+<ul class="simple">
+<li><p>compare parametric and local behavior empirically</p></li>
+<li><p>keep parametric if it truly converged</p></li>
+<li><p>reserve modified local for genuine failure cases</p></li>
+</ul>
+<p>Thus, the parametric vs local comparison and the warning-handling decision were part of the same broader design philosophy.</p>
+</section>
+<hr class="docutils" />
+<section id="key-take-home-message">
+<h2>Key Take-Home Message<a class="headerlink" href="#key-take-home-message" title="Link to this heading"></a></h2>
+<p>In this project, parametric fitting, default local regression, and modified local regression did not behave equivalently. Parametric fitting was retained as the primary MAnorm2 strategy because it often converged successfully and preserved strong biologically plausible signal, including at important sex-linked loci. Modified local regression was kept as a practical fallback for difficult comparisons where parametric fitting genuinely failed, giving the workflow both interpretability and fault tolerance.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="b3_why_autosomal_fully_occupied_anchors.html" class="btn btn-neutral float-left" title="B3. Why Autosomal Fully Occupied Peaks Were Used as MAnorm2 Normalization Anchors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="b5_why_parametric_warnings_not_auto_failure.html" class="btn btn-neutral float-right" title="B5. Why Parametric Warnings Were Not Automatically Treated as Fit Failure" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yizhou Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,365 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Step 9: Differential Enrichment Analysis (MAnorm2) &mdash; Cut and Tag Pipeline 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Step 10: Gene Annotation" href="../module4_downstream/step10_annotation.html" />
+    <link rel="prev" title="Step 8: Master Counts Matrix Generation" href="step8_quantification.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Cut and Tag Pipeline
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step2_qc.html">Step 2: Quality Control &amp; Adapter Trimming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step3_alignment.html">Step 3: Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing &amp; Quality Filtering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak &amp; Signal</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step5_dual_track_signal.html">Step 5: Dual-Track Signal Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step6_seacr.html">Step 6: SEACR Peak Calling</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 3: DE Analysis</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="step7_cps_generation.html">Step 7: Consensus Peak Set (CPS) Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="step8_quantification.html">Step 8: Master Counts Matrix Generation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Step 9: Differential Enrichment Analysis (MAnorm2)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#execution-strategy">Execution Strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#key-algorithmic-rationale">Key Algorithmic Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#three-tier-feature-filtering">1. Three-Tier Feature Filtering</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#a-basic-count-volume-filter">a. Basic count-volume filter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#b-quality-and-variance-filter">b. Quality and variance filter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c-occupancy-filter">c. Occupancy filter</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#conservative-normalization-anchor-selection">2. Conservative Normalization Anchor Selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#primary-parametric-fitting-with-convergence-based-fallback">3. Primary Parametric Fitting with Convergence-Based Fallback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#differential-testing-within-the-cps-framework">4. Differential Testing Within the CPS Framework</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#direct-genomic-annotation-with-chipseeker">5. Direct Genomic Annotation with ChIPseeker</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#output">Output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#key-take-home-message">Key Take-Home Message</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step10_annotation.html">Step 10: Gene Annotation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step11_pca_batch.html">Step 11: PCA &amp; Batch Effect</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/spike_in_free.html">Appendix: ChIPseqSpikeInFree Normalization</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cut and Tag Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Step 9: Differential Enrichment Analysis (MAnorm2)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/module3_quantitative_DE/step9_manorm2_de.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="step-9-differential-enrichment-analysis-manorm2">
+<h1>Step 9: Differential Enrichment Analysis (MAnorm2)<a class="headerlink" href="#step-9-differential-enrichment-analysis-manorm2" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>With the master counts matrices generated in Step 8, we can now perform a quantitative comparison of chromatin enrichment between biological conditions. Because CUT&amp;Tag data can exhibit substantial variability in both signal intensity and peak occupancy structure, robust filtering, normalization, and variance modeling are essential before formal statistical testing.</p>
+<p>To perform differential enrichment analysis, we used the <code class="docutils literal notranslate"><span class="pre">MAnorm2</span></code> R package. MAnorm2 is designed for the quantitative comparison of groups of chromatin profiling samples and provides model-based normalization and variance estimation well suited for CUT&amp;Tag-style enrichment data.</p>
+<p>In this workflow, differential testing is performed within the CPS-defined feature space established in Step 7 and quantified in Step 8. Thus, all comparisons are conducted on a shared, non-redundant set of genomic intervals rather than on sample-specific peak boundaries.</p>
+<p>To ensure robustness across heterogeneous comparison groups, the analysis script was designed to perform:</p>
+<ul class="simple">
+<li><p>Strict pre-filtering of noisy intervals</p></li>
+<li><p>Conservative normalization-anchor selection</p></li>
+<li><p>Primary parametric mean-variance fitting with fallback only when true convergence fails</p></li>
+<li><p>Direct genomic annotation of the final differential results using <code class="docutils literal notranslate"><span class="pre">ChIPseeker</span></code></p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="execution-strategy">
+<h2>Execution Strategy<a class="headerlink" href="#execution-strategy" title="Link to this heading"></a></h2>
+<p>The full MAnorm2 workflow is implemented as an automated R script executed through a Slurm array, with each task corresponding to one comparison entry in <code class="docutils literal notranslate"><span class="pre">Metadata_Comparison.csv</span></code>.</p>
+<p>Rather than embedding the full script in the documentation, the key analytical logic is summarized below. The complete implementation is maintained in the project repository.</p>
+<p>At a high level, each comparison follows this sequence:</p>
+<ol class="arabic simple">
+<li><p>Load the CPS-specific master counts matrix</p></li>
+<li><p>Extract the count and occupancy columns corresponding to the two comparison groups</p></li>
+<li><p>Apply multi-tier feature filtering</p></li>
+<li><p>Normalize the two groups using a conservative shared anchor set</p></li>
+<li><p>Fit the mean-variance relationship</p></li>
+<li><p>Perform differential testing</p></li>
+<li><p>Annotate the resulting intervals with genomic context and nearest-gene information</p></li>
+<li><p>Export comparison-specific result tables and summary statistics</p></li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="key-algorithmic-rationale">
+<h2>Key Algorithmic Rationale<a class="headerlink" href="#key-algorithmic-rationale" title="Link to this heading"></a></h2>
+<section id="three-tier-feature-filtering">
+<h3>1. Three-Tier Feature Filtering<a class="headerlink" href="#three-tier-feature-filtering" title="Link to this heading"></a></h3>
+<p>Before differential testing, low-information and unstable regions are removed to reduce noise and lessen the multiple-testing burden. The filtering strategy consists of three layers:</p>
+<section id="a-basic-count-volume-filter">
+<h4>a. Basic count-volume filter<a class="headerlink" href="#a-basic-count-volume-filter" title="Link to this heading"></a></h4>
+<p>Intervals in the bottom 10% of total fragment counts across the two comparison groups are removed. This step excludes the weakest regions, which are typically dominated by stochastic background signal and contribute little useful statistical information.</p>
+<p>A simplified version of the implementation is:</p>
+<div class="highlight-R notranslate"><div class="highlight"><pre><span></span><span class="n">low_quantile_cutoff</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">0.1</span>
+<span class="n">low_cutoff</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">quantile</span><span class="p">(</span><span class="n">total_sum</span><span class="p">,</span><span class="w"> </span><span class="n">low_quantile_cutoff</span><span class="p">,</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span>
+<span class="n">basic_keep</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">total_sum</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">low_cutoff</span>
+</pre></div>
+</div>
+</section>
+<section id="b-quality-and-variance-filter">
+<h4>b. Quality and variance filter<a class="headerlink" href="#b-quality-and-variance-filter" title="Link to this heading"></a></h4>
+<p>An interval is retained only if at least one of the two groups shows both:</p>
+<ul class="simple">
+<li><p>A mean count of at least 10</p></li>
+<li><p>A coefficient of variation (CV) no greater than 1.0</p></li>
+</ul>
+<p>This requirement removes regions whose apparent signal is driven primarily by unstable or highly scattered observations.</p>
+<div class="highlight-R notranslate"><div class="highlight"><pre><span></span><span class="n">quality_keep</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">((</span><span class="n">g1_mean</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">min_mean_count</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">cv1</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">max_cv</span><span class="p">))</span><span class="w"> </span><span class="o">|</span>
+<span class="w">                </span><span class="p">((</span><span class="n">g2_mean</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">min_mean_count</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">cv2</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">max_cv</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="c-occupancy-filter">
+<h4>c. Occupancy filter<a class="headerlink" href="#c-occupancy-filter" title="Link to this heading"></a></h4>
+<p>An interval must overlap original sample-specific peak calls in at least two replicates across the two comparison groups combined.</p>
+<p>This is important: the filter is not defined as “at least two replicates within either single group,” but rather as a combined occupancy requirement across both groups.</p>
+<div class="highlight-R notranslate"><div class="highlight"><pre><span></span><span class="n">occupancy_keep</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">(</span><span class="n">occ_n_g1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">occ_n_g2</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">min_occ_n</span>
+</pre></div>
+</div>
+<p>Together, these three filters improve the stability of downstream variance modeling and statistical testing.</p>
+</section>
+</section>
+<section id="conservative-normalization-anchor-selection">
+<h3>2. Conservative Normalization Anchor Selection<a class="headerlink" href="#conservative-normalization-anchor-selection" title="Link to this heading"></a></h3>
+<p>After filtering, between-group normalization is performed using <code class="docutils literal notranslate"><span class="pre">normBioCond()</span></code> in MAnorm2.</p>
+<p>Instead of using all retained intervals as normalization anchors, we define a more conservative anchor set consisting only of regions that satisfy all of the following:</p>
+<ul class="simple">
+<li><p>Located on autosomes</p></li>
+<li><p>Occupied in every replicate of Group 1</p></li>
+<li><p>Occupied in every replicate of Group 2</p></li>
+</ul>
+<p>This excludes sex chromosomes, which may show biologically driven dosage differences, and restricts normalization to highly stable shared regions. These universally occupied autosomal intervals provide a robust anchor set for scaling the two biological conditions to a common baseline.</p>
+<div class="highlight-R notranslate"><div class="highlight"><pre><span></span><span class="n">autosome</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="o">!</span><span class="p">(</span><span class="n">data_filtered</span><span class="o">$</span><span class="n">chrom</span><span class="w"> </span><span class="o">%in%</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;chrX&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;chrY&quot;</span><span class="p">))</span>
+<span class="n">common_peak_idx</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">autosome</span><span class="w"> </span><span class="o">&amp;</span>
+<span class="w">                   </span><span class="p">(</span><span class="n">occ_n_g1_f</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nf">ncol</span><span class="p">(</span><span class="n">occ_g1_f</span><span class="p">))</span><span class="w"> </span><span class="o">&amp;</span>
+<span class="w">                   </span><span class="p">(</span><span class="n">occ_n_g2_f</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nf">ncol</span><span class="p">(</span><span class="n">occ_g2_f</span><span class="p">))</span>
+
+<span class="n">conds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">normBioCond</span><span class="p">(</span><span class="n">conds</span><span class="p">,</span><span class="w"> </span><span class="n">common.peak.regions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">common_peak_idx</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For reproducibility tracking, the script also records the number and proportion of anchor intervals retained for each comparison.</p>
+</section>
+<section id="primary-parametric-fitting-with-convergence-based-fallback">
+<h3>3. Primary Parametric Fitting with Convergence-Based Fallback<a class="headerlink" href="#primary-parametric-fitting-with-convergence-based-fallback" title="Link to this heading"></a></h3>
+<p>A common failure point in model-based chromatin differential analysis is mean-variance curve fitting, especially when replicate numbers are limited or signal dispersion is highly uneven.</p>
+<p>To make the workflow robust, we implemented a convergence-based fitting strategy:</p>
+<ul class="simple">
+<li><p><strong>Primary model:</strong> Parametric mean-variance fitting</p></li>
+<li><p><strong>Fallback model:</strong> Modified local regression with re-estimated prior degrees of freedom</p></li>
+</ul>
+<p>The parametric model is attempted first because it provides a stable and interpretable fit under well-behaved conditions. Importantly, the script does not switch away from the parametric model merely because warnings are emitted. As long as the MAnorm2 fitting log explicitly reports successful convergence, the parametric fit is retained.</p>
+<p>A simplified version of the implementation is:</p>
+<div class="highlight-R notranslate"><div class="highlight"><pre><span></span><span class="n">fit_log</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">capture.output</span><span class="p">(</span>
+<span class="w">  </span><span class="n">conds_param</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">tryCatch</span><span class="p">(</span>
+<span class="w">    </span><span class="nf">fitMeanVarCurve</span><span class="p">(</span>
+<span class="w">      </span><span class="n">conds</span><span class="p">,</span>
+<span class="w">      </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;parametric&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="n">occupy.only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span>
+<span class="w">      </span><span class="n">max.iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">,</span>
+<span class="w">      </span><span class="n">init.coef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.1</span><span class="p">,</span><span class="w"> </span><span class="m">10</span><span class="p">)</span>
+<span class="w">    </span><span class="p">),</span>
+<span class="w">    </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="n">e</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">param_converged</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">any</span><span class="p">(</span><span class="nf">grepl</span><span class="p">(</span><span class="s">&quot;Converged\\.&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fit_log</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Only when the parametric fit fails to converge or throws a true fitting error does the workflow fall back to a modified local regression strategy:</p>
+<div class="highlight-R notranslate"><div class="highlight"><pre><span></span><span class="n">conds_local</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">tryCatch</span><span class="p">({</span>
+<span class="w">  </span><span class="n">tmp_conds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">fitMeanVarCurve</span><span class="p">(</span>
+<span class="w">    </span><span class="n">conds</span><span class="p">,</span>
+<span class="w">    </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;local regression&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">occupy.only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="w">  </span><span class="n">tmp_conds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">estimatePriorDf</span><span class="p">(</span>
+<span class="w">    </span><span class="n">tmp_conds</span><span class="p">,</span>
+<span class="w">    </span><span class="n">occupy.only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="w">  </span><span class="n">tmp_conds</span>
+<span class="p">},</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="n">e</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the final output, the selected fitting method is recorded explicitly for each comparison (for example, <code class="docutils literal notranslate"><span class="pre">parametric</span></code> or <code class="docutils literal notranslate"><span class="pre">local_allIntervals_rePriorDf</span></code>).</p>
+</section>
+<section id="differential-testing-within-the-cps-framework">
+<h3>4. Differential Testing Within the CPS Framework<a class="headerlink" href="#differential-testing-within-the-cps-framework" title="Link to this heading"></a></h3>
+<p>After normalization and mean-variance estimation, differential testing is performed using <code class="docutils literal notranslate"><span class="pre">diffTest()</span></code> in MAnorm2.</p>
+<div class="highlight-R notranslate"><div class="highlight"><pre><span></span><span class="n">res</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">diffTest</span><span class="p">(</span><span class="n">conds</span><span class="p">[[</span><span class="m">2</span><span class="p">]],</span><span class="w"> </span><span class="n">conds</span><span class="p">[[</span><span class="m">1</span><span class="p">]])</span>
+<span class="n">final_res</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cbind</span><span class="p">(</span><span class="n">data_filtered</span><span class="p">[,</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">3</span><span class="p">],</span><span class="w"> </span><span class="n">res</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Each tested interval therefore represents one CPS-defined genomic feature, and the resulting statistics quantify differential enrichment between the two comparison groups within that shared coordinate framework.</p>
+<p>This is an important distinction: the analysis is not based on raw sample-specific peak boundaries, but on the unified feature space established earlier in the workflow.</p>
+</section>
+<section id="direct-genomic-annotation-with-chipseeker">
+<h3>5. Direct Genomic Annotation with ChIPseeker<a class="headerlink" href="#direct-genomic-annotation-with-chipseeker" title="Link to this heading"></a></h3>
+<p>To make the differential output immediately biologically interpretable, the tested intervals are annotated directly within the MAnorm2 workflow using <code class="docutils literal notranslate"><span class="pre">ChIPseeker</span></code> and the custom GENCODE vM38 annotation resources prepared during reference setup.</p>
+<p>A simplified annotation block is:</p>
+<div class="highlight-R notranslate"><div class="highlight"><pre><span></span><span class="n">peaks_gr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">GRanges</span><span class="p">(</span>
+<span class="w">  </span><span class="n">seqnames</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">final_res</span><span class="o">$</span><span class="n">chrom</span><span class="p">,</span>
+<span class="w">  </span><span class="n">ranges</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">IRanges</span><span class="p">(</span><span class="n">final_res</span><span class="o">$</span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">final_res</span><span class="o">$</span><span class="n">end</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="nf">mcols</span><span class="p">(</span><span class="n">peaks_gr</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">final_res</span><span class="p">[,</span><span class="w"> </span><span class="m">4</span><span class="o">:</span><span class="nf">ncol</span><span class="p">(</span><span class="n">final_res</span><span class="p">)]</span>
+
+<span class="n">peakAnno</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">annotatePeak</span><span class="p">(</span>
+<span class="w">  </span><span class="n">peaks_gr</span><span class="p">,</span>
+<span class="w">  </span><span class="n">tssRegion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">-3000</span><span class="p">,</span><span class="w"> </span><span class="m">3000</span><span class="p">),</span>
+<span class="w">  </span><span class="n">TxDb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">txdb</span><span class="p">,</span>
+<span class="w">  </span><span class="n">overlap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;all&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">addFlankGeneInfo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span>
+<span class="w">  </span><span class="n">flankDistance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3000</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>For each differential interval, the final result table includes:</p>
+<ul class="simple">
+<li><p>Genomic annotation category (for example, Promoter, Intron, Distal Intergenic)</p></li>
+<li><p>Nearest gene information</p></li>
+<li><p>Distance to transcription start site (TSS)</p></li>
+<li><p>Gene symbol mapping</p></li>
+</ul>
+<p>In addition, the script appends comparison-level metadata directly into the final result table, including:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Comparison_ID</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CPS</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Histone_Mark</span></code></p></li>
+</ul>
+<p>This makes the exported results immediately traceable across multiple CPS groups and histone-marker analyses.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="output">
+<h2>Output<a class="headerlink" href="#output" title="Link to this heading"></a></h2>
+<p>For each comparison defined in <code class="docutils literal notranslate"><span class="pre">Metadata_Comparison.csv</span></code>, the MAnorm2 workflow produces an annotated differential result table containing:</p>
+<ul class="simple">
+<li><p>CPS interval coordinates</p></li>
+<li><p>Normalized group-level statistics</p></li>
+<li><p>Differential enrichment statistics (including M-value and significance metrics)</p></li>
+<li><p>Genomic context annotations</p></li>
+<li><p>Associated gene information</p></li>
+<li><p>Comparison metadata (<code class="docutils literal notranslate"><span class="pre">Comparison_ID</span></code>, <code class="docutils literal notranslate"><span class="pre">CPS</span></code>, <code class="docutils literal notranslate"><span class="pre">Histone_Mark</span></code>)</p></li>
+</ul>
+<p>In addition, summary statistics and diagnostic tracking tables are generated to record:</p>
+<ul class="simple">
+<li><p>The number of intervals retained after each filtering stage</p></li>
+<li><p>The normalization-anchor counts</p></li>
+<li><p>The mean-variance fitting method ultimately used for that comparison</p></li>
+<li><p>Marker-aware comparison summaries and chromosome-level directional distributions</p></li>
+</ul>
+<p>These outputs form the definitive basis for downstream biological interpretation and comparison-specific visualization.</p>
+<section id="key-take-home-message">
+<h3>Key Take-Home Message<a class="headerlink" href="#key-take-home-message" title="Link to this heading"></a></h3>
+<p>The differential enrichment analysis workflow is designed not only to test for statistical differences, but also to enforce a high-confidence analytical framework through:</p>
+<ol class="arabic simple">
+<li><p>CPS-based shared feature definition</p></li>
+<li><p>Reproducibility-aware feature filtering</p></li>
+<li><p>Conservative normalization-anchor selection</p></li>
+<li><p>Convergence-aware mean-variance modeling</p></li>
+<li><p>Immediate biological annotation and metadata-aware result export</p></li>
+</ol>
+<p>This makes the final results substantially more robust and interpretable than a naive count-comparison workflow performed directly on raw per-sample peak files. The full implementation script is maintained in the project repository; only the key analytical logic and representative code blocks are shown here.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="step8_quantification.html" class="btn btn-neutral float-left" title="Step 8: Master Counts Matrix Generation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../module4_downstream/step10_annotation.html" class="btn btn-neutral float-right" title="Step 10: Gene Annotation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yizhou Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

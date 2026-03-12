@@ -1,0 +1,340 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A1. ChIPseqSpikeInFree in This Project &mdash; Cut and Tag Pipeline 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="A2. Comparison of SEACR Thresholds: 0.01 vs 0.005 vs 0.05" href="a2_seacr_threshold_comparison.html" />
+    <link rel="prev" title="A0. How Spike-In Absence Was Evaluated in This Project" href="a0_spikein_absence_evaluation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Cut and Tag Pipeline
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step2_qc.html">Step 2: Quality Control &amp; Adapter Trimming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step3_alignment.html">Step 3: Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing &amp; Quality Filtering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak &amp; Signal</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step5_dual_track_signal.html">Step 5: Dual-Track Signal Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step6_seacr.html">Step 6: SEACR Peak Calling</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 3: DE Analysis</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step7_cps_generation.html">Step 7: Consensus Peak Set (CPS) Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step8_quantification.html">Step 8: Master Counts Matrix Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step9_manorm2_de.html">Step 9: Differential Enrichment Analysis (MAnorm2)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step10_annotation.html">Step 10: Genomic Annotation (ChIPseeker)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step11_summarize_organize.html">Step 11: Result Aggregation and CPS-Based File Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step12_PCA.html">Step 12: CPS-Level PCA Quality Assessment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="appendix_index.html">Appendix: Methodological Discussions and Design Decisions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="a0_spikein_absence_evaluation.html">A0. How Spike-In Absence Was Evaluated in This Project</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">A1. ChIPseqSpikeInFree in This Project</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-chipseqspikeinfree-was-considered">Why ChIPseqSpikeInFree Was Considered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core-questions-addressed-during-evaluation">Core Questions Addressed During Evaluation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-accidental-e-coli-carry-over-was-not-used-as-a-spike-in-surrogate">Why Accidental <em>E. coli</em> Carry-Over Was Not Used as a Spike-In Surrogate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#with-or-without-input-control-samples">With or Without Input / Control Samples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#potential-rationale-for-including-input-control">Potential rationale for including input / control</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#practical-concerns-in-this-project">Practical concerns in this project</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#why-cps-specific-scaling-factor-inconsistency-was-a-major-concern">Why CPS-Specific Scaling-Factor Inconsistency Was a Major Concern</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-scaling-factors-were-not-interpreted-as-direct-biological-global-effects">Why Scaling Factors Were Not Interpreted as Direct Biological Global Effects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-chipseqspikeinfree-was-not-adopted-as-the-default-normalization-backbone">Why ChIPseqSpikeInFree Was Not Adopted as the Default Normalization Backbone</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#the-main-workflow-was-built-around-a-different-quantitative-architecture">1. The main workflow was built around a different quantitative architecture</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scaling-factors-were-not-globally-stable-across-contexts">2. Scaling factors were not globally stable across contexts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-workflow-already-had-a-coherent-comparison-specific-normalization-framework">3. The workflow already had a coherent comparison-specific normalization framework</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#browser-visualization-and-peak-calling-were-already-intentionally-separated-from-formal-differential-normalization">4. Browser visualization and peak calling were already intentionally separated from formal differential normalization</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#why-its-scaling-factors-were-not-propagated-directly-into-manorm2">Why Its Scaling Factors Were Not Propagated Directly Into MAnorm2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relationship-to-other-workflow-components">Relationship to Other Workflow Components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#key-take-home-message">Key Take-Home Message</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="a2_seacr_threshold_comparison.html">A2. Comparison of SEACR Thresholds: 0.01 vs 0.005 vs 0.05</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a3_why_negative_controls_were_excluded.html">A3. Why Negative-Control Libraries Were Excluded from SEACR and CPS Construction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a4_why_dual_track_signal_generation_was_necessary.html">A4. Why Browser Visualization and Peak Calling Require Two Different Signal Tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a5_why_cpm_bigwig_is_ok_for_visualization.html">A5. Why CPM-Normalized BigWig Tracks Are Acceptable for Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b1_why_master_matrix_replaced_individual_matrices.html">B1. Why the Workflow Moved From Individual Comparison Count Matrices to a Master Count Matrix Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b2_why_combined_occupancy_ge_2.html">B2. Why the Occupancy Filter Was Set to Combined Occupancy &gt;= 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b3_why_autosomal_fully_occupied_anchors.html">B3. Why Autosomal Fully Occupied Peaks Were Used as MAnorm2 Normalization Anchors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b4_parametric_vs_local_regression.html">B4. Parametric vs Local Regression in MAnorm2, Including Modified Local Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b5_why_parametric_warnings_not_auto_failure.html">B5. Why Parametric Warnings Were Not Automatically Treated as Fit Failure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b6_profile_bins_pairing_diagnostics.html">B6. Pairing Integrity and <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c1_why_custom_gencode_annotation.html">C1. Why Custom GENCODE-Matched Annotation Was Preferred Over Generic Annotation Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c2_why_restricted_gene_type_annotation.html">C2. Why Restricted Gene-Type Annotation Was Chosen Instead of a Fully Generic Annotation Set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c3_preflight_validation_before_cps_generation.html">C3. Pre-Flight Validation Before CPS Generation</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cut and Tag Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="appendix_index.html">Appendix: Methodological Discussions and Design Decisions</a></li>
+      <li class="breadcrumb-item active">A1. ChIPseqSpikeInFree in This Project</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/appendix/a1_chipseqspikeinfree_in_this_project.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="a1-chipseqspikeinfree-in-this-project">
+<h1>A1. ChIPseqSpikeInFree in This Project<a class="headerlink" href="#a1-chipseqspikeinfree-in-this-project" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ChIPseqSpikeInFree</span></code> was evaluated in this project as a possible way to estimate genome-wide scaling behavior without relying on a formally added external spike-in. The motivation for testing it was straightforward: some CUT&amp;Tag comparisons can plausibly contain broad global shifts, and a spike-in-free scaling framework might capture that behavior more explicitly than simple library-size normalization.</p>
+<p>However, after project-specific testing and comparison with the rest of the workflow, <code class="docutils literal notranslate"><span class="pre">ChIPseqSpikeInFree</span></code> was <strong>not</strong> adopted as the default normalization backbone of the final pipeline. Instead, it was treated as an informative methodological comparison framework.</p>
+<p>This section documents the main reasons for that decision.</p>
+</section>
+<hr class="docutils" />
+<section id="why-chipseqspikeinfree-was-considered">
+<h2>Why ChIPseqSpikeInFree Was Considered<a class="headerlink" href="#why-chipseqspikeinfree-was-considered" title="Link to this heading"></a></h2>
+<p>The method was considered for several reasons:</p>
+<ul class="simple">
+<li><p>the project did not use a formal exogenous spike-in design</p></li>
+<li><p>some biological comparisons could plausibly involve broad global signal changes</p></li>
+<li><p>it was important to test whether a spike-in-free global scaling strategy would alter interpretation relative to the main CPS–MAnorm2 workflow</p></li>
+<li><p>it provided a way to explicitly examine the idea of genome-wide scaling without assuming that library-size normalization alone was always sufficient</p></li>
+</ul>
+<p>Thus, <code class="docutils literal notranslate"><span class="pre">ChIPseqSpikeInFree</span></code> was evaluated as a candidate auxiliary normalization framework, not as a method that was assumed to be correct a priori.</p>
+</section>
+<hr class="docutils" />
+<section id="core-questions-addressed-during-evaluation">
+<h2>Core Questions Addressed During Evaluation<a class="headerlink" href="#core-questions-addressed-during-evaluation" title="Link to this heading"></a></h2>
+<p>The project-level discussion of <code class="docutils literal notranslate"><span class="pre">ChIPseqSpikeInFree</span></code> focused on the following practical questions:</p>
+<ol class="arabic simple">
+<li><p>Should <code class="docutils literal notranslate"><span class="pre">ChIPseqSpikeInFree</span></code> be used at all in this dataset?</p></li>
+<li><p>Should it be run with or without input / control samples?</p></li>
+<li><p>Can carry-over bacterial DNA be treated as an accidental spike-in?</p></li>
+<li><p>Should the resulting scaling factors be interpreted as direct biological global-effect estimates?</p></li>
+<li><p>Should those scaling factors be propagated directly into MAnorm2 differential analysis?</p></li>
+<li><p>How should one interpret cases where the same biological sample receives different scaling factors in different CPS contexts?</p></li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="why-accidental-e-coli-carry-over-was-not-used-as-a-spike-in-surrogate">
+<h2>Why Accidental <em>E. coli</em> Carry-Over Was Not Used as a Spike-In Surrogate<a class="headerlink" href="#why-accidental-e-coli-carry-over-was-not-used-as-a-spike-in-surrogate" title="Link to this heading"></a></h2>
+<p>One related idea that was discussed was whether accidental bacterial carry-over, especially <em>E. coli</em>-like DNA, could be treated as a pseudo-spike-in.</p>
+<p>This was ultimately not adopted for the following reasons:</p>
+<ul class="simple">
+<li><p>the project did not establish a robust, intentionally designed spike-in framework</p></li>
+<li><p>accidental carry-over is not equivalent to a controlled external reference</p></li>
+<li><p>exogenous carry-over, even if present, may be sparse, unstable, or inconsistent across samples</p></li>
+<li><p>an accidental signal is difficult to justify as a quantitative normalization backbone for formal downstream inference</p></li>
+</ul>
+<p>Accordingly, accidental bacterial carry-over was not treated as a formal spike-in substitute in the final workflow.</p>
+</section>
+<hr class="docutils" />
+<section id="with-or-without-input-control-samples">
+<h2>With or Without Input / Control Samples<a class="headerlink" href="#with-or-without-input-control-samples" title="Link to this heading"></a></h2>
+<p>A major practical issue was whether <code class="docutils literal notranslate"><span class="pre">ChIPseqSpikeInFree</span></code> should be run together with input or control libraries.</p>
+<section id="potential-rationale-for-including-input-control">
+<h3>Potential rationale for including input / control<a class="headerlink" href="#potential-rationale-for-including-input-control" title="Link to this heading"></a></h3>
+<p>Including input-like controls might in principle help characterize background structure and improve interpretation in some settings.</p>
+</section>
+<section id="practical-concerns-in-this-project">
+<h3>Practical concerns in this project<a class="headerlink" href="#practical-concerns-in-this-project" title="Link to this heading"></a></h3>
+<p>In this project, however, that strategy was not obviously superior because:</p>
+<ul class="simple">
+<li><p>control libraries were not uniformly informative across all CPS contexts</p></li>
+<li><p>some controls were sparse and therefore potentially unstable as scaling references</p></li>
+<li><p>the main workflow itself was not built around input-driven normalization logic</p></li>
+<li><p>importing input/control behavior into the scaling model risked adding another layer of inconsistency across already heterogeneous comparisons</p></li>
+</ul>
+<p>For these reasons, the with/without-input question was treated as an exploratory methodological issue rather than a settled default rule.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="why-cps-specific-scaling-factor-inconsistency-was-a-major-concern">
+<h2>Why CPS-Specific Scaling-Factor Inconsistency Was a Major Concern<a class="headerlink" href="#why-cps-specific-scaling-factor-inconsistency-was-a-major-concern" title="Link to this heading"></a></h2>
+<p>One of the most important observations from project-level testing was that the same biological sample could receive different scaling factors when analyzed in different CPS contexts.</p>
+<p>This means that the estimated scaling factor was not simply an intrinsic property of the sample alone. Instead, it depended on:</p>
+<ul class="simple">
+<li><p>which feature universe was being considered</p></li>
+<li><p>which other samples were present in the same analytical context</p></li>
+<li><p>how the global signal structure was represented within that CPS</p></li>
+</ul>
+<p>This context dependence had an important consequence:</p>
+<blockquote>
+<div><p>a <code class="docutils literal notranslate"><span class="pre">ChIPseqSpikeInFree</span></code> scaling factor could not be treated as a universal sample-level constant that could be safely propagated throughout the entire workflow.</p>
+</div></blockquote>
+<p>This was one of the strongest reasons not to adopt it as the single global normalization backbone of the project.</p>
+</section>
+<hr class="docutils" />
+<section id="why-scaling-factors-were-not-interpreted-as-direct-biological-global-effects">
+<h2>Why Scaling Factors Were Not Interpreted as Direct Biological Global Effects<a class="headerlink" href="#why-scaling-factors-were-not-interpreted-as-direct-biological-global-effects" title="Link to this heading"></a></h2>
+<p>Another important caution was interpretive.</p>
+<p>Even when <code class="docutils literal notranslate"><span class="pre">ChIPseqSpikeInFree</span></code> produced a scaling factor, that value was not interpreted as a direct measurement of the true biological magnitude of genome-wide change. In practice, the scaling factor reflects the assumptions and model behavior of the method under a given analytical context.</p>
+<p>Therefore:</p>
+<ul class="simple">
+<li><p>a scaling factor of 1.3 was <strong>not</strong> interpreted as proof of a true 1.3-fold biological global effect</p></li>
+<li><p>a scaling factor of 6.5 was <strong>not</strong> interpreted as proof of a true sixfold biological global effect</p></li>
+</ul>
+<p>The scaling factor was treated as a model-derived normalization quantity, not as a standalone biological conclusion.</p>
+</section>
+<hr class="docutils" />
+<section id="why-chipseqspikeinfree-was-not-adopted-as-the-default-normalization-backbone">
+<h2>Why ChIPseqSpikeInFree Was Not Adopted as the Default Normalization Backbone<a class="headerlink" href="#why-chipseqspikeinfree-was-not-adopted-as-the-default-normalization-backbone" title="Link to this heading"></a></h2>
+<p>Several project-specific considerations led to the decision not to adopt <code class="docutils literal notranslate"><span class="pre">ChIPseqSpikeInFree</span></code> as the default normalization backbone.</p>
+<section id="the-main-workflow-was-built-around-a-different-quantitative-architecture">
+<h3>1. The main workflow was built around a different quantitative architecture<a class="headerlink" href="#the-main-workflow-was-built-around-a-different-quantitative-architecture" title="Link to this heading"></a></h3>
+<p>The final workflow was centered on:</p>
+<ul class="simple">
+<li><p>CPS-based feature definition</p></li>
+<li><p>CPS-level master matrices</p></li>
+<li><p>comparison-specific MAnorm2 filtering and normalization</p></li>
+<li><p>occupancy-aware differential testing</p></li>
+<li><p>separate browser-visualization normalization</p></li>
+</ul>
+<p>Replacing that design with a single spike-in-free scaling backbone would have required a more radical redefinition of the full workflow than was justified by the project-level evidence.</p>
+</section>
+<section id="scaling-factors-were-not-globally-stable-across-contexts">
+<h3>2. Scaling factors were not globally stable across contexts<a class="headerlink" href="#scaling-factors-were-not-globally-stable-across-contexts" title="Link to this heading"></a></h3>
+<p>Because scaling factors could vary across CPS groups, they did not provide a universal sample-level normalization constant suitable for all steps.</p>
+</section>
+<section id="the-workflow-already-had-a-coherent-comparison-specific-normalization-framework">
+<h3>3. The workflow already had a coherent comparison-specific normalization framework<a class="headerlink" href="#the-workflow-already-had-a-coherent-comparison-specific-normalization-framework" title="Link to this heading"></a></h3>
+<p>MAnorm2 provided its own comparison-specific normalization structure, based on conservative shared anchors within each analysis context. This was more naturally aligned with the CPS-based design of the project.</p>
+</section>
+<section id="browser-visualization-and-peak-calling-were-already-intentionally-separated-from-formal-differential-normalization">
+<h3>4. Browser visualization and peak calling were already intentionally separated from formal differential normalization<a class="headerlink" href="#browser-visualization-and-peak-calling-were-already-intentionally-separated-from-formal-differential-normalization" title="Link to this heading"></a></h3>
+<p>The workflow already used:</p>
+<ul class="simple">
+<li><p>CPM-normalized BigWigs for visualization</p></li>
+<li><p>raw fragment BedGraphs for SEACR</p></li>
+<li><p>CPS/master-matrix quantification for differential analysis</p></li>
+</ul>
+<p>Introducing <code class="docutils literal notranslate"><span class="pre">ChIPseqSpikeInFree</span></code> as the single normalization backbone across all three layers would have reduced that intentional separation and created more methodological coupling than desired.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="why-its-scaling-factors-were-not-propagated-directly-into-manorm2">
+<h2>Why Its Scaling Factors Were Not Propagated Directly Into MAnorm2<a class="headerlink" href="#why-its-scaling-factors-were-not-propagated-directly-into-manorm2" title="Link to this heading"></a></h2>
+<p>The project also considered whether <code class="docutils literal notranslate"><span class="pre">ChIPseqSpikeInFree</span></code> scaling factors should be directly imposed on downstream MAnorm2 analysis.</p>
+<p>This was not adopted for several reasons:</p>
+<ul class="simple">
+<li><p>the scaling factors were CPS-context dependent</p></li>
+<li><p>MAnorm2 already performs its own comparison-specific normalization</p></li>
+<li><p>the anchor-based logic of <code class="docutils literal notranslate"><span class="pre">normBioCond()</span></code> was designed to work within the CPS-defined comparison space</p></li>
+<li><p>layering an external scaling-factor system on top of that framework would have mixed two different normalization philosophies without a single unified statistical design</p></li>
+</ul>
+<p>Thus, although <code class="docutils literal notranslate"><span class="pre">ChIPseqSpikeInFree</span></code> was informative as a comparison method, its scaling factors were not treated as default inputs to the formal MAnorm2 testing framework.</p>
+</section>
+<hr class="docutils" />
+<section id="relationship-to-other-workflow-components">
+<h2>Relationship to Other Workflow Components<a class="headerlink" href="#relationship-to-other-workflow-components" title="Link to this heading"></a></h2>
+<p>The final project-level division of labor remained:</p>
+<ul class="simple">
+<li><p><strong>raw fragment BedGraphs</strong> for SEACR peak calling</p></li>
+<li><p><strong>CPS / master matrices</strong> for unified feature-space quantification</p></li>
+<li><p><strong>MAnorm2</strong> for comparison-specific normalization and differential enrichment testing</p></li>
+<li><p><strong>CPM BigWigs</strong> for browser visualization</p></li>
+<li><p><strong>ChIPseqSpikeInFree</strong> for methodological testing and comparative evaluation</p></li>
+</ul>
+<p>This preserved internal consistency across the pipeline.</p>
+</section>
+<hr class="docutils" />
+<section id="key-take-home-message">
+<h2>Key Take-Home Message<a class="headerlink" href="#key-take-home-message" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ChIPseqSpikeInFree</span></code> was seriously evaluated in this project, but it was not adopted as the default normalization backbone. The main reasons were:</p>
+<ul class="simple">
+<li><p>absence of a true spike-in-centered experimental design</p></li>
+<li><p>the weakness of treating accidental carry-over as a spike-in substitute</p></li>
+<li><p>CPS-specific scaling-factor inconsistency</p></li>
+<li><p>the danger of overinterpreting scaling factors as direct biological global-effect estimates</p></li>
+<li><p>incompatibility with simply imposing those factors onto the project’s CPS–MAnorm2 differential framework</p></li>
+</ul>
+<p>As a result, <code class="docutils literal notranslate"><span class="pre">ChIPseqSpikeInFree</span></code> remained an informative methodological comparison tool rather than the primary normalization engine of the final workflow.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="a0_spikein_absence_evaluation.html" class="btn btn-neutral float-left" title="A0. How Spike-In Absence Was Evaluated in This Project" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="a2_seacr_threshold_comparison.html" class="btn btn-neutral float-right" title="A2. Comparison of SEACR Thresholds: 0.01 vs 0.005 vs 0.05" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yizhou Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

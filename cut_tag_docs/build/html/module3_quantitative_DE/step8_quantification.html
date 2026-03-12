@@ -1,0 +1,361 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Step 8: Master Counts Matrix Generation &mdash; Cut and Tag Pipeline 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Step 9: MAnorm2 DE Analysis" href="step9_manorm2_de.html" />
+    <link rel="prev" title="Step 7: Consensus Peak Set (CPS) Generation" href="step7_cps_generation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Cut and Tag Pipeline
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step2_qc.html">Step 2: Quality Control &amp; Adapter Trimming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step3_alignment.html">Step 3: Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing &amp; Quality Filtering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak &amp; Signal</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step5_dual_track_signal.html">Step 5: Dual-Track Signal Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step6_seacr.html">Step 6: SEACR Peak Calling</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 3: DE Analysis</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="step7_cps_generation.html">Step 7: Consensus Peak Set (CPS) Generation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Step 8: Master Counts Matrix Generation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisite-paired-end-bed-conversion-and-read-name-standardization">Prerequisite: Paired-End BED Conversion and Read-Name Standardization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-command-sequence">Example Command Sequence</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rationale">Rationale</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#metadata-driven-matrix-generation">Metadata-Driven Matrix Generation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Example Command Sequence</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#key-parameter-rationale">Key Parameter Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#bins-consensus-peak"><code class="docutils literal notranslate"><span class="pre">--bins=$CONSENSUS_PEAK</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#paired"><code class="docutils literal notranslate"><span class="pre">--paired</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#peaks-peak-arg"><code class="docutils literal notranslate"><span class="pre">--peaks=$PEAK_ARG</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#label-sanitization-sed-s-g">Label sanitization (<code class="docutils literal notranslate"><span class="pre">sed</span> <span class="pre">'s/-/_/g'</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#output">Output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#key-take-home-message">Key Take-Home Message</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="step9_manorm2_de.html">Step 9: MAnorm2 DE Analysis</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step10_annotation.html">Step 10: Gene Annotation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step11_pca_batch.html">Step 11: PCA &amp; Batch Effect</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/spike_in_free.html">Appendix: ChIPseqSpikeInFree Normalization</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cut and Tag Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Step 8: Master Counts Matrix Generation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/module3_quantitative_DE/step8_quantification.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="step-8-master-counts-matrix-generation">
+<h1>Step 8: Master Counts Matrix Generation<a class="headerlink" href="#step-8-master-counts-matrix-generation" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>To perform quantitative comparisons across multiple conditions, we must translate processed paired-end alignments into a structured numerical format. For each CPS, the goal of this step is to generate a <strong>Master Counts Matrix</strong> in which each row represents one genomic interval from the marker-specific Consensus Peak Set (CPS), each column represents one biological sample, and each cell records the corresponding fragment-level signal.</p>
+<p>A separate master counts matrix is generated for each CPS. Together, these matrices provide the quantitative foundation for downstream normalization and differential enrichment analysis.</p>
+<p>We use the <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> module from the <strong>MAnorm2</strong> suite to construct these matrices.</p>
+</section>
+<hr class="docutils" />
+<section id="prerequisite-paired-end-bed-conversion-and-read-name-standardization">
+<h2>Prerequisite: Paired-End BED Conversion and Read-Name Standardization<a class="headerlink" href="#prerequisite-paired-end-bed-conversion-and-read-name-standardization" title="Link to this heading"></a></h2>
+<p>Because CUT&amp;Tag signal is most appropriately represented at the fragment level rather than the individual read-end level, quantification should be performed using paired-end fragment coordinates whenever possible.</p>
+<p>Accordingly, <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> is run in <code class="docutils literal notranslate"><span class="pre">--paired</span></code> mode. This mode does not accept BAM files directly in the same way as many standard counting tools; instead, it requires paired BED input with perfectly matched mate names.</p>
+<p>A practical complication arises because <code class="docutils literal notranslate"><span class="pre">bedtools</span> <span class="pre">bamtobed</span></code> appends <code class="docutils literal notranslate"><span class="pre">/1</span></code> and <code class="docutils literal notranslate"><span class="pre">/2</span></code> suffixes to read names, whereas MAnorm2 <code class="docutils literal notranslate"><span class="pre">profile_bins</span> <span class="pre">--paired</span></code> expects the two mates of a fragment to have identical read names. Therefore, before matrix generation, aligned BAM files must be converted into paired BED files with standardized mate names.</p>
+<p>In this workflow, this conversion is handled using a Slurm array script.</p>
+<section id="example-command-sequence">
+<h3>Example Command Sequence<a class="headerlink" href="#example-command-sequence" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define paths</span>
+<span class="nv">BAM_DIR</span><span class="o">=</span><span class="s2">&quot;path/to/bam&quot;</span>
+<span class="nv">OUT_DIR</span><span class="o">=</span><span class="s2">&quot;path/to/bam_to_bed&quot;</span>
+mkdir<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$OUT_DIR</span><span class="s2">&quot;</span>
+
+<span class="c1"># 1. Collect BAM files, explicitly excluding IgG / nAb controls</span>
+<span class="nv">BAM_LIST</span><span class="o">=(</span><span class="k">$(</span>find<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BAM_DIR</span><span class="s2">&quot;</span><span class="w"> </span>-maxdepth<span class="w"> </span><span class="m">1</span><span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*rmdup.bam&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-viE<span class="w"> </span><span class="s2">&quot;IgG|nAb&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="k">)</span><span class="o">)</span>
+
+<span class="nv">CURRENT_BAM</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">BAM_LIST</span><span class="p">[</span><span class="k">$((</span><span class="nv">SLURM_ARRAY_TASK_ID</span><span class="o">-</span><span class="m">1</span><span class="k">))</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nv">BASE_NAME</span><span class="o">=</span><span class="k">$(</span>basename<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CURRENT_BAM</span><span class="s2">&quot;</span><span class="w"> </span>.bam<span class="k">)</span>
+
+<span class="nv">TMP_BAM</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">OUT_DIR</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">BASE_NAME</span><span class="si">}</span><span class="s2">.tmp.name.bam&quot;</span>
+<span class="nv">FILTERED_BAM</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">OUT_DIR</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">BASE_NAME</span><span class="si">}</span><span class="s2">.tmp.filtered.bam&quot;</span>
+<span class="nv">OUT_BED</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">OUT_DIR</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">BASE_NAME</span><span class="si">}</span><span class="s2">.bed&quot;</span>
+
+<span class="c1"># 2. Sort BAM by read name (required for pairing logic)</span>
+samtools<span class="w"> </span>sort<span class="w"> </span>-n<span class="w"> </span>-@<span class="w"> </span><span class="m">4</span><span class="w"> </span>-o<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TMP_BAM</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CURRENT_BAM</span><span class="s2">&quot;</span>
+
+<span class="c1"># 3. Retain only high-confidence proper pairs</span>
+<span class="c1"># -f 0x2   : keep properly paired alignments</span>
+<span class="c1"># -F 0x904 : remove unmapped (0x4), secondary (0x100), supplementary (0x800)</span>
+samtools<span class="w"> </span>view<span class="w"> </span>-@<span class="w"> </span><span class="m">4</span><span class="w"> </span>-bh<span class="w"> </span>-f<span class="w"> </span>0x2<span class="w"> </span>-F<span class="w"> </span>0x904<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TMP_BAM</span><span class="s2">&quot;</span><span class="w"> </span>&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$FILTERED_BAM</span><span class="s2">&quot;</span>
+
+<span class="c1"># 4. Convert to BED</span>
+bedtools<span class="w"> </span>bamtobed<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$FILTERED_BAM</span><span class="s2">&quot;</span><span class="w"> </span>&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$OUT_BED</span><span class="s2">.raw&quot;</span>
+
+<span class="c1"># 5. Strip /1 and /2 suffixes and enforce exact mate-name pairing</span>
+awk<span class="w"> </span><span class="s1">&#39;BEGIN{OFS=&quot;\t&quot;}</span>
+<span class="s1">{</span>
+<span class="s1">    curr_name = $4</span>
+<span class="s1">    sub(&quot;/[12]$&quot;, &quot;&quot;, curr_name)</span>
+<span class="s1">    curr_chr = $1</span>
+<span class="s1">    </span>
+<span class="s1">    if (curr_name == prev_name &amp;&amp; curr_chr == prev_chr) {</span>
+<span class="s1">        $4 = curr_name</span>
+<span class="s1">        split(prev_line, p_arr, &quot;\t&quot;)</span>
+<span class="s1">        p_arr[4] = curr_name</span>
+<span class="s1">        print p_arr[1], p_arr[2], p_arr[3], p_arr[4], p_arr[5], p_arr[6]</span>
+<span class="s1">        print $0</span>
+<span class="s1">        prev_name = &quot;&quot;</span>
+<span class="s1">    } else {</span>
+<span class="s1">        prev_line = $0</span>
+<span class="s1">        prev_name = curr_name</span>
+<span class="s1">        prev_chr = curr_chr</span>
+<span class="s1">    }</span>
+<span class="s1">}&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$OUT_BED</span><span class="s2">.raw&quot;</span><span class="w"> </span>&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$OUT_BED</span><span class="s2">&quot;</span>
+
+<span class="c1"># 6. Clean up intermediate files</span>
+rm<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TMP_BAM</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$FILTERED_BAM</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$OUT_BED</span><span class="s2">.raw&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="rationale">
+<h3>Rationale<a class="headerlink" href="#rationale" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Name-sorted BAM</strong>: The pairing logic depends on mates being encountered consecutively. Therefore, BAM files must first be sorted by read name.</p></li>
+<li><p><strong>Proper-pair filtering (<code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">0x2</span> <span class="pre">-F</span> <span class="pre">0x904</span></code>)</strong>: Only high-confidence paired alignments are retained. This removes unmapped, secondary, and supplementary alignments that would otherwise distort fragment quantification.</p></li>
+<li><p><strong>Read-name suffix stripping</strong>: <code class="docutils literal notranslate"><span class="pre">bedtools</span> <span class="pre">bamtobed</span></code> appends <code class="docutils literal notranslate"><span class="pre">/1</span></code> and <code class="docutils literal notranslate"><span class="pre">/2</span></code> to mate names. These suffixes must be removed because <code class="docutils literal notranslate"><span class="pre">profile_bins</span> <span class="pre">--paired</span></code> requires identical mate names for the two reads belonging to the same fragment.</p></li>
+<li><p><strong>Exact mate pairing</strong>: The AWK step standardizes mate names and ensures that only properly paired records with matching names and chromosomes are passed forward into the final BED file.</p></li>
+<li><p><strong>Control exclusion</strong>: Negative control libraries (IgG/nAb) are excluded from BED generation because the master matrix is intended to quantify target-specific fragment enrichment across CPS intervals.</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="metadata-driven-matrix-generation">
+<h2>Metadata-Driven Matrix Generation<a class="headerlink" href="#metadata-driven-matrix-generation" title="Link to this heading"></a></h2>
+<p>Manually constructing <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> commands for dozens of samples would be highly error-prone. Therefore, we reuse the same metadata-driven logic established in Step 7.</p>
+<p>A single metadata file, <code class="docutils literal notranslate"><span class="pre">Metadata_Comparison.csv</span></code>, defines:</p>
+<ol class="arabic simple">
+<li><p>The CPS identifier</p></li>
+<li><p>The biological groups participating in that CPS</p></li>
+<li><p>The associated histone marker</p></li>
+</ol>
+<p>Using this file, the script dynamically associates the correct CPS BED file (Step 7), paired BED files (generated above), and original sample-specific SEACR peak files (Step 6). This ensures that quantification is reproducible, scalable, and fully synchronized with the comparison design.</p>
+<section id="id1">
+<h3>Example Command Sequence<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define paths</span>
+<span class="nv">OUT_DIR</span><span class="o">=</span><span class="s2">&quot;path/to/count_matrices&quot;</span>
+<span class="nv">CSV_FILE</span><span class="o">=</span><span class="s2">&quot;path/to/Metadata_Comparison.csv&quot;</span>
+<span class="nv">PEAK_DIR</span><span class="o">=</span><span class="s2">&quot;path/to/consensus_peaks&quot;</span><span class="w">      </span><span class="c1"># Output from Step 7</span>
+<span class="nv">BED_DIR</span><span class="o">=</span><span class="s2">&quot;path/to/bam_to_bed&quot;</span><span class="w">            </span><span class="c1"># Paired BED files generated above</span>
+<span class="nv">RAW_PEAK_DIR</span><span class="o">=</span><span class="s2">&quot;path/to/seacr_peaks&quot;</span><span class="w">      </span><span class="c1"># Output from Step 6</span>
+
+mkdir<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$OUT_DIR</span><span class="s2">&quot;</span>
+
+<span class="nb">declare</span><span class="w"> </span>-A<span class="w"> </span>cps_samples
+<span class="nb">declare</span><span class="w"> </span>-A<span class="w"> </span>cps_marker
+
+<span class="c1"># 1. Aggregate all samples based on metadata</span>
+<span class="k">while</span><span class="w"> </span><span class="nv">IFS</span><span class="o">=</span>,<span class="w"> </span><span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>CPS<span class="w"> </span>comp<span class="w"> </span>group1<span class="w"> </span>group2<span class="w"> </span>marker<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nv">CPS</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CPS</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="k">)</span>
+<span class="w">    </span><span class="nv">marker</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$marker</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="k">)</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="nv">G1_SAMPLES</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$group1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39;;&#39;</span><span class="w"> </span><span class="s1">&#39; &#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="k">)</span>
+<span class="w">    </span><span class="nv">G2_SAMPLES</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$group2</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39;;&#39;</span><span class="w"> </span><span class="s1">&#39; &#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="k">)</span>
+
+<span class="w">    </span>cps_samples<span class="o">[</span><span class="s2">&quot;</span><span class="nv">$CPS</span><span class="s2">&quot;</span><span class="o">]=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">cps_samples</span><span class="p">[</span><span class="s2">&quot;</span><span class="nv">$CPS</span><span class="s2">&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="nv">$G1_SAMPLES</span><span class="s2"> </span><span class="nv">$G2_SAMPLES</span><span class="s2">&quot;</span>
+<span class="w">    </span>cps_marker<span class="o">[</span><span class="s2">&quot;</span><span class="nv">$CPS</span><span class="s2">&quot;</span><span class="o">]=</span><span class="s2">&quot;</span><span class="nv">$marker</span><span class="s2">&quot;</span>
+<span class="k">done</span><span class="w"> </span>&lt;<span class="w"> </span>&lt;<span class="o">(</span>tail<span class="w"> </span>-n<span class="w"> </span>+2<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CSV_FILE</span><span class="s2">&quot;</span><span class="o">)</span>
+
+<span class="c1"># 2. Iterate through each unique CPS</span>
+<span class="k">for</span><span class="w"> </span>CPS<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="p">!cps_samples[@]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nv">marker</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">cps_marker</span><span class="p">[</span><span class="nv">$CPS</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="w">    </span><span class="nv">CONSENSUS_PEAK</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">PEAK_DIR</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">CPS</span><span class="si">}</span><span class="s2">_consensus.bed&quot;</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="nv">all_reads</span><span class="o">=()</span>
+<span class="w">    </span><span class="nv">all_labs</span><span class="o">=()</span>
+<span class="w">    </span><span class="nv">all_peaks</span><span class="o">=()</span>
+
+<span class="w">    </span><span class="nv">UNIQUE_SAMPLES</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">cps_samples</span><span class="p">[</span><span class="nv">$CPS</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39; &#39;</span><span class="w"> </span><span class="s1">&#39;\n&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;^$&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-u<span class="k">)</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span>sname<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nv">$UNIQUE_SAMPLES</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">        </span><span class="nv">READ_FILES</span><span class="o">=</span><span class="k">$(</span>ls<span class="w"> </span><span class="si">${</span><span class="nv">BED_DIR</span><span class="si">}</span>/<span class="si">${</span><span class="nv">sname</span><span class="si">}</span>*<span class="si">${</span><span class="nv">marker</span><span class="si">}</span>*.bed<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-viE<span class="w"> </span><span class="s2">&quot;IgG|nAb&quot;</span><span class="k">)</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span>f<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nv">$READ_FILES</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">            </span><span class="nv">lab_name</span><span class="o">=</span><span class="k">$(</span>basename<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$f</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span><span class="s1">&#39;s/\.rmdup\.bed//&#39;</span><span class="k">)</span>
+<span class="w">            </span><span class="nv">raw_p</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">RAW_PEAK_DIR</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">lab_name</span><span class="si">}</span><span class="s2">.rmdup.01.stringent.bed&quot;</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$raw_p</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">                </span><span class="nv">all_reads</span><span class="o">+=(</span><span class="s2">&quot;</span><span class="nv">$f</span><span class="s2">&quot;</span><span class="o">)</span>
+<span class="w">                </span><span class="nv">all_peaks</span><span class="o">+=(</span><span class="s2">&quot;</span><span class="nv">$raw_p</span><span class="s2">&quot;</span><span class="o">)</span>
+
+<span class="w">                </span><span class="c1"># Replace hyphens with underscores for downstream R compatibility</span>
+<span class="w">                </span><span class="nv">lab_name_clean</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$lab_name</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span><span class="s1">&#39;s/-/_/g&#39;</span><span class="k">)</span>
+<span class="w">                </span><span class="nv">all_labs</span><span class="o">+=(</span><span class="s2">&quot;</span><span class="nv">$lab_name_clean</span><span class="s2">&quot;</span><span class="o">)</span>
+<span class="w">            </span><span class="k">else</span>
+<span class="w">                </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;### [ERROR] Raw peak not found for </span><span class="nv">$lab_name</span><span class="s2">: </span><span class="nv">$raw_p</span><span class="s2">&quot;</span><span class="w"> </span>&gt;<span class="p">&amp;</span><span class="m">2</span>
+<span class="w">            </span><span class="k">fi</span>
+<span class="w">        </span><span class="k">done</span>
+<span class="w">    </span><span class="k">done</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="si">${#</span><span class="nv">all_reads</span><span class="p">[@]</span><span class="si">}</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;### [SKIP] No valid files found for CPS: </span><span class="nv">$CPS</span><span class="s2">&quot;</span><span class="w"> </span>&gt;<span class="p">&amp;</span><span class="m">2</span>
+<span class="w">        </span><span class="k">continue</span>
+<span class="w">    </span><span class="k">fi</span>
+
+<span class="w">    </span><span class="nv">READ_ARG</span><span class="o">=</span><span class="k">$(</span><span class="nv">IFS</span><span class="o">=</span>,<span class="p">;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">all_reads</span><span class="p">[*]</span><span class="si">}</span><span class="s2">&quot;</span><span class="k">)</span>
+<span class="w">    </span><span class="nv">LAB_ARG</span><span class="o">=</span><span class="k">$(</span><span class="nv">IFS</span><span class="o">=</span>,<span class="p">;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">all_labs</span><span class="p">[*]</span><span class="si">}</span><span class="s2">&quot;</span><span class="k">)</span>
+<span class="w">    </span><span class="nv">PEAK_ARG</span><span class="o">=</span><span class="k">$(</span><span class="nv">IFS</span><span class="o">=</span>,<span class="p">;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">all_peaks</span><span class="p">[*]</span><span class="si">}</span><span class="s2">&quot;</span><span class="k">)</span>
+
+<span class="w">    </span><span class="c1"># 3. Execute MAnorm2 profile_bins</span>
+<span class="w">    </span>profile_bins<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--bins<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CONSENSUS_PEAK</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--paired<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--peaks<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PEAK_ARG</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--reads<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$READ_ARG</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--labs<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$LAB_ARG</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">OUT_DIR</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">CPS</span><span class="si">}</span><span class="s2">_master_counts&quot;</span>
+<span class="k">done</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="key-parameter-rationale">
+<h2>Key Parameter Rationale<a class="headerlink" href="#key-parameter-rationale" title="Link to this heading"></a></h2>
+<section id="bins-consensus-peak">
+<h3><code class="docutils literal notranslate"><span class="pre">--bins=$CONSENSUS_PEAK</span></code><a class="headerlink" href="#bins-consensus-peak" title="Link to this heading"></a></h3>
+<p>This argument defines the genomic feature space for quantification. Each row of the resulting master matrix corresponds exactly to one interval in the CPS BED file generated in Step 7. Because quantification is performed separately for each CPS, each output matrix is tied to one marker-specific consensus peak set.</p>
+</section>
+<section id="paired">
+<h3><code class="docutils literal notranslate"><span class="pre">--paired</span></code><a class="headerlink" href="#paired" title="Link to this heading"></a></h3>
+<p>This flag is crucial for CUT&amp;Tag fragment counting. Rather than counting single read ends, <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> treats identically named paired reads as one contiguous DNA fragment. This allows quantification to reflect the full fragment footprint rather than isolated read endpoints.</p>
+</section>
+<section id="peaks-peak-arg">
+<h3><code class="docutils literal notranslate"><span class="pre">--peaks=$PEAK_ARG</span></code><a class="headerlink" href="#peaks-peak-arg" title="Link to this heading"></a></h3>
+<p>By supplying the original sample-specific SEACR peak files alongside the paired BED files, <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> appends an occupancy annotation for each sample and each CPS interval.</p>
+<p>This occupancy value is binary (<code class="docutils literal notranslate"><span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">0</span></code>) and indicates whether the CPS interval overlaps the original sample-specific peak set for that sample. <strong>Importantly, this is not a re-called peak status on the CPS intervals themselves; rather, it records overlap with the original Step 6 peak calls.</strong> This occupancy information is later used as one component of downstream feature filtering, together with count-based and variability-based criteria.</p>
+</section>
+<section id="label-sanitization-sed-s-g">
+<h3>Label sanitization (<code class="docutils literal notranslate"><span class="pre">sed</span> <span class="pre">'s/-/_/g'</span></code>)<a class="headerlink" href="#label-sanitization-sed-s-g" title="Link to this heading"></a></h3>
+<p>Sample names often contain hyphens. When imported into R, hyphens in column names can be interpreted as subtraction operators and may break downstream parsing or formula-based analysis. Therefore, sample labels are sanitized by replacing hyphens with underscores before matrix generation. The original raw filenames remain traceable through the metadata structure and upstream file naming.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="output">
+<h2>Output<a class="headerlink" href="#output" title="Link to this heading"></a></h2>
+<p>For each CPS group, this workflow produces one master tab-separated text file: <code class="docutils literal notranslate"><span class="pre">*_master_counts_profile_bins.xls</span></code></p>
+<p>Each file contains:</p>
+<ol class="arabic simple">
+<li><p>The genomic coordinates of each CPS interval.</p></li>
+<li><p>The fragment-level counts for every biological sample.</p></li>
+<li><p>The binary occupancy status (<code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>) for every sample.</p></li>
+</ol>
+<p>These CPS-specific master matrices serve as the definitive formatted input for statistical normalization and differential enrichment analysis in <strong>Step 9</strong>.</p>
+<section id="key-take-home-message">
+<h3>Key Take-Home Message<a class="headerlink" href="#key-take-home-message" title="Link to this heading"></a></h3>
+<p>This step converts metadata-defined CPS regions and processed paired-end CUT&amp;Tag fragments into structured quantitative matrices suitable for downstream analysis.</p>
+<p>The resulting master matrix is not just a count table: it also preserves sample-specific occupancy information from the original SEACR peak calls, making it possible to combine fragment abundance and peak-support evidence in subsequent filtering and differential analysis.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="step7_cps_generation.html" class="btn btn-neutral float-left" title="Step 7: Consensus Peak Set (CPS) Generation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="step9_manorm2_de.html" class="btn btn-neutral float-right" title="Step 9: MAnorm2 DE Analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yizhou Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

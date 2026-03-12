@@ -1,0 +1,310 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Step 5: Dual-Track Signal Generation &mdash; Cut and Tag Pipeline 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Step 6: SEACR Peak Calling" href="step6_seacr.html" />
+    <link rel="prev" title="Step 4: BAM Processing &amp; Quality Filtering" href="../module1_preprocessing/step4_bam_process.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Cut and Tag Pipeline
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step2_qc.html">Step 2: Quality Control &amp; Adapter Trimming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step3_alignment.html">Step 3: Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing &amp; Quality Filtering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak &amp; Signal</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Step 5: Dual-Track Signal Generation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#track-1-human-readable-signals-bigwig-for-igv">Track 1: Human-Readable Signals (BigWig for IGV)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-command">Example Command</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rationale">Rationale</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#track-2-machine-readable-signals-bedgraph-for-seacr">Track 2: Machine-Readable Signals (BedGraph for SEACR)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#why-not-use-the-browser-bigwig-bedgraph-for-seacr">Why not use the browser BigWig/BedGraph for SEACR?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exact-fragment-level-bedgraph-generation-for-seacr">Exact fragment-level BedGraph generation for SEACR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Rationale</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#practical-distinction-between-the-two-track-types">Practical Distinction Between the Two Track Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#key-take-home-message">Key Take-Home Message</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="step6_seacr.html">Step 6: SEACR Peak Calling</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 3: DE Analysis</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step7_cps_generation.html">Step 7: CPS Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step8_quantification.html">Step 8: Master Counts Matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step9_manorm2_de.html">Step 9: MAnorm2 DE Analysis</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step10_annotation.html">Step 10: Gene Annotation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step11_pca_batch.html">Step 11: PCA &amp; Batch Effect</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/spike_in_free.html">Appendix: ChIPseqSpikeInFree Normalization</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cut and Tag Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Step 5: Dual-Track Signal Generation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/module2_peak_calling/step5_dual_track_signal.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="step-5-dual-track-signal-generation">
+<h1>Step 5: Dual-Track Signal Generation<a class="headerlink" href="#step-5-dual-track-signal-generation" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>A critical, yet often overlooked, aspect of CUT&amp;Tag analysis is that genome-browser visualization and peak calling require different signal representations, even when they originate from the same aligned BAM files. To address this, we implemented a Dual-Track Signal Generation strategy:</p>
+<ol class="arabic simple">
+<li><p><strong>Human-readable track</strong>: Normalized, moderately smoothed <code class="docutils literal notranslate"><span class="pre">BigWig</span></code> files optimized for visual inspection in IGV.</p></li>
+<li><p><strong>Machine-readable track</strong>: Raw, exact-resolution, strictly filtered <code class="docutils literal notranslate"><span class="pre">BedGraph</span></code> files optimized for the SEACR peak caller.</p></li>
+</ol>
+<p>This separation is intentional: browser tracks are designed for human interpretation of local signal patterns, whereas SEACR requires a raw fragment-level signal landscape for accurate thresholding and peak boundary detection.</p>
+</section>
+<hr class="docutils" />
+<section id="track-1-human-readable-signals-bigwig-for-igv">
+<h2>Track 1: Human-Readable Signals (BigWig for IGV)<a class="headerlink" href="#track-1-human-readable-signals-bigwig-for-igv" title="Link to this heading"></a></h2>
+<p>For browser-based visualization, we want tracks that are easy to compare across libraries with different sequencing depths and sufficiently smooth to reduce meaningless base-level noise. For this purpose, we generate CPM-normalized BigWig files using <code class="docutils literal notranslate"><span class="pre">deepTools</span> <span class="pre">bamCoverage</span></code>.</p>
+<section id="example-command">
+<h3>Example Command<a class="headerlink" href="#example-command" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define paths</span>
+<span class="nv">bam_dir</span><span class="o">=</span><span class="s2">&quot;path/to/bams&quot;</span>
+<span class="nv">out_root</span><span class="o">=</span><span class="s2">&quot;path/to/bigwigs&quot;</span>
+<span class="nv">blacklist</span><span class="o">=</span><span class="s2">&quot;path/to/mm39.excluderanges.bed&quot;</span>
+
+<span class="nv">current_bam</span><span class="o">=</span><span class="si">${</span><span class="nv">BAM_LIST</span><span class="p">[</span><span class="k">$((</span><span class="nv">SLURM_ARRAY_TASK_ID</span><span class="o">-</span><span class="m">1</span><span class="k">))</span><span class="p">]</span><span class="si">}</span>
+<span class="nv">base_name</span><span class="o">=</span><span class="k">$(</span>basename<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$current_bam</span><span class="s2">&quot;</span><span class="k">)</span>
+<span class="nv">output_bw</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">out_root</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">base_name</span><span class="p">%.bam</span><span class="si">}</span><span class="s2">.cpm.bw&quot;</span>
+
+bamCoverage<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--bam<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$current_bam</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--outFileName<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$output_bw</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--outFileFormat<span class="w"> </span>bigwig<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--normalizeUsing<span class="w"> </span>CPM<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--binSize<span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--extendReads<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--ignoreForNormalization<span class="w"> </span>chrM<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--blackListFileName<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$blacklist</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--numberOfProcessors<span class="w"> </span><span class="m">8</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--minMappingQuality<span class="w"> </span><span class="m">10</span>
+</pre></div>
+</div>
+</section>
+<section id="rationale">
+<h3>Rationale<a class="headerlink" href="#rationale" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">--normalizeUsing</span> <span class="pre">CPM</span></code></strong>: Scales coverage by library size (counts per million mapped reads), making browser tracks more comparable across samples with different sequencing depths. These tracks are intended for visualization of local signal patterns, not for formal differential inference.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">--binSize</span> <span class="pre">10</span></code></strong>: Aggregates signal in 10 bp windows, which reduces visual noise and substantially decreases file size, making IGV browsing more responsive.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">--extendReads</span></code></strong>: Produces a smoother approximation of fragment-level coverage for visualization. This is useful for browser inspection, but these extended tracks are not used for peak calling.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">--ignoreForNormalization</span> <span class="pre">chrM</span></code></strong>: Excludes mitochondrial reads from library-size normalization, since extremely high mitochondrial signal can distort CPM scaling.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">--blackListFileName</span></code></strong>: Suppresses known high-signal artifact regions in the mm39 genome for cleaner visual interpretation.</p></li>
+</ul>
+<blockquote>
+<div><p><strong>Important Note:</strong> These CPM-normalized BigWig files are used <em>only</em> for browser visualization. Formal differential analysis is performed separately using the MAnorm2 framework on count matrices, not on the BigWig tracks.</p>
+</div></blockquote>
+</section>
+</section>
+<hr class="docutils" />
+<section id="track-2-machine-readable-signals-bedgraph-for-seacr">
+<h2>Track 2: Machine-Readable Signals (BedGraph for SEACR)<a class="headerlink" href="#track-2-machine-readable-signals-bedgraph-for-seacr" title="Link to this heading"></a></h2>
+<p>SEACR requires raw fragment pileup profiles rather than normalized or smoothed browser tracks. Therefore, we generate a separate signal representation specifically for peak calling.</p>
+<section id="why-not-use-the-browser-bigwig-bedgraph-for-seacr">
+<h3>Why not use the browser BigWig/BedGraph for SEACR?<a class="headerlink" href="#why-not-use-the-browser-bigwig-bedgraph-for-seacr" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Binning alters signal structure</strong>: A binned track (for example, <code class="docutils literal notranslate"><span class="pre">binSize</span> <span class="pre">10</span></code>) coarsens the signal landscape and can blur short true zero-signal gaps between adjacent enriched regions. SEACR relies on the exact structure of contiguous signal blocks separated by genuine zeros, so binned tracks are not appropriate inputs.</p></li>
+<li><p><strong>Normalization changes the empirical signal distribution</strong>: SEACR is designed to operate on raw fragment pileup profiles. Library-size normalization or smoothing changes the signal distribution on which SEACR’s thresholding strategy is based.</p></li>
+<li><p><strong>Exact fragment boundaries matter</strong>: For CUT&amp;Tag, we want SEACR to see the true paired-end fragment coordinates rather than visually smoothed or extended signal approximations.</p></li>
+</ol>
+</section>
+<section id="exact-fragment-level-bedgraph-generation-for-seacr">
+<h3>Exact fragment-level BedGraph generation for SEACR<a class="headerlink" href="#exact-fragment-level-bedgraph-generation-for-seacr" title="Link to this heading"></a></h3>
+<p>To preserve true fragment structure, we follow a fragment-based workflow that converts paired-end BAM files into exact fragment intervals and then computes base-resolution coverage.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define paths &amp; references</span>
+<span class="nv">CHROMSIZES</span><span class="o">=</span><span class="s2">&quot;path/to/mm39.chrom.sizes&quot;</span>
+
+<span class="nv">CURRENT_BAM</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">BAM_LIST</span><span class="p">[</span><span class="k">$((</span><span class="nv">SLURM_ARRAY_TASK_ID</span><span class="o">-</span><span class="m">1</span><span class="k">))</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nv">BASE_NAME</span><span class="o">=</span><span class="k">$(</span>basename<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CURRENT_BAM</span><span class="s2">&quot;</span><span class="w"> </span>.bam<span class="k">)</span>
+
+<span class="nv">TMP_BAM</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">OUT_DIR</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">BASE_NAME</span><span class="si">}</span><span class="s2">.name_sorted.bam&quot;</span>
+<span class="nv">BEDPE_FILE</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">OUT_DIR</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">BASE_NAME</span><span class="si">}</span><span class="s2">.bedpe&quot;</span>
+<span class="nv">CLEAN_BEDPE</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">OUT_DIR</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">BASE_NAME</span><span class="si">}</span><span class="s2">.clean.bedpe&quot;</span>
+<span class="nv">FRAG_BED</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">OUT_DIR</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">BASE_NAME</span><span class="si">}</span><span class="s2">.fragments.bed&quot;</span>
+<span class="nv">OUT_BG</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">OUT_DIR</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">BASE_NAME</span><span class="si">}</span><span class="s2">.seacr.bedgraph&quot;</span>
+
+<span class="c1"># 1. Name-sort BAM (required for bedtools bamtobed -bedpe)</span>
+samtools<span class="w"> </span>sort<span class="w"> </span>-n<span class="w"> </span>-@<span class="w"> </span><span class="m">4</span><span class="w"> </span>-o<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TMP_BAM</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CURRENT_BAM</span><span class="s2">&quot;</span>
+
+<span class="c1"># 2. Convert paired-end BAM to BEDPE</span>
+bedtools<span class="w"> </span>bamtobed<span class="w"> </span>-bedpe<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TMP_BAM</span><span class="s2">&quot;</span><span class="w"> </span>&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BEDPE_FILE</span><span class="s2">&quot;</span>
+
+<span class="c1"># 3. Retain only biologically plausible fragments:</span>
+<span class="c1"># - both mates on the same chromosome ($1==$4)</span>
+<span class="c1"># - positive fragment length ($6&gt;$2)</span>
+<span class="c1"># - fragment size &lt; 1000 bp</span>
+awk<span class="w"> </span><span class="s1">&#39;$1==$4 &amp;&amp; $6&gt;$2 &amp;&amp; ($6-$2)&lt;1000 {print $0}&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BEDPE_FILE</span><span class="s2">&quot;</span><span class="w"> </span>&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CLEAN_BEDPE</span><span class="s2">&quot;</span>
+
+<span class="c1"># 4. Extract outer fragment coordinates and sort for genomecov</span>
+cut<span class="w"> </span>-f<span class="w"> </span><span class="m">1</span>,2,6<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CLEAN_BEDPE</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-k1,1<span class="w"> </span>-k2,2n<span class="w"> </span>-k3,3n<span class="w"> </span>&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$FRAG_BED</span><span class="s2">&quot;</span>
+
+<span class="c1"># 5. Generate exact fragment pileup BedGraph</span>
+bedtools<span class="w"> </span>genomecov<span class="w"> </span>-bg<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$FRAG_BED</span><span class="s2">&quot;</span><span class="w"> </span>-g<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CHROMSIZES</span><span class="s2">&quot;</span><span class="w"> </span>&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$OUT_BG</span><span class="s2">&quot;</span>
+
+<span class="c1"># 6. Clean up large intermediate files</span>
+rm<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TMP_BAM</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BEDPE_FILE</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CLEAN_BEDPE</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$FRAG_BED</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="id1">
+<h3>Rationale<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Name-sorted BAM</strong>: <code class="docutils literal notranslate"><span class="pre">bedtools</span> <span class="pre">bamtobed</span> <span class="pre">-bedpe</span></code> requires name-sorted paired-end alignments so that mate information can be reconstructed correctly.</p></li>
+<li><p><strong>Same-chromosome filtering (<code class="docutils literal notranslate"><span class="pre">$1==$4</span></code>)</strong>: Removes discordant inter-chromosomal pairs that typically represent mapping artifacts or anomalous fragments rather than genuine local chromatin fragments.</p></li>
+<li><p><strong>Positive fragment length (<code class="docutils literal notranslate"><span class="pre">$6&gt;$2</span></code>)</strong>: Ensures valid fragment coordinates before downstream coverage calculation.</p></li>
+<li><p><strong>Fragment size filter (<code class="docutils literal notranslate"><span class="pre">($6-$2)&lt;1000</span></code>)</strong>: Removes unusually large fragments, which are generally more consistent with background, mapping artifacts, or anomalous long-range events than bona fide CUT&amp;Tag chromatin fragments.</p></li>
+<li><p><strong>Coordinate sorting before genomecov</strong>: Ensures that <code class="docutils literal notranslate"><span class="pre">bedtools</span> <span class="pre">genomecov</span></code> receives properly ordered intervals for stable and reproducible coverage generation.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">bedtools</span> <span class="pre">genomecov</span> <span class="pre">-bg</span></code></strong>: Produces an exact fragment-pileup BedGraph without smoothing or library-size normalization, preserving the native signal structure required by SEACR.</p></li>
+</ul>
+<blockquote>
+<div><p><strong>Important Note:</strong> Unlike the browser BigWig tracks, these SEACR input BedGraph files are generated from the raw filtered fragment set and are not library-size normalized or visually smoothed.</p>
+</div></blockquote>
+</section>
+</section>
+<hr class="docutils" />
+<section id="practical-distinction-between-the-two-track-types">
+<h2>Practical Distinction Between the Two Track Types<a class="headerlink" href="#practical-distinction-between-the-two-track-types" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Feature</p></th>
+<th class="head text-left"><p>Track 1: Human-Readable</p></th>
+<th class="head text-left"><p>Track 2: Machine-Readable</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><strong>Output format</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">BigWig</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">BedGraph</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><strong>Primary use</strong></p></td>
+<td class="text-left"><p>IGV / genome browser visualization</p></td>
+<td class="text-left"><p>SEACR peak calling</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><strong>Normalized</strong></p></td>
+<td class="text-left"><p>Yes (CPM)</p></td>
+<td class="text-left"><p>No</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><strong>Smoothed/Binned</strong></p></td>
+<td class="text-left"><p>Yes (<code class="docutils literal notranslate"><span class="pre">binSize</span> <span class="pre">10</span></code>, read extension)</p></td>
+<td class="text-left"><p>No (Exact base-resolution)</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><strong>Used for differential inference</strong></p></td>
+<td class="text-left"><p>No</p></td>
+<td class="text-left"><p>Indirectly, through called peaks</p></td>
+</tr>
+</tbody>
+</table>
+<section id="key-take-home-message">
+<h3>Key Take-Home Message<a class="headerlink" href="#key-take-home-message" title="Link to this heading"></a></h3>
+<p>The same aligned BAM files are intentionally transformed into two different signal products for two different purposes:</p>
+<ol class="arabic simple">
+<li><p><strong>CPM-normalized BigWig tracks</strong> for human interpretation in genome browsers.</p></li>
+<li><p><strong>Raw fragment-level BedGraph tracks</strong> for SEACR peak calling.</p></li>
+</ol>
+<p>This dual-track strategy ensures that browser visualization remains interpretable and efficient, while peak calling remains mathematically faithful to the underlying CUT&amp;Tag fragment structure.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../module1_preprocessing/step4_bam_process.html" class="btn btn-neutral float-left" title="Step 4: BAM Processing &amp; Quality Filtering" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="step6_seacr.html" class="btn btn-neutral float-right" title="Step 6: SEACR Peak Calling" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yizhou Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

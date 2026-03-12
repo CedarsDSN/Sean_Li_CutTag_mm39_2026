@@ -1,0 +1,335 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A5. Why CPM-Normalized BigWig Tracks Are Acceptable for Visualization &mdash; Cut and Tag Pipeline 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="B1. Why the Workflow Moved From Individual Comparison Count Matrices to a Master Count Matrix Design" href="b1_why_master_matrix_replaced_individual_matrices.html" />
+    <link rel="prev" title="A4. Why Browser Visualization and Peak Calling Require Two Different Signal Tracks" href="a4_why_dual_track_signal_generation_was_necessary.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Cut and Tag Pipeline
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step2_qc.html">Step 2: Quality Control &amp; Adapter Trimming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step3_alignment.html">Step 3: Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing &amp; Quality Filtering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak &amp; Signal</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step5_dual_track_signal.html">Step 5: Dual-Track Signal Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step6_seacr.html">Step 6: SEACR Peak Calling</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 3: DE Analysis</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step7_cps_generation.html">Step 7: Consensus Peak Set (CPS) Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step8_quantification.html">Step 8: Master Counts Matrix Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step9_manorm2_de.html">Step 9: Differential Enrichment Analysis (MAnorm2)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step10_annotation.html">Step 10: Genomic Annotation (ChIPseeker)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step11_summarize_organize.html">Step 11: Result Aggregation and CPS-Based File Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step12_PCA.html">Step 12: CPS-Level PCA Quality Assessment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="appendix_index.html">Appendix: Methodological Discussions and Design Decisions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="a0_spikein_absence_evaluation.html">A0. How Spike-In Absence Was Evaluated in This Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a1_chipseqspikeinfree_in_this_project.html">A1. ChIPseqSpikeInFree in This Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a2_seacr_threshold_comparison.html">A2. Comparison of SEACR Thresholds: 0.01 vs 0.005 vs 0.05</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a3_why_negative_controls_were_excluded.html">A3. Why Negative-Control Libraries Were Excluded from SEACR and CPS Construction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a4_why_dual_track_signal_generation_was_necessary.html">A4. Why Browser Visualization and Peak Calling Require Two Different Signal Tracks</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">A5. Why CPM-Normalized BigWig Tracks Are Acceptable for Visualization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-core-distinction-visualization-vs-formal-inference">The Core Distinction: Visualization vs Formal Inference</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#browser-visualization-is-intended-to-support">Browser visualization is intended to support:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#formal-differential-analysis-is-intended-to-support">Formal differential analysis is intended to support:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#why-cpm-was-a-reasonable-choice">Why CPM Was a Reasonable Choice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-cpm-tracks-do-not-need-to-match-manorm2-normalization-exactly">Why CPM Tracks Do Not Need To Match MAnorm2 Normalization Exactly</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#the-browser-asks">The browser asks:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-differential-model-asks">The differential model asks:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#why-cpm-was-sufficient-for-igv-in-this-project">Why CPM Was Sufficient for IGV in This Project</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#browser-tracks-were-not-used-as-the-substrate-for-statistical-testing">1. Browser tracks were not used as the substrate for statistical testing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#browser-tracks-were-meant-to-support-human-interpretation">2. Browser tracks were meant to support human interpretation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cpm-preserved-simplicity-in-the-browser-layer">3. CPM preserved simplicity in the browser layer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#why-chipseqspikeinfree-scaling-was-not-forced-into-bigwig-visualization">Why ChIPseqSpikeInFree Scaling Was Not Forced Into BigWig Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-the-collaborator-concern-was-understandable-but-not-fatal">Why the Collaborator Concern Was Understandable but Not Fatal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relationship-to-the-dual-track-strategy">Relationship to the Dual-Track Strategy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#key-take-home-message">Key Take-Home Message</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="b1_why_master_matrix_replaced_individual_matrices.html">B1. Why the Workflow Moved From Individual Comparison Count Matrices to a Master Count Matrix Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b2_why_combined_occupancy_ge_2.html">B2. Why the Occupancy Filter Was Set to Combined Occupancy &gt;= 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b3_why_autosomal_fully_occupied_anchors.html">B3. Why Autosomal Fully Occupied Peaks Were Used as MAnorm2 Normalization Anchors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b4_parametric_vs_local_regression.html">B4. Parametric vs Local Regression in MAnorm2, Including Modified Local Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b5_why_parametric_warnings_not_auto_failure.html">B5. Why Parametric Warnings Were Not Automatically Treated as Fit Failure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b6_profile_bins_pairing_diagnostics.html">B6. Pairing Integrity and <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c1_why_custom_gencode_annotation.html">C1. Why Custom GENCODE-Matched Annotation Was Preferred Over Generic Annotation Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c2_why_restricted_gene_type_annotation.html">C2. Why Restricted Gene-Type Annotation Was Chosen Instead of a Fully Generic Annotation Set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c3_preflight_validation_before_cps_generation.html">C3. Pre-Flight Validation Before CPS Generation</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cut and Tag Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="appendix_index.html">Appendix: Methodological Discussions and Design Decisions</a></li>
+      <li class="breadcrumb-item active">A5. Why CPM-Normalized BigWig Tracks Are Acceptable for Visualization</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/appendix/a5_why_cpm_bigwig_is_ok_for_visualization.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="a5-why-cpm-normalized-bigwig-tracks-are-acceptable-for-visualization">
+<h1>A5. Why CPM-Normalized BigWig Tracks Are Acceptable for Visualization<a class="headerlink" href="#a5-why-cpm-normalized-bigwig-tracks-are-acceptable-for-visualization" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>A recurring methodological question in this project was whether browser tracks used for IGV visualization should undergo the same normalization logic used in formal differential analysis. In particular, because the differential-enrichment framework ultimately relied on CPS-based quantification and MAnorm2 normalization, it was necessary to justify why browser tracks generated using simple CPM normalization were still acceptable for visual interpretation.</p>
+<p>The conclusion of this project was that CPM-normalized BigWig tracks were appropriate for <strong>visualization</strong>, even though they were not the normalization backbone for formal differential inference.</p>
+<p>This section explains why.</p>
+</section>
+<hr class="docutils" />
+<section id="the-core-distinction-visualization-vs-formal-inference">
+<h2>The Core Distinction: Visualization vs Formal Inference<a class="headerlink" href="#the-core-distinction-visualization-vs-formal-inference" title="Link to this heading"></a></h2>
+<p>The most important point is that browser visualization and formal differential analysis do <strong>not</strong> have the same goal.</p>
+<section id="browser-visualization-is-intended-to-support">
+<h3>Browser visualization is intended to support:<a class="headerlink" href="#browser-visualization-is-intended-to-support" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>qualitative inspection of local signal shape</p></li>
+<li><p>visual comparison of track height at specific loci</p></li>
+<li><p>replicate consistency checking</p></li>
+<li><p>figure generation and IGV screenshots</p></li>
+<li><p>rapid interpretation of candidate regions</p></li>
+</ul>
+</section>
+<section id="formal-differential-analysis-is-intended-to-support">
+<h3>Formal differential analysis is intended to support:<a class="headerlink" href="#formal-differential-analysis-is-intended-to-support" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>feature-level statistical comparison</p></li>
+<li><p>comparison-specific normalization</p></li>
+<li><p>reproducibility-aware filtering</p></li>
+<li><p>mean-variance modeling</p></li>
+<li><p>significance testing</p></li>
+</ul>
+<p>Because the goals differ, the normalization requirements also differ.</p>
+<p>The browser layer only needs a signal representation that is:</p>
+<ul class="simple">
+<li><p>visually interpretable</p></li>
+<li><p>reasonably comparable across libraries</p></li>
+<li><p>stable enough for locus-level inspection</p></li>
+</ul>
+<p>It does <strong>not</strong> need to encode the entire formal statistical normalization framework.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="why-cpm-was-a-reasonable-choice">
+<h2>Why CPM Was a Reasonable Choice<a class="headerlink" href="#why-cpm-was-a-reasonable-choice" title="Link to this heading"></a></h2>
+<p>In this project, BigWig tracks were generated using CPM normalization because CPM provides a straightforward and interpretable way to account for sequencing-depth differences across libraries.</p>
+<p>Practical advantages of CPM include:</p>
+<ul class="simple">
+<li><p>simple library-size normalization</p></li>
+<li><p>easy interpretation of relative track height</p></li>
+<li><p>broad compatibility with browser-based visualization tools</p></li>
+<li><p>suitability for qualitative comparison across multiple samples</p></li>
+</ul>
+<p>For the purpose of IGV-based inspection, these properties were sufficient.</p>
+</section>
+<hr class="docutils" />
+<section id="why-cpm-tracks-do-not-need-to-match-manorm2-normalization-exactly">
+<h2>Why CPM Tracks Do Not Need To Match MAnorm2 Normalization Exactly<a class="headerlink" href="#why-cpm-tracks-do-not-need-to-match-manorm2-normalization-exactly" title="Link to this heading"></a></h2>
+<p>A common concern is that browser tracks should use the same normalization logic as the formal differential analysis. In this project, that was intentionally <strong>not</strong> required.</p>
+<p>The reason is that the browser track and the differential model answer different questions.</p>
+<section id="the-browser-asks">
+<h3>The browser asks:<a class="headerlink" href="#the-browser-asks" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p>what does the signal look like at this locus?</p>
+</div></blockquote>
+</section>
+<section id="the-differential-model-asks">
+<h3>The differential model asks:<a class="headerlink" href="#the-differential-model-asks" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p>after filtering and comparison-specific normalization, is this region statistically different between groups?</p>
+</div></blockquote>
+<p>These are related questions, but they are not identical. Therefore, it is methodologically acceptable for the browser layer and the differential-analysis layer to use different normalization logic, as long as each is appropriate for its purpose.</p>
+<p>In this project:</p>
+<ul class="simple">
+<li><p><strong>CPM BigWigs</strong> were used for qualitative visualization</p></li>
+<li><p><strong>MAnorm2</strong> was used for formal comparison-specific normalization and differential testing</p></li>
+</ul>
+<p>This division of labor was deliberate.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="why-cpm-was-sufficient-for-igv-in-this-project">
+<h2>Why CPM Was Sufficient for IGV in This Project<a class="headerlink" href="#why-cpm-was-sufficient-for-igv-in-this-project" title="Link to this heading"></a></h2>
+<section id="browser-tracks-were-not-used-as-the-substrate-for-statistical-testing">
+<h3>1. Browser tracks were not used as the substrate for statistical testing<a class="headerlink" href="#browser-tracks-were-not-used-as-the-substrate-for-statistical-testing" title="Link to this heading"></a></h3>
+<p>The project did <strong>not</strong> use BigWig tracks as the input for differential calling or enrichment statistics. Formal inference was based on:</p>
+<ul class="simple">
+<li><p>CPS-defined feature spaces</p></li>
+<li><p>master count matrices</p></li>
+<li><p>occupancy-aware filtering</p></li>
+<li><p>MAnorm2 normalization and differential testing</p></li>
+</ul>
+<p>Because the browser tracks did not carry inferential responsibility, CPM was sufficient.</p>
+</section>
+<section id="browser-tracks-were-meant-to-support-human-interpretation">
+<h3>2. Browser tracks were meant to support human interpretation<a class="headerlink" href="#browser-tracks-were-meant-to-support-human-interpretation" title="Link to this heading"></a></h3>
+<p>The goal of the BigWig track was not to establish final quantitative truth, but to let a reviewer visually inspect:</p>
+<ul class="simple">
+<li><p>whether signal is visibly present</p></li>
+<li><p>whether a mark appears stronger in one condition than another</p></li>
+<li><p>whether replicates look coherent</p></li>
+<li><p>whether candidate loci are biologically plausible</p></li>
+</ul>
+<p>For these tasks, CPM-normalized tracks were appropriate.</p>
+</section>
+<section id="cpm-preserved-simplicity-in-the-browser-layer">
+<h3>3. CPM preserved simplicity in the browser layer<a class="headerlink" href="#cpm-preserved-simplicity-in-the-browser-layer" title="Link to this heading"></a></h3>
+<p>One of the strengths of CPM is that it keeps browser interpretation simple. In a large project with many samples and many loci, this simplicity matters. More complicated scaling logic can make visual review harder to explain without necessarily improving local interpretability.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="why-chipseqspikeinfree-scaling-was-not-forced-into-bigwig-visualization">
+<h2>Why ChIPseqSpikeInFree Scaling Was Not Forced Into BigWig Visualization<a class="headerlink" href="#why-chipseqspikeinfree-scaling-was-not-forced-into-bigwig-visualization" title="Link to this heading"></a></h2>
+<p>The project also considered whether browser tracks should be rescaled using <code class="docutils literal notranslate"><span class="pre">ChIPseqSpikeInFree</span></code>-derived scaling factors. This was ultimately not adopted as the default strategy.</p>
+<p>The main reasons were:</p>
+<ul class="simple">
+<li><p>browser tracks were not the formal inferential layer</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ChIPseqSpikeInFree</span></code> scaling factors were context dependent across CPS groups</p></li>
+<li><p>scaling-factor inconsistency made it difficult to apply one universal project-wide browser-scaling rule</p></li>
+<li><p>CPM already provided a stable and interpretable baseline for IGV viewing</p></li>
+</ul>
+<p>Thus, the project did not require browser tracks to carry the same scaling complexity that was being explored methodologically elsewhere.</p>
+</section>
+<hr class="docutils" />
+<section id="why-the-collaborator-concern-was-understandable-but-not-fatal">
+<h2>Why the Collaborator Concern Was Understandable but Not Fatal<a class="headerlink" href="#why-the-collaborator-concern-was-understandable-but-not-fatal" title="Link to this heading"></a></h2>
+<p>A reasonable concern from a collaborator is that CPM only accounts for library size and does not incorporate more sophisticated normalization, such as MAnorm2 or ChIPseqSpikeInFree-style scaling. That concern is valid in principle if the BigWig tracks were being used as the primary basis for formal quantitative conclusions.</p>
+<p>However, in this project, that was <strong>not</strong> their role.</p>
+<p>The browser tracks were used to support:</p>
+<ul class="simple">
+<li><p>visual review</p></li>
+<li><p>local interpretation</p></li>
+<li><p>qualitative consistency checks</p></li>
+</ul>
+<p>while formal conclusions were derived from a separate downstream framework.</p>
+<p>Therefore, the use of CPM-normalized BigWigs did not undermine the formal statistical analysis. Instead, it reflected the intentional separation between:</p>
+<ul class="simple">
+<li><p><strong>human-readable browser visualization</strong></p></li>
+<li><p><strong>formal comparison-specific differential modeling</strong></p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="relationship-to-the-dual-track-strategy">
+<h2>Relationship to the Dual-Track Strategy<a class="headerlink" href="#relationship-to-the-dual-track-strategy" title="Link to this heading"></a></h2>
+<p>This choice is tightly connected to the project’s broader dual-track signal-generation design:</p>
+<ul class="simple">
+<li><p><strong>BigWig tracks</strong> for browser visualization</p></li>
+<li><p><strong>raw fragment BedGraphs</strong> for SEACR peak calling</p></li>
+</ul>
+<p>Under that design:</p>
+<ul class="simple">
+<li><p>visualization tracks were optimized for readability</p></li>
+<li><p>peak-calling tracks were optimized for mathematical faithfulness</p></li>
+<li><p>differential analysis was handled separately through CPS/master-matrix/MAnorm2 logic</p></li>
+</ul>
+<p>Thus, CPM-normalized BigWig tracks were one part of a larger workflow architecture in which each signal layer had a distinct purpose.</p>
+</section>
+<hr class="docutils" />
+<section id="key-take-home-message">
+<h2>Key Take-Home Message<a class="headerlink" href="#key-take-home-message" title="Link to this heading"></a></h2>
+<p>CPM-normalized BigWig tracks were acceptable in this project because they were used for <strong>visualization</strong>, not for formal statistical inference. Their purpose was to provide simple, interpretable, library-size-adjusted browser tracks for IGV-based inspection of local signal patterns.</p>
+<p>Formal differential conclusions were derived from the separate CPS–master matrix–MAnorm2 framework. Because visualization and inferential analysis were intentionally separated, CPM was an appropriate and sufficient normalization strategy for the browser layer.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="a4_why_dual_track_signal_generation_was_necessary.html" class="btn btn-neutral float-left" title="A4. Why Browser Visualization and Peak Calling Require Two Different Signal Tracks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="b1_why_master_matrix_replaced_individual_matrices.html" class="btn btn-neutral float-right" title="B1. Why the Workflow Moved From Individual Comparison Count Matrices to a Master Count Matrix Design" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yizhou Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

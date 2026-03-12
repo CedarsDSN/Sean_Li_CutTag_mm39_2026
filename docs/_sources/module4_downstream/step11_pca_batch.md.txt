@@ -1,0 +1,7 @@
+# Step 11: PCA & Batch Effect
+
+## Overview
+To ensure biological reproducibility, we visualize the global variance of the 12 CPS groups using Principal Component Analysis (PCA).
+
+## Application
+The PCA plots (based on the normalized master count matrix) verify that biological replicates cluster tightly together and that experimental batches do not introduce confounding global variances that override biological signals.

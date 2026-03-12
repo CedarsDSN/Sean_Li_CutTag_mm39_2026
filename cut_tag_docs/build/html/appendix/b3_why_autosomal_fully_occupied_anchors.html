@@ -1,0 +1,316 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>B3. Why Autosomal Fully Occupied Peaks Were Used as MAnorm2 Normalization Anchors &mdash; Cut and Tag Pipeline 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="B4. Parametric vs Local Regression in MAnorm2, Including Modified Local Settings" href="b4_parametric_vs_local_regression.html" />
+    <link rel="prev" title="B2. Why the Occupancy Filter Was Set to Combined Occupancy &gt;= 2" href="b2_why_combined_occupancy_ge_2.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Cut and Tag Pipeline
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step2_qc.html">Step 2: Quality Control &amp; Adapter Trimming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step3_alignment.html">Step 3: Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing &amp; Quality Filtering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak &amp; Signal</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step5_dual_track_signal.html">Step 5: Dual-Track Signal Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step6_seacr.html">Step 6: SEACR Peak Calling</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 3: DE Analysis</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step7_cps_generation.html">Step 7: Consensus Peak Set (CPS) Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step8_quantification.html">Step 8: Master Counts Matrix Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step9_manorm2_de.html">Step 9: Differential Enrichment Analysis (MAnorm2)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step10_annotation.html">Step 10: Genomic Annotation (ChIPseeker)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step11_summarize_organize.html">Step 11: Result Aggregation and CPS-Based File Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step12_PCA.html">Step 12: CPS-Level PCA Quality Assessment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="appendix_index.html">Appendix: Methodological Discussions and Design Decisions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="a0_spikein_absence_evaluation.html">A0. How Spike-In Absence Was Evaluated in This Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a1_chipseqspikeinfree_in_this_project.html">A1. ChIPseqSpikeInFree in This Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a2_seacr_threshold_comparison.html">A2. Comparison of SEACR Thresholds: 0.01 vs 0.005 vs 0.05</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a3_why_negative_controls_were_excluded.html">A3. Why Negative-Control Libraries Were Excluded from SEACR and CPS Construction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a4_why_dual_track_signal_generation_was_necessary.html">A4. Why Browser Visualization and Peak Calling Require Two Different Signal Tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a5_why_cpm_bigwig_is_ok_for_visualization.html">A5. Why CPM-Normalized BigWig Tracks Are Acceptable for Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b1_why_master_matrix_replaced_individual_matrices.html">B1. Why the Workflow Moved From Individual Comparison Count Matrices to a Master Count Matrix Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b2_why_combined_occupancy_ge_2.html">B2. Why the Occupancy Filter Was Set to Combined Occupancy &gt;= 2</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">B3. Why Autosomal Fully Occupied Peaks Were Used as MAnorm2 Normalization Anchors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-normalization-anchors-needed-to-be-chosen-carefully">Why Normalization Anchors Needed To Be Chosen Carefully</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-not-use-all-retained-peaks-as-anchors">Why Not Use All Retained Peaks as Anchors</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#not-all-retained-intervals-are-equally-stable">1. Not all retained intervals are equally stable</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#using-all-retained-intervals-risks-absorbing-true-biology-into-the-normalization-baseline">2. Using all retained intervals risks absorbing true biology into the normalization baseline</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#why-autosomes-were-chosen">Why Autosomes Were Chosen</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sex-chromosomes-may-carry-real-biology-in-this-project">1. Sex chromosomes may carry real biology in this project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#autosomes-provide-a-safer-shared-background-for-normalization">2. Autosomes provide a safer shared background for normalization</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#why-full-occupancy-in-all-replicates-was-required">Why Full Occupancy in All Replicates Was Required</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#full-occupancy-implies-strong-reproducibility">1. Full occupancy implies strong reproducibility</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#full-occupancy-reduces-anchor-noise">2. Full occupancy reduces anchor noise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#full-occupancy-better-matches-the-conceptual-role-of-a-normalization-baseline">3. Full occupancy better matches the conceptual role of a normalization baseline</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#why-a-smaller-but-cleaner-anchor-set-was-preferred">Why a Smaller but Cleaner Anchor Set Was Preferred</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-this-was-especially-important-in-the-context-of-real-biological-asymmetry">Why This Was Especially Important in the Context of Real Biological Asymmetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relationship-to-the-occupancy-filter-and-master-matrix-design">Relationship to the Occupancy Filter and Master Matrix Design</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#key-take-home-message">Key Take-Home Message</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="b4_parametric_vs_local_regression.html">B4. Parametric vs Local Regression in MAnorm2, Including Modified Local Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b5_why_parametric_warnings_not_auto_failure.html">B5. Why Parametric Warnings Were Not Automatically Treated as Fit Failure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b6_profile_bins_pairing_diagnostics.html">B6. Pairing Integrity and <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c1_why_custom_gencode_annotation.html">C1. Why Custom GENCODE-Matched Annotation Was Preferred Over Generic Annotation Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c2_why_restricted_gene_type_annotation.html">C2. Why Restricted Gene-Type Annotation Was Chosen Instead of a Fully Generic Annotation Set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c3_preflight_validation_before_cps_generation.html">C3. Pre-Flight Validation Before CPS Generation</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cut and Tag Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="appendix_index.html">Appendix: Methodological Discussions and Design Decisions</a></li>
+      <li class="breadcrumb-item active">B3. Why Autosomal Fully Occupied Peaks Were Used as MAnorm2 Normalization Anchors</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/appendix/b3_why_autosomal_fully_occupied_anchors.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="b3-why-autosomal-fully-occupied-peaks-were-used-as-manorm2-normalization-anchors">
+<h1>B3. Why Autosomal Fully Occupied Peaks Were Used as MAnorm2 Normalization Anchors<a class="headerlink" href="#b3-why-autosomal-fully-occupied-peaks-were-used-as-manorm2-normalization-anchors" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>A key normalization decision in the MAnorm2 workflow was to use a conservative anchor set for <code class="docutils literal notranslate"><span class="pre">normBioCond()</span></code> rather than letting all retained intervals participate equally in between-group normalization.</p>
+<p>The project defined normalization anchors as intervals that were:</p>
+<ul class="simple">
+<li><p>located on autosomes</p></li>
+<li><p>occupied in every replicate of Group 1</p></li>
+<li><p>occupied in every replicate of Group 2</p></li>
+</ul>
+<p>In code, the logic was equivalent to:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">autosome</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="o">!</span><span class="p">(</span><span class="n">data_filtered</span><span class="o">$</span><span class="n">chrom</span><span class="w"> </span><span class="o">%in%</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;chrX&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;chrY&quot;</span><span class="p">))</span>
+<span class="n">common_peak_idx</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">autosome</span><span class="w"> </span><span class="o">&amp;</span>
+<span class="w">                   </span><span class="p">(</span><span class="n">occ_n_g1_f</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nf">ncol</span><span class="p">(</span><span class="n">occ_g1_f</span><span class="p">))</span><span class="w"> </span><span class="o">&amp;</span>
+<span class="w">                   </span><span class="p">(</span><span class="n">occ_n_g2_f</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nf">ncol</span><span class="p">(</span><span class="n">occ_g2_f</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This section explains why such a conservative anchor definition was used and why it was especially appropriate for this project.</p>
+</section>
+<hr class="docutils" />
+<section id="why-normalization-anchors-needed-to-be-chosen-carefully">
+<h2>Why Normalization Anchors Needed To Be Chosen Carefully<a class="headerlink" href="#why-normalization-anchors-needed-to-be-chosen-carefully" title="Link to this heading"></a></h2>
+<p>In MAnorm2, normalization anchors are intended to provide a shared baseline between the two biological conditions being compared. If that baseline is defined using unstable, partially differential, or biologically biased loci, normalization may become harder to interpret.</p>
+<p>This issue was particularly important in this project because the comparisons included:</p>
+<ul class="simple">
+<li><p>strong biological differences in some contexts</p></li>
+<li><p>sex-related contrasts</p></li>
+<li><p>mark-specific asymmetry</p></li>
+<li><p>limited replicate numbers in many comparisons</p></li>
+</ul>
+<p>Under these conditions, it was not safe to assume that “all retained peaks” should automatically serve as normalization anchors.</p>
+</section>
+<hr class="docutils" />
+<section id="why-not-use-all-retained-peaks-as-anchors">
+<h2>Why Not Use All Retained Peaks as Anchors<a class="headerlink" href="#why-not-use-all-retained-peaks-as-anchors" title="Link to this heading"></a></h2>
+<p>A more permissive approach would have been to let the full retained interval set contribute to normalization. The project deliberately avoided that for several reasons.</p>
+<section id="not-all-retained-intervals-are-equally-stable">
+<h3>1. Not all retained intervals are equally stable<a class="headerlink" href="#not-all-retained-intervals-are-equally-stable" title="Link to this heading"></a></h3>
+<p>Even after filtering, retained intervals may still include:</p>
+<ul class="simple">
+<li><p>partially differential loci</p></li>
+<li><p>weakly stable loci</p></li>
+<li><p>intervals with asymmetric occupancy behavior</p></li>
+<li><p>regions that pass thresholding but are not ideal baseline candidates</p></li>
+</ul>
+<p>Such intervals may be appropriate to <strong>test</strong>, but not necessarily appropriate to <strong>normalize on</strong>.</p>
+</section>
+<section id="using-all-retained-intervals-risks-absorbing-true-biology-into-the-normalization-baseline">
+<h3>2. Using all retained intervals risks absorbing true biology into the normalization baseline<a class="headerlink" href="#using-all-retained-intervals-risks-absorbing-true-biology-into-the-normalization-baseline" title="Link to this heading"></a></h3>
+<p>If a substantial number of retained intervals reflect real group differences, allowing them to influence normalization could partially suppress the very biological shifts the analysis is meant to detect.</p>
+<p>The project therefore wanted a smaller but cleaner normalization baseline, rather than a broader but more biologically mixed one.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="why-autosomes-were-chosen">
+<h2>Why Autosomes Were Chosen<a class="headerlink" href="#why-autosomes-were-chosen" title="Link to this heading"></a></h2>
+<p>One of the most important parts of the anchor definition was the exclusion of <code class="docutils literal notranslate"><span class="pre">chrX</span></code> and <code class="docutils literal notranslate"><span class="pre">chrY</span></code>.</p>
+<section id="sex-chromosomes-may-carry-real-biology-in-this-project">
+<h3>1. Sex chromosomes may carry real biology in this project<a class="headerlink" href="#sex-chromosomes-may-carry-real-biology-in-this-project" title="Link to this heading"></a></h3>
+<p>This project included sex-related comparisons in which differences on <code class="docutils literal notranslate"><span class="pre">chrX</span></code> and <code class="docutils literal notranslate"><span class="pre">chrY</span></code> were not nuisance artifacts—they were potentially real and biologically meaningful.</p>
+<p>If sex chromosomes were included in the normalization anchor set, true dosage-linked or sex-specific signal could be partially absorbed into the scaling baseline.</p>
+</section>
+<section id="autosomes-provide-a-safer-shared-background-for-normalization">
+<h3>2. Autosomes provide a safer shared background for normalization<a class="headerlink" href="#autosomes-provide-a-safer-shared-background-for-normalization" title="Link to this heading"></a></h3>
+<p>By restricting anchors to autosomes, the workflow reduced the chance that normalization would distort or dilute biologically meaningful sex-chromosome differences.</p>
+<p>This was especially important because some loci on <code class="docutils literal notranslate"><span class="pre">chrY</span></code> were later used as biological sanity checks for model behavior.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="why-full-occupancy-in-all-replicates-was-required">
+<h2>Why Full Occupancy in All Replicates Was Required<a class="headerlink" href="#why-full-occupancy-in-all-replicates-was-required" title="Link to this heading"></a></h2>
+<p>The second major part of the anchor rule was the requirement that the interval be occupied in <strong>every replicate of both groups</strong>.</p>
+<section id="full-occupancy-implies-strong-reproducibility">
+<h3>1. Full occupancy implies strong reproducibility<a class="headerlink" href="#full-occupancy-implies-strong-reproducibility" title="Link to this heading"></a></h3>
+<p>An interval present in every replicate on both sides of the comparison is more likely to represent a stable shared feature than one that is only intermittently occupied.</p>
+</section>
+<section id="full-occupancy-reduces-anchor-noise">
+<h3>2. Full occupancy reduces anchor noise<a class="headerlink" href="#full-occupancy-reduces-anchor-noise" title="Link to this heading"></a></h3>
+<p>Partially occupied intervals could fluctuate into or out of the anchor set based on weaker or noisier peak support. Requiring full occupancy made the anchor set more reproducible and less sensitive to borderline loci.</p>
+</section>
+<section id="full-occupancy-better-matches-the-conceptual-role-of-a-normalization-baseline">
+<h3>3. Full occupancy better matches the conceptual role of a normalization baseline<a class="headerlink" href="#full-occupancy-better-matches-the-conceptual-role-of-a-normalization-baseline" title="Link to this heading"></a></h3>
+<p>A normalization anchor is supposed to represent shared signal, not just signal that happens not to fail a test. Full occupancy across all replicates gives a stronger basis for calling the region part of the shared baseline.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="why-a-smaller-but-cleaner-anchor-set-was-preferred">
+<h2>Why a Smaller but Cleaner Anchor Set Was Preferred<a class="headerlink" href="#why-a-smaller-but-cleaner-anchor-set-was-preferred" title="Link to this heading"></a></h2>
+<p>This project deliberately favored a more conservative anchor set, even if that meant having fewer anchors overall.</p>
+<p>The reasoning was that normalization is more defensible when it relies on regions that are:</p>
+<ul class="simple">
+<li><p>clearly shared</p></li>
+<li><p>clearly occupied</p></li>
+<li><p>unlikely to represent strong group-specific biology</p></li>
+<li><p>structurally stable across replicates</p></li>
+</ul>
+<p>Thus, the project preferred anchor quality over anchor quantity.</p>
+</section>
+<hr class="docutils" />
+<section id="why-this-was-especially-important-in-the-context-of-real-biological-asymmetry">
+<h2>Why This Was Especially Important in the Context of Real Biological Asymmetry<a class="headerlink" href="#why-this-was-especially-important-in-the-context-of-real-biological-asymmetry" title="Link to this heading"></a></h2>
+<p>This conservative anchor strategy was particularly important because the project did <strong>not</strong> assume that the genome-wide signal landscape was always symmetric between groups.</p>
+<p>Some comparisons could plausibly contain:</p>
+<ul class="simple">
+<li><p>mark-specific asymmetry</p></li>
+<li><p>sex-linked differences</p></li>
+<li><p>broad group-skewed enrichment behavior</p></li>
+</ul>
+<p>Under such conditions, using a permissive anchor definition would increase the risk that real biological differences are treated as normalization background.</p>
+<p>The autosomal fully occupied anchor rule reduced that risk and therefore aligned better with the project’s broader interpretive goals.</p>
+</section>
+<hr class="docutils" />
+<section id="relationship-to-the-occupancy-filter-and-master-matrix-design">
+<h2>Relationship to the Occupancy Filter and Master Matrix Design<a class="headerlink" href="#relationship-to-the-occupancy-filter-and-master-matrix-design" title="Link to this heading"></a></h2>
+<p>The anchor strategy also fit naturally into the larger workflow architecture.</p>
+<p>Because the project already used:</p>
+<ul class="simple">
+<li><p>CPS-based feature spaces</p></li>
+<li><p>occupancy-aware filtering</p></li>
+<li><p>master matrices containing both counts and occupancy</p></li>
+</ul>
+<p>it was straightforward to define a normalization baseline that explicitly respected occupancy structure.</p>
+<p>This was another advantage of the master-matrix design: it allowed the workflow to distinguish clearly between:</p>
+<ul class="simple">
+<li><p>intervals that are testable</p></li>
+<li><p>intervals that are good normalization anchors</p></li>
+</ul>
+<p>Those two sets did not have to be identical.</p>
+</section>
+<hr class="docutils" />
+<section id="key-take-home-message">
+<h2>Key Take-Home Message<a class="headerlink" href="#key-take-home-message" title="Link to this heading"></a></h2>
+<p>Autosomal fully occupied peaks were used as MAnorm2 normalization anchors because the project needed a conservative and biologically defensible shared baseline.</p>
+<p>This strategy:</p>
+<ul class="simple">
+<li><p>avoided sex-chromosome distortion</p></li>
+<li><p>required strong replicate-level reproducibility</p></li>
+<li><p>reduced the influence of unstable or partially differential loci</p></li>
+<li><p>helped preserve true biological asymmetry rather than absorbing it into normalization</p></li>
+</ul>
+<p>In this project, the anchor set was intentionally designed to be smaller but cleaner, making comparison-specific normalization more interpretable and more robust.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="b2_why_combined_occupancy_ge_2.html" class="btn btn-neutral float-left" title="B2. Why the Occupancy Filter Was Set to Combined Occupancy &gt;= 2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="b4_parametric_vs_local_regression.html" class="btn btn-neutral float-right" title="B4. Parametric vs Local Regression in MAnorm2, Including Modified Local Settings" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yizhou Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,313 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>B5. Why Parametric Warnings Were Not Automatically Treated as Fit Failure &mdash; Cut and Tag Pipeline 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="B6. Pairing Integrity and profile_bins Diagnostics" href="b6_profile_bins_pairing_diagnostics.html" />
+    <link rel="prev" title="B4. Parametric vs Local Regression in MAnorm2, Including Modified Local Settings" href="b4_parametric_vs_local_regression.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Cut and Tag Pipeline
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step2_qc.html">Step 2: Quality Control &amp; Adapter Trimming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step3_alignment.html">Step 3: Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing &amp; Quality Filtering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak &amp; Signal</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step5_dual_track_signal.html">Step 5: Dual-Track Signal Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step6_seacr.html">Step 6: SEACR Peak Calling</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 3: DE Analysis</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step7_cps_generation.html">Step 7: Consensus Peak Set (CPS) Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step8_quantification.html">Step 8: Master Counts Matrix Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step9_manorm2_de.html">Step 9: Differential Enrichment Analysis (MAnorm2)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step10_annotation.html">Step 10: Genomic Annotation (ChIPseeker)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step11_summarize_organize.html">Step 11: Result Aggregation and CPS-Based File Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step12_PCA.html">Step 12: CPS-Level PCA Quality Assessment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="appendix_index.html">Appendix: Methodological Discussions and Design Decisions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="a0_spikein_absence_evaluation.html">A0. How Spike-In Absence Was Evaluated in This Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a1_chipseqspikeinfree_in_this_project.html">A1. ChIPseqSpikeInFree in This Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a2_seacr_threshold_comparison.html">A2. Comparison of SEACR Thresholds: 0.01 vs 0.005 vs 0.05</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a3_why_negative_controls_were_excluded.html">A3. Why Negative-Control Libraries Were Excluded from SEACR and CPS Construction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a4_why_dual_track_signal_generation_was_necessary.html">A4. Why Browser Visualization and Peak Calling Require Two Different Signal Tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a5_why_cpm_bigwig_is_ok_for_visualization.html">A5. Why CPM-Normalized BigWig Tracks Are Acceptable for Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b1_why_master_matrix_replaced_individual_matrices.html">B1. Why the Workflow Moved From Individual Comparison Count Matrices to a Master Count Matrix Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b2_why_combined_occupancy_ge_2.html">B2. Why the Occupancy Filter Was Set to Combined Occupancy &gt;= 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b3_why_autosomal_fully_occupied_anchors.html">B3. Why Autosomal Fully Occupied Peaks Were Used as MAnorm2 Normalization Anchors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="b4_parametric_vs_local_regression.html">B4. Parametric vs Local Regression in MAnorm2, Including Modified Local Settings</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">B5. Why Parametric Warnings Were Not Automatically Treated as Fit Failure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-this-became-an-important-project-level-issue">Why This Became an Important Project-Level Issue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-warning-presence-alone-was-not-a-reliable-failure-criterion">Why Warning Presence Alone Was Not a Reliable Failure Criterion</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#warnings-and-final-convergence-are-not-the-same-thing">1. Warnings and final convergence are not the same thing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#parametric-fitting-sometimes-converged-despite-alarming-warnings">2. Parametric fitting sometimes converged despite alarming warnings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#some-converged-parametric-fits-were-biologically-better-than-the-corresponding-local-alternatives">3. Some converged parametric fits were biologically better than the corresponding local alternatives</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#the-decision-rule-used-in-the-workflow">The Decision Rule Used in the Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-this-was-more-appropriate-than-a-warning-based-rule">Why This Was More Appropriate Than a Warning-Based Rule</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#it-respected-the-actual-behavior-of-the-fitting-algorithm">1. It respected the actual behavior of the fitting algorithm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#it-avoided-unnecessary-fallback">2. It avoided unnecessary fallback</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#it-preserved-continuity-with-the-broader-model-comparison-logic">3. It preserved continuity with the broader model-comparison logic</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#why-this-was-especially-important-in-this-project">Why This Was Especially Important in This Project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relationship-to-the-modified-local-fallback">Relationship to the Modified Local Fallback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#key-take-home-message">Key Take-Home Message</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="b6_profile_bins_pairing_diagnostics.html">B6. Pairing Integrity and <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c1_why_custom_gencode_annotation.html">C1. Why Custom GENCODE-Matched Annotation Was Preferred Over Generic Annotation Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c2_why_restricted_gene_type_annotation.html">C2. Why Restricted Gene-Type Annotation Was Chosen Instead of a Fully Generic Annotation Set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c3_preflight_validation_before_cps_generation.html">C3. Pre-Flight Validation Before CPS Generation</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cut and Tag Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="appendix_index.html">Appendix: Methodological Discussions and Design Decisions</a></li>
+      <li class="breadcrumb-item active">B5. Why Parametric Warnings Were Not Automatically Treated as Fit Failure</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/appendix/b5_why_parametric_warnings_not_auto_failure.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="b5-why-parametric-warnings-were-not-automatically-treated-as-fit-failure">
+<h1>B5. Why Parametric Warnings Were Not Automatically Treated as Fit Failure<a class="headerlink" href="#b5-why-parametric-warnings-were-not-automatically-treated-as-fit-failure" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>During MAnorm2 parametric mean-variance fitting, warning messages can appear even when the overall fitting procedure ultimately converges successfully. In this project, a key methodological decision was therefore <strong>not</strong> to treat the mere presence of warnings as automatic evidence of model failure.</p>
+<p>This section explains why explicit convergence status, rather than warning presence alone, was used as the final criterion for accepting or rejecting the parametric fit.</p>
+</section>
+<hr class="docutils" />
+<section id="why-this-became-an-important-project-level-issue">
+<h2>Why This Became an Important Project-Level Issue<a class="headerlink" href="#why-this-became-an-important-project-level-issue" title="Link to this heading"></a></h2>
+<p>In practice, parametric fitting in MAnorm2 can emit messages such as:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">glm.fit:</span> <span class="pre">algorithm</span> <span class="pre">did</span> <span class="pre">not</span> <span class="pre">converge</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NaNs</span> <span class="pre">produced</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">step</span> <span class="pre">size</span> <span class="pre">truncated</span> <span class="pre">due</span> <span class="pre">to</span> <span class="pre">divergence</span></code></p></li>
+</ul>
+<p>At first glance, these warnings appear severe. It is therefore tempting to conclude that any comparison producing such messages should be discarded from parametric fitting and immediately rerouted to local regression.</p>
+<p>However, project-level testing showed that this interpretation was too simplistic.</p>
+<p>The key observation was:</p>
+<blockquote>
+<div><p>warning messages can arise during intermediate numerical steps even when the overall parametric fitting procedure later reaches a successful final solution.</p>
+</div></blockquote>
+<p>This meant that the project needed a more careful decision rule.</p>
+</section>
+<hr class="docutils" />
+<section id="why-warning-presence-alone-was-not-a-reliable-failure-criterion">
+<h2>Why Warning Presence Alone Was Not a Reliable Failure Criterion<a class="headerlink" href="#why-warning-presence-alone-was-not-a-reliable-failure-criterion" title="Link to this heading"></a></h2>
+<section id="warnings-and-final-convergence-are-not-the-same-thing">
+<h3>1. Warnings and final convergence are not the same thing<a class="headerlink" href="#warnings-and-final-convergence-are-not-the-same-thing" title="Link to this heading"></a></h3>
+<p>A warning typically reflects something noteworthy that happened during one iteration or one internal numerical sub-step. It does <strong>not</strong> necessarily mean that the full fitting procedure failed globally.</p>
+<p>By contrast, convergence status reflects the behavior of the fitting procedure as a whole.</p>
+<p>Thus, warnings and convergence operate at different levels:</p>
+<ul class="simple">
+<li><p><strong>warnings</strong> describe local numerical difficulty</p></li>
+<li><p><strong>convergence</strong> describes whether the overall fitting process successfully stabilized</p></li>
+</ul>
+<p>Treating them as equivalent would collapse two distinct concepts into one overly aggressive failure rule.</p>
+</section>
+<section id="parametric-fitting-sometimes-converged-despite-alarming-warnings">
+<h3>2. Parametric fitting sometimes converged despite alarming warnings<a class="headerlink" href="#parametric-fitting-sometimes-converged-despite-alarming-warnings" title="Link to this heading"></a></h3>
+<p>In this project, there were comparisons in which parametric fitting emitted multiple warning messages but still ended with explicit successful convergence in the MAnorm2 fit log.</p>
+<p>In such cases, replacing the parametric model automatically would have meant discarding a fit that the algorithm itself considered complete.</p>
+</section>
+<section id="some-converged-parametric-fits-were-biologically-better-than-the-corresponding-local-alternatives">
+<h3>3. Some converged parametric fits were biologically better than the corresponding local alternatives<a class="headerlink" href="#some-converged-parametric-fits-were-biologically-better-than-the-corresponding-local-alternatives" title="Link to this heading"></a></h3>
+<p>This was not merely a numerical issue. In several project-relevant comparisons, converged parametric fits produced results that were more biologically convincing than the results from default local regression.</p>
+<p>This was especially important at loci where prior biological expectations were strong. Therefore, using “warning present” as an automatic failure rule would not only have been numerically crude, but also biologically counterproductive.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="the-decision-rule-used-in-the-workflow">
+<h2>The Decision Rule Used in the Workflow<a class="headerlink" href="#the-decision-rule-used-in-the-workflow" title="Link to this heading"></a></h2>
+<p>Because of these observations, the workflow used explicit convergence as the final decision criterion.</p>
+<p>A simplified version of the core logic was:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">fit_log</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">capture.output</span><span class="p">(</span>
+<span class="w">  </span><span class="n">conds_param</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">tryCatch</span><span class="p">(</span>
+<span class="w">    </span><span class="nf">fitMeanVarCurve</span><span class="p">(</span>
+<span class="w">      </span><span class="n">conds</span><span class="p">,</span>
+<span class="w">      </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;parametric&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="n">occupy.only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span>
+<span class="w">      </span><span class="n">max.iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">,</span>
+<span class="w">      </span><span class="n">init.coef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.1</span><span class="p">,</span><span class="w"> </span><span class="m">10</span><span class="p">)</span>
+<span class="w">    </span><span class="p">),</span>
+<span class="w">    </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="n">e</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">param_converged</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">any</span><span class="p">(</span><span class="nf">grepl</span><span class="p">(</span><span class="s">&quot;Converged\\.&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fit_log</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The final interpretation was:</p>
+<ul class="simple">
+<li><p>if the model threw a <strong>true error</strong>, fallback was required</p></li>
+<li><p>if the model <strong>did not report convergence</strong>, fallback was required</p></li>
+<li><p>if the model <strong>did report convergence</strong>, the parametric fit was retained, even if warnings appeared during fitting</p></li>
+</ul>
+<p>This made convergence, not warning presence, the decisive acceptance criterion.</p>
+</section>
+<hr class="docutils" />
+<section id="why-this-was-more-appropriate-than-a-warning-based-rule">
+<h2>Why This Was More Appropriate Than a Warning-Based Rule<a class="headerlink" href="#why-this-was-more-appropriate-than-a-warning-based-rule" title="Link to this heading"></a></h2>
+<section id="it-respected-the-actual-behavior-of-the-fitting-algorithm">
+<h3>1. It respected the actual behavior of the fitting algorithm<a class="headerlink" href="#it-respected-the-actual-behavior-of-the-fitting-algorithm" title="Link to this heading"></a></h3>
+<p>The fitting algorithm itself reports whether the process converged. Using that explicit signal is more faithful to the model’s final state than imposing an external warning-based veto rule.</p>
+</section>
+<section id="it-avoided-unnecessary-fallback">
+<h3>2. It avoided unnecessary fallback<a class="headerlink" href="#it-avoided-unnecessary-fallback" title="Link to this heading"></a></h3>
+<p>If every warning automatically triggered local-regression fallback, then many successfully converged parametric fits would have been discarded unnecessarily.</p>
+<p>That would have made the workflow too eager to abandon parametric fitting, even when the final fit was usable and biologically reasonable.</p>
+</section>
+<section id="it-preserved-continuity-with-the-broader-model-comparison-logic">
+<h3>3. It preserved continuity with the broader model-comparison logic<a class="headerlink" href="#it-preserved-continuity-with-the-broader-model-comparison-logic" title="Link to this heading"></a></h3>
+<p>This decision was fully consistent with the project’s broader comparison between:</p>
+<ul class="simple">
+<li><p>parametric fitting</p></li>
+<li><p>default local regression</p></li>
+<li><p>modified local fallback</p></li>
+</ul>
+<p>The project did not assume that local regression was automatically better whenever parametric fitting encountered difficulty. Instead, it treated parametric fitting as acceptable whenever it genuinely converged.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="why-this-was-especially-important-in-this-project">
+<h2>Why This Was Especially Important in This Project<a class="headerlink" href="#why-this-was-especially-important-in-this-project" title="Link to this heading"></a></h2>
+<p>This issue mattered more in this project than it might in a very simple dataset because the comparisons involved:</p>
+<ul class="simple">
+<li><p>limited replicate counts</p></li>
+<li><p>heterogeneous variance structures</p></li>
+<li><p>strong group differences in some cases</p></li>
+<li><p>biologically important loci where model behavior was visibly consequential</p></li>
+</ul>
+<p>Under these conditions, a crude “warnings = fail” rule would have produced too many unnecessary fallback events and could have weakened biologically plausible results.</p>
+<p>In other words, the project needed a decision rule that was:</p>
+<ul class="simple">
+<li><p>numerically defensible</p></li>
+<li><p>biologically aware</p></li>
+<li><p>operationally robust</p></li>
+</ul>
+<p>Using explicit convergence status met those requirements better than a warning-only rule.</p>
+</section>
+<hr class="docutils" />
+<section id="relationship-to-the-modified-local-fallback">
+<h2>Relationship to the Modified Local Fallback<a class="headerlink" href="#relationship-to-the-modified-local-fallback" title="Link to this heading"></a></h2>
+<p>Importantly, the workflow did <strong>not</strong> ignore warnings completely. Rather, it treated warnings as contextual information while reserving fallback for true failure cases.</p>
+<p>If the parametric fit:</p>
+<ul class="simple">
+<li><p>threw a real fitting error</p></li>
+<li><p>or failed to report convergence</p></li>
+</ul>
+<p>then the workflow switched to the modified local fallback strategy.</p>
+<p>This means the project still preserved fault tolerance. It simply did not define fault tolerance in an unnecessarily aggressive way.</p>
+</section>
+<hr class="docutils" />
+<section id="key-take-home-message">
+<h2>Key Take-Home Message<a class="headerlink" href="#key-take-home-message" title="Link to this heading"></a></h2>
+<p>Parametric warnings were not automatically treated as fit failure because warning messages and final convergence are not the same thing. In this project, explicit convergence status was used as the decisive acceptance criterion for the parametric model.</p>
+<p>This allowed the workflow to:</p>
+<ul class="simple">
+<li><p>retain successfully converged parametric fits</p></li>
+<li><p>avoid unnecessary fallback to local regression</p></li>
+<li><p>preserve biologically plausible results in important comparisons</p></li>
+<li><p>remain robust by switching to modified local regression only when true failure occurred</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="b4_parametric_vs_local_regression.html" class="btn btn-neutral float-left" title="B4. Parametric vs Local Regression in MAnorm2, Including Modified Local Settings" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="b6_profile_bins_pairing_diagnostics.html" class="btn btn-neutral float-right" title="B6. Pairing Integrity and profile_bins Diagnostics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yizhou Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

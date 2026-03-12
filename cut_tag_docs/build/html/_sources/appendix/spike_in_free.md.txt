@@ -1,0 +1,9 @@
+# Appendix: ChIPseqSpikeInFree Normalization
+
+## Discussion and Rationale
+The `ChIPseqSpikeInFree` method offers a novel way to calculate scaling factors without exogenous spike-in DNA (e.g., E. coli DNA). 
+
+**However, a critical caveat applies:**
+According to the original methodology, this tool assumes and corrects for a massive, system-wide "global effect" (e.g., a total depletion of a histone mark across the entire genome). 
+
+If the overall biological abundance of H3K27ac or H3K4me1 is expected to remain relatively stable between our conditions, forcing Spike-In-Free normalization could artificially skew the data. Currently, **CPM (Counts Per Million)** normalization provides a robust and visually reliable baseline for IGV visualization and relative peak quantification.

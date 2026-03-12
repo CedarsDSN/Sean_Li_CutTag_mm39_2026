@@ -1,0 +1,211 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Step 3: Alignment &mdash; Cut and Tag Pipeline 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Step 4: BAM Processing" href="step4_bam_process.html" />
+    <link rel="prev" title="Step 2: Quality Control &amp; Adapter Trimming" href="step2_qc.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Cut and Tag Pipeline
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="step2_qc.html">Step 2: Quality Control &amp; Adapter Trimming</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Step 3: Alignment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#script-execution">Script &amp; Execution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#key-parameter-rationale">Key Parameter Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#spike-in-alignment-assessment">Spike-in Alignment Assessment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#observation-conclusion">Observation &amp; Conclusion</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#output">Output</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="step4_bam_process.html">Step 4: BAM Processing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak &amp; Signal</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step5_dual_track_signal.html">Step 5: Dual-Track Signal Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step6_seacr.html">Step 6: SEACR Peak Calling</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 3: DE Analysis</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step7_cps_generation.html">Step 7: CPS Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step8_quantification.html">Step 8: Master Counts Matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step9_manorm2_de.html">Step 9: MAnorm2 DE Analysis</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step10_annotation.html">Step 10: Gene Annotation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step11_pca_batch.html">Step 11: PCA &amp; Batch Effect</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/spike_in_free.html">Appendix: ChIPseqSpikeInFree Normalization</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cut and Tag Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Step 3: Alignment</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/module1_preprocessing/step3_alignment.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="step-3-alignment">
+<h1>Step 3: Alignment<a class="headerlink" href="#step-3-alignment" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>Trimmed paired-end reads are aligned to the customized GRCm39 reference genome using <strong>Bowtie2</strong>. To optimize computational efficiency and save disk space, the alignment output is piped directly into <code class="docutils literal notranslate"><span class="pre">samtools</span> <span class="pre">sort</span></code> to generate coordinate-sorted BAM files on the fly, bypassing the creation of bulky intermediate SAM files.</p>
+</section>
+<section id="script-execution">
+<h2>Script &amp; Execution<a class="headerlink" href="#script-execution" title="Link to this heading"></a></h2>
+<p>The core alignment commands are encapsulated in a shell script named <code class="docutils literal notranslate"><span class="pre">alignment.sh</span></code>. Since this is a compute-intensive step, the jobs are submitted to the High-Performance Computing (HPC) cluster using a Slurm submission script named <code class="docutils literal notranslate"><span class="pre">1_sub_alignment_slurm.sh</span></code>.</p>
+<p>Here is the core command executed for the primary genome alignment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define paths (configured in the wrapper script)</span>
+<span class="c1"># Genome_Ref=&quot;path/to/GRCm39&quot;</span>
+<span class="c1"># trim_fastq_path=&quot;path/to/trim_fastqs&quot;</span>
+<span class="c1"># bam_path=&quot;path/to/alignment_bams&quot;</span>
+
+<span class="c1"># 1. Align and directly sort by coordinate</span>
+bowtie2<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--dovetail<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--very-sensitive-local<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--no-unal<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--no-mixed<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--no-discordant<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--phred33<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-I<span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-X<span class="w"> </span><span class="m">700</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-x<span class="w"> </span><span class="nv">$Genome_Ref</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-1<span class="w"> </span><span class="nv">$trim_fastq_path</span>/<span class="si">${</span><span class="nv">SAMPLE_ID</span><span class="si">}</span>_R1.fastq.gz<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-2<span class="w"> </span><span class="nv">$trim_fastq_path</span>/<span class="si">${</span><span class="nv">SAMPLE_ID</span><span class="si">}</span>_R2.fastq.gz<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="m">2</span>&gt;<span class="w"> </span><span class="nv">$bam_path</span>/<span class="si">${</span><span class="nv">SAMPLE_ID</span><span class="si">}</span>_bowtie2.log<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>samtools<span class="w"> </span>sort<span class="w"> </span>-@<span class="w"> </span><span class="m">4</span><span class="w"> </span>-o<span class="w"> </span><span class="nv">$bam_path</span>/<span class="si">${</span><span class="nv">SAMPLE_ID</span><span class="si">}</span>.coordsorted.bam<span class="w"> </span>-
+
+<span class="c1"># 2. Index the sorted BAM file</span>
+samtools<span class="w"> </span>index<span class="w"> </span><span class="nv">$bam_path</span>/<span class="si">${</span><span class="nv">SAMPLE_ID</span><span class="si">}</span>.coordsorted.bam
+</pre></div>
+</div>
+</section>
+<section id="key-parameter-rationale">
+<h2>Key Parameter Rationale<a class="headerlink" href="#key-parameter-rationale" title="Link to this heading"></a></h2>
+<p>The alignment parameters are specifically tailored for CUT&amp;Tag libraries:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">--dovetail</span></code></strong>: Tn5 transposase can generate fragments shorter than the sequencing read length. This flag allows Bowtie2 to consider these “dovetailing” pairs as valid, concordant alignments.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">--very-sensitive-local</span></code></strong>: Uses local alignment to softly clip adapters or low-quality bases, maximizing the mapping rate.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">--no-unal</span></code>, <code class="docutils literal notranslate"><span class="pre">--no-mixed</span></code>, <code class="docutils literal notranslate"><span class="pre">--no-discordant</span></code></strong>: Enforces strict filtering at the alignment stage, outputting only reads where <em>both</em> mates align successfully and correctly.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">-I</span> <span class="pre">10</span> <span class="pre">-X</span> <span class="pre">700</span></code></strong>: Defines the valid fragment length bounds (10bp to 700bp).</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="spike-in-alignment-assessment">
+<h2>Spike-in Alignment Assessment<a class="headerlink" href="#spike-in-alignment-assessment" title="Link to this heading"></a></h2>
+<p>Standard CUT&amp;Tag protocols often introduce an exogenous spike-in DNA (e.g., <em>E. coli</em>) for downstream data normalization. To evaluate this, we performed a parallel alignment against the spike-in reference genome using a batch submission loop:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Loop through all trimmed fastq files and submit spike-in alignment jobs</span>
+<span class="nv">SAMPLES</span><span class="o">=</span><span class="k">$(</span>ls<span class="w"> </span><span class="nv">$FASTQ_DIR</span>/*_R1.fastq.gz<span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span>basename<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span><span class="s1">&#39;s/_R1.fastq.gz//&#39;</span><span class="k">)</span>
+
+<span class="k">for</span><span class="w"> </span>SAMPLE<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nv">$SAMPLES</span>
+<span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Submitting sample: </span><span class="nv">$SAMPLE</span><span class="s2">&quot;</span>
+<span class="w">    </span>sbatch<span class="w"> </span>--job-name<span class="o">=</span><span class="s2">&quot;aln_</span><span class="nv">$SAMPLE</span><span class="s2">&quot;</span><span class="w"> </span>./alignment_spike.sh<span class="w"> </span><span class="nv">$SAMPLE</span>
+<span class="k">done</span>
+</pre></div>
+</div>
+<section id="observation-conclusion">
+<h3>Observation &amp; Conclusion<a class="headerlink" href="#observation-conclusion" title="Link to this heading"></a></h3>
+<p>Upon reviewing the alignment logs from the <code class="docutils literal notranslate"><span class="pre">alignment_spike.sh</span></code> runs, we observed that the <strong>spike-in alignment rates were extremely low</strong> across the samples.</p>
+<p>We can safely assume that the exogenous spike-in was either omitted during the experimental protocol or was present at negligible levels. Consequently, we concluded that utilizing spike-in normalization factors is biologically unsupported for this specific dataset. Downstream visualization and quantification will instead rely on highly robust within-sample normalization methods (such as CPM).</p>
+</section>
+</section>
+<section id="output">
+<h2>Output<a class="headerlink" href="#output" title="Link to this heading"></a></h2>
+<p>The final outputs for the primary analysis are the cleanly aligned, coordinate-sorted BAM files (<code class="docutils literal notranslate"><span class="pre">.coordsorted.bam</span></code>), their indices (<code class="docutils literal notranslate"><span class="pre">.coordsorted.bam.bai</span></code>), and the alignment logs, all stored in the designated BAM output folder.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="step2_qc.html" class="btn btn-neutral float-left" title="Step 2: Quality Control &amp; Adapter Trimming" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="step4_bam_process.html" class="btn btn-neutral float-right" title="Step 4: BAM Processing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yizhou Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

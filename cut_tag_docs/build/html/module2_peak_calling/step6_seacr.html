@@ -1,0 +1,234 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Step 6: SEACR Peak Calling &mdash; Cut and Tag Pipeline 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Step 7: CPS Generation" href="../module3_quantitative_DE/step7_cps_generation.html" />
+    <link rel="prev" title="Step 5: Dual-Track Signal Generation" href="step5_dual_track_signal.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Cut and Tag Pipeline
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step2_qc.html">Step 2: Quality Control &amp; Adapter Trimming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step3_alignment.html">Step 3: Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing &amp; Quality Filtering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak &amp; Signal</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="step5_dual_track_signal.html">Step 5: Dual-Track Signal Generation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Step 6: SEACR Peak Calling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#input-strategy">Input Strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#execution-command">Execution Command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parameter-rationale">Parameter Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#threshold"><code class="docutils literal notranslate"><span class="pre">0.01</span></code> threshold</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#non-mode"><code class="docutils literal notranslate"><span class="pre">non</span></code> mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stringent-mode"><code class="docutils literal notranslate"><span class="pre">stringent</span></code> mode</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#why-igg-nab-controls-were-not-used-directly">Why IgG/nAb Controls Were Not Used Directly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#output">Output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#key-take-home-message">Key Take-Home Message</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 3: DE Analysis</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step7_cps_generation.html">Step 7: CPS Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step8_quantification.html">Step 8: Master Counts Matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step9_manorm2_de.html">Step 9: MAnorm2 DE Analysis</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step10_annotation.html">Step 10: Gene Annotation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step11_pca_batch.html">Step 11: PCA &amp; Batch Effect</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/spike_in_free.html">Appendix: ChIPseqSpikeInFree Normalization</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cut and Tag Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Step 6: SEACR Peak Calling</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/module2_peak_calling/step6_seacr.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="step-6-seacr-peak-calling">
+<h1>Step 6: SEACR Peak Calling<a class="headerlink" href="#step-6-seacr-peak-calling" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>CUT&amp;Tag data is typically characterized by extremely low global background and high local signal-to-noise ratios. This sparse signal structure differs substantially from conventional ChIP-seq and is one of the main reasons why CUT&amp;Tag often benefits from a dedicated peak-calling strategy.</p>
+<p>To identify enriched regions from these sparse-background profiles, we used <strong>SEACR</strong> (Sparse Enrichment Analysis for CUT&amp;RUN), a peak caller specifically designed for CUT&amp;RUN/CUT&amp;Tag-style data. SEACR operates directly on fragment pileup BedGraph files and is well suited for datasets in which local enrichment is sharp and background is minimal.</p>
+<p>Accordingly, we performed peak calling on the raw fragment-level BedGraph files generated in Step 5, rather than on the normalized browser tracks.</p>
+</section>
+<hr class="docutils" />
+<section id="input-strategy">
+<h2>Input Strategy<a class="headerlink" href="#input-strategy" title="Link to this heading"></a></h2>
+<p>As described in Step 5, two different signal representations were generated from the same aligned BAM files:</p>
+<ol class="arabic simple">
+<li><p><strong>CPM-normalized BigWig tracks</strong> for browser visualization.</p></li>
+<li><p><strong>Raw fragment-level BedGraph tracks</strong> for peak calling.</p></li>
+</ol>
+<p>For SEACR, we used <em>only</em> the second type of file: the exact, unsmoothed, non-normalized fragment BedGraph.</p>
+<p>This distinction is essential. Browser tracks are optimized for human interpretation, whereas SEACR requires a mathematically faithful representation of the underlying fragment pileup landscape.</p>
+</section>
+<hr class="docutils" />
+<section id="execution-command">
+<h2>Execution Command<a class="headerlink" href="#execution-command" title="Link to this heading"></a></h2>
+<p>We processed the machine-readable BedGraph files using a Slurm array script. During this step, we explicitly excluded IgG and nAb control samples from the execution list, since these files were not used as independent peak-calling targets in the present workflow.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define paths</span>
+<span class="nv">bg_dir</span><span class="o">=</span><span class="s2">&quot;path/to/seacr_bedgraph&quot;</span>
+<span class="nv">out_dir</span><span class="o">=</span><span class="s2">&quot;path/to/seacr_stringent_001&quot;</span>
+<span class="nv">seacr_exec</span><span class="o">=</span><span class="s2">&quot;path/to/SEACR_1.3.sh&quot;</span>
+
+mkdir<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$out_dir</span><span class="s2">&quot;</span>
+
+<span class="c1"># 1. Dynamically identify valid BedGraph files, excluding IgG/nAb controls</span>
+<span class="nv">BG_LIST</span><span class="o">=(</span><span class="k">$(</span>find<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$bg_dir</span><span class="s2">&quot;</span><span class="w"> </span>-maxdepth<span class="w"> </span><span class="m">1</span><span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.seacr.bedgraph&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-viE<span class="w"> </span><span class="s2">&quot;IgG|nAb&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="k">)</span><span class="o">)</span>
+
+<span class="c1"># 2. Select the current sample based on Slurm Array ID</span>
+<span class="nv">current_bg</span><span class="o">=</span><span class="si">${</span><span class="nv">BG_LIST</span><span class="p">[</span><span class="k">$((</span><span class="nv">SLURM_ARRAY_TASK_ID</span><span class="o">-</span><span class="m">1</span><span class="k">))</span><span class="p">]</span><span class="si">}</span>
+<span class="nv">base_name</span><span class="o">=</span><span class="k">$(</span>basename<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$current_bg</span><span class="s2">&quot;</span><span class="w"> </span>.rmdup.seacr.bedgraph<span class="k">)</span>
+<span class="nv">output_prefix</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">out_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">base_name</span><span class="si">}</span><span class="s2">.01&quot;</span>
+
+<span class="c1"># 3. Execute SEACR</span>
+bash<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$seacr_exec</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s2">&quot;</span><span class="nv">$current_bg</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="m">0</span>.01<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>non<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>stringent<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s2">&quot;</span><span class="nv">$output_prefix</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="parameter-rationale">
+<h2>Parameter Rationale<a class="headerlink" href="#parameter-rationale" title="Link to this heading"></a></h2>
+<p>The choice of SEACR parameters strongly influences the balance between sensitivity and specificity. In this project, we adopted a control-free, stringent calling strategy.</p>
+<section id="threshold">
+<h3><code class="docutils literal notranslate"><span class="pre">0.01</span></code> threshold<a class="headerlink" href="#threshold" title="Link to this heading"></a></h3>
+<p>Instead of supplying an external control BedGraph, we used a numeric threshold of <code class="docutils literal notranslate"><span class="pre">0.01</span></code>. In this mode, SEACR retains the top 1% of enriched regions ranked by total signal intensity (area under the curve, AUC). This provides a conservative and reproducible way to define enriched regions without relying on a potentially unstable control track. This thresholding strategy was chosen to minimize false positives while still preserving strong biologically meaningful enrichment.</p>
+</section>
+<section id="non-mode">
+<h3><code class="docutils literal notranslate"><span class="pre">non</span></code> mode<a class="headerlink" href="#non-mode" title="Link to this heading"></a></h3>
+<p>Because we used a numeric threshold rather than a control BedGraph as the second argument, the workflow effectively operates without a matched control track for empirical threshold definition. In this setting, we intentionally avoided direct IgG/nAb-based thresholding. This was an important design choice for our dataset. Across batches, IgG/nAb controls were highly sparse and not always uniformly structured, making them less suitable as direct denominators for peak calling. Rather than introducing inconsistency through variable control behavior, we adopted a uniform control-free SEACR strategy across comparable target samples.</p>
+</section>
+<section id="stringent-mode">
+<h3><code class="docutils literal notranslate"><span class="pre">stringent</span></code> mode<a class="headerlink" href="#stringent-mode" title="Link to this heading"></a></h3>
+<p>We used SEACR in stringent mode to obtain a conservative, high-confidence set of enriched regions. Compared with relaxed mode, stringent calling produces tighter and more selective peak calls, which is desirable for downstream construction of a robust Common Peak Set (CPS). Because the CPS serves as the foundation for subsequent quantification and differential analysis, we prioritized specificity and reproducibility over maximal sensitivity at this stage.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="why-igg-nab-controls-were-not-used-directly">
+<h2>Why IgG/nAb Controls Were Not Used Directly<a class="headerlink" href="#why-igg-nab-controls-were-not-used-directly" title="Link to this heading"></a></h2>
+<p>In conventional ChIP-seq workflows, input DNA or IgG controls are often incorporated directly into peak calling. However, for this CUT&amp;Tag dataset, we intentionally did not use IgG/nAb BedGraphs as SEACR control inputs for several reasons:</p>
+<ul class="simple">
+<li><p><strong>Extreme sparsity:</strong> CUT&amp;Tag control libraries often contain very low signal and highly sparse coverage profiles.</p></li>
+<li><p><strong>Inconsistent structure across batches:</strong> Because this project was generated across multiple experimental batches and different negative control types were present (IgG in some batches and nAb in others), direct control-based thresholding would have introduced additional heterogeneity.</p></li>
+<li><p><strong>Need for a consistent calling framework:</strong> For downstream merging into CPS and cross-sample comparison, it was more important to apply a stable and internally consistent peak-calling strategy across all target samples than to use batch-variable sparse controls.</p></li>
+</ul>
+<blockquote>
+<div><p><strong>Note:</strong> It is important to note that this does not mean IgG/nAb controls were biologically irrelevant. Rather, in this workflow they were treated primarily as background reference tracks for QC and visualization, not as formal control tracks for SEACR peak calling.</p>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="output">
+<h2>Output<a class="headerlink" href="#output" title="Link to this heading"></a></h2>
+<p>The output of this step is a <code class="docutils literal notranslate"><span class="pre">.stringent.bed</span></code> file for each biological sample, containing the genomic coordinates of all high-confidence enriched regions identified by SEACR.</p>
+<p>These individual peak files are then carried forward into the next module, where they are merged across samples to construct the Common Peak Set (CPS) used for downstream counting, normalization, and differential analysis.</p>
+<section id="key-take-home-message">
+<h3>Key Take-Home Message<a class="headerlink" href="#key-take-home-message" title="Link to this heading"></a></h3>
+<p>SEACR peak calling in this workflow was performed on raw fragment-level BedGraph files, not on normalized browser tracks. We used a control-free, stringent, numeric-threshold strategy (<code class="docutils literal notranslate"><span class="pre">0.01</span></code>, <code class="docutils literal notranslate"><span class="pre">non</span></code>, <code class="docutils literal notranslate"><span class="pre">stringent</span></code>) to obtain a robust and internally consistent set of per-sample peaks suitable for downstream CPS construction.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="step5_dual_track_signal.html" class="btn btn-neutral float-left" title="Step 5: Dual-Track Signal Generation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../module3_quantitative_DE/step7_cps_generation.html" class="btn btn-neutral float-right" title="Step 7: CPS Generation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yizhou Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
