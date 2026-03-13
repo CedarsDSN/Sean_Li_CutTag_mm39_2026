@@ -2,53 +2,6 @@
 
 This page describes how to run the maintained CUT&Tag analysis pipeline from start to finish using the current production scripts under `script/`.
 
-## Pipeline flowchart
-
-### Detailed workflow
-
-```{mermaid}
-flowchart TD
-
-    A["Input data<br/>trim_fastqs/*.fastq.gz"] --> B["01_alignment<br/>submit_alignment.sh<br/>run_alignment.sh"]
-    A --> C["01_alignment (spike-in)<br/>submit_alignment_spikein.sh<br/>run_alignment_spikein.sh"]
-
-    B --> D["Output<br/>bam/*.coordsorted.bam"]
-    C --> E["Output<br/>bam_spike/*.amp.bam<br/>bam_spike/*.ecoli.bam"]
-
-    D --> F["02_bam_processing<br/>submit_process_bam.sh<br/>run_process_bam.sh"]
-    F --> G["Output<br/>bam/*.rmdup.bam<br/>qc/*.metrics / *.stats"]
-
-    G --> H["03_signal_generation<br/>run_bigwig_cpm.sh"]
-    G --> I["03_signal_generation<br/>run_bedgraph_seacr.sh"]
-    G --> J["03_signal_generation<br/>run_bam_to_bed.sh"]
-
-    H --> K["Output<br/>bw_bedgraph_cpm/*.cpm.bw"]
-    I --> L["Output<br/>seacr_bedgraph/*.seacr.bedgraph"]
-    J --> M["Output<br/>bam_to_bed/*.bed"]
-
-    L --> N["04_peak_calling<br/>run_seacr_peak_calling.sh"]
-    N --> O["Output<br/>seacr_peak_calling/*.stringent.bed"]
-
-    O --> P["08_preflight_checks<br/>preflight_check_cps_peak_inputs.sh"]
-    P --> Q["04_peak_calling<br/>run_cps_generation.sh"]
-    Q --> R["Output<br/>consensus_peaks/CPS*_consensus.bed"]
-
-    R --> S["05_quantification<br/>submit_profile_bins_all.sh<br/>submit_profile_bins_master.sh<br/>run_profile_bins_master.sh"]
-    M --> S
-    O --> S
-
-    S --> T["Output<br/>manorm2_master_counts/CPS*_master_counts_profile_bins.xls"]
-
-    T --> U["06_differential_analysis<br/>submit_manorm2_all.sh<br/>submit_manorm2_master_count.sh<br/>run_manorm2_master_count.R"]
-    U --> V["Output<br/>manorm2_master_results/*_results.txt<br/>*_summary.csv<br/>*_filter_stats.csv<br/>*_dist.csv"]
-
-    V --> W["07_summary_qc<br/>run_summary_master.sh"]
-    T --> X["07_summary_qc<br/>run_plot_pca.R"]
-
-    W --> Y["Final summary outputs<br/>All_Comparisons_Summary.csv<br/>All_Filter_Stats.csv<br/>All_Chromosome_Dist.csv"]
-    X --> Z["Final PCA outputs<br/>PCA_master/*.pdf"]
-```
-
 ## Overview
 
 The maintained workflow consists of the following major stages:
