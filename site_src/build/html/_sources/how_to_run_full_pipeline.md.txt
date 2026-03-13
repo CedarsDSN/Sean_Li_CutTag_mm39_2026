@@ -4,26 +4,9 @@ This page describes how to run the maintained CUT&Tag analysis pipeline from sta
 
 ## Pipeline flowchart
 
-### Simplified workflow
-
-```mermaid
-flowchart LR
-
-    A["FASTQ"] --> B["Alignment"]
-    B --> C["BAM Processing"]
-    C --> D["Signal Generation"]
-    D --> E["SEACR Peak Calling"]
-    E --> F["Preflight Check"]
-    F --> G["CPS Generation"]
-    G --> H["profile_bins Quantification"]
-    H --> I["MAnorm2 Differential Analysis"]
-    I --> J["Summary Aggregation"]
-    H --> K["PCA"]
-```
-
 ### Detailed workflow
 
-```mermaid
+```{mermaid}
 flowchart TD
 
     A["Input data<br/>trim_fastqs/*.fastq.gz"] --> B["01_alignment<br/>submit_alignment.sh<br/>run_alignment.sh"]
