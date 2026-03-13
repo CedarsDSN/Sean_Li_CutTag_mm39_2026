@@ -2,6 +2,12 @@ Welcome to CUT&Tag Analysis Pipeline!
 =====================================
 
 This documentation covers the comprehensive workflow from raw fastq files to differential peak analysis for H3K27ac and H3K4me1.
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   pipeline_index
+   how_to_run_full_pipeline
 
 .. toctree::
    :maxdepth: 2
