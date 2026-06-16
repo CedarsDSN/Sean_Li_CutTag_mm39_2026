@@ -1,5 +1,8 @@
 # Sean Li CUT&Tag Analysis Workflow
 
+## Documentation
+Project documentation: https://cedarsdsn.github.io/Sean_Li_CutTag_mm39_2026/
+
 This repository contains the current maintained CUT&Tag analysis scripts for the Sean Li project under the mm39 reference framework.
 
 The code in this repository is the source of truth for the current workflow. The active implementation uses:
