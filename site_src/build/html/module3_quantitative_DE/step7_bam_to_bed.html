@@ -1,0 +1,213 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Step 7: BAM to Paired BED Conversion &mdash; Cut and Tag Pipeline 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Step 8: Marker-Specific Quantification with profile_bins" href="step8_quantification.html" />
+    <link rel="prev" title="Step 6: CTK4me1 SEACR Peak Calling and CPS Generation" href="../module2_peak_calling/step6_ctk4me1_seacr_cps.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Cut and Tag Pipeline
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_run_full_pipeline.html">Full Pipeline Run Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step2_qc.html">Step 2: FASTQ QC and Adapter Trimming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step3_alignment.html">Step 3: Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing and Filtering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak Calling</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step5_ctk27ac_macs3.html">Step 5: CTK27ac Peak Calling with MACS3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step6_ctk4me1_seacr_cps.html">Step 6: CTK4me1 SEACR Peak Calling and CPS Generation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 3: Quantification and Differential Analysis</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Step 7: BAM to Paired BED Conversion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#purpose">Purpose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#script">Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#inputs">Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#processing-logic">Processing Logic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#core-commands">Core Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#outputs">Outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#downstream-role">Downstream Role</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="step8_quantification.html">Step 8: Marker-Specific Quantification with profile_bins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="step9_edger_de.html">Step 9: Differential Enrichment Analysis with edgeR</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step10_summary_organize.html">Step 10: edgeR Output Summary and Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step11_pca_qc.html">Step 11: PCA QC from edgeR-Normalized Counts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/appendix_index.html">Appendix</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../legacy/legacy_index.html">Legacy Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cut and Tag Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Step 7: BAM to Paired BED Conversion</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/module3_quantitative_DE/step7_bam_to_bed.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="step-7-bam-to-paired-bed-conversion">
+<h1>Step 7: BAM to Paired BED Conversion<a class="headerlink" href="#step-7-bam-to-paired-bed-conversion" title="Link to this heading"></a></h1>
+<section id="purpose">
+<h2>Purpose<a class="headerlink" href="#purpose" title="Link to this heading"></a></h2>
+<p>The current quantification stage uses <code class="docutils literal notranslate"><span class="pre">profile_bins</span> <span class="pre">--paired</span></code>, which requires paired BED records rather than BAM input. This step converts the final blacklist-filtered BAM files into paired-end BED files with standardized mate names.</p>
+</section>
+<section id="script">
+<h2>Script<a class="headerlink" href="#script" title="Link to this heading"></a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>script/04_quantification/run_bam_to_bed.sh
+</pre></div>
+</div>
+</section>
+<section id="inputs">
+<h2>Inputs<a class="headerlink" href="#inputs" title="Link to this heading"></a></h2>
+<p>The script searches:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>${PROJECT_ROOT}/bam
+</pre></div>
+</div>
+<p>for:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>*.rmdup.blfilter.bam
+</pre></div>
+</div>
+<p>Controls matching <code class="docutils literal notranslate"><span class="pre">IgG</span></code>, <code class="docutils literal notranslate"><span class="pre">nAb</span></code>, or <code class="docutils literal notranslate"><span class="pre">CTnAb</span></code> are excluded.</p>
+</section>
+<section id="processing-logic">
+<h2>Processing Logic<a class="headerlink" href="#processing-logic" title="Link to this heading"></a></h2>
+<p>For each BAM selected by the SLURM array task, the script:</p>
+<ol class="arabic simple">
+<li><p>sorts the BAM by read name</p></li>
+<li><p>keeps proper pairs and removes unmapped, secondary, and supplementary alignments</p></li>
+<li><p>converts BAM to BED6 using <code class="docutils literal notranslate"><span class="pre">bedtools</span> <span class="pre">bamtobed</span></code></p></li>
+<li><p>strips <code class="docutils literal notranslate"><span class="pre">/1</span></code> and <code class="docutils literal notranslate"><span class="pre">/2</span></code> mate suffixes from read names</p></li>
+<li><p>keeps only complete read pairs with matching name and chromosome</p></li>
+<li><p>removes temporary intermediate files</p></li>
+</ol>
+</section>
+<section id="core-commands">
+<h2>Core Commands<a class="headerlink" href="#core-commands" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>samtools<span class="w"> </span>sort<span class="w"> </span>-n<span class="w"> </span>-@<span class="w"> </span><span class="m">4</span><span class="w"> </span>-o<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TMP_BAM</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CURRENT_BAM</span><span class="s2">&quot;</span>
+
+samtools<span class="w"> </span>view<span class="w"> </span>-@<span class="w"> </span><span class="m">4</span><span class="w"> </span>-bh<span class="w"> </span>-f<span class="w"> </span>0x2<span class="w"> </span>-F<span class="w"> </span>0x904<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TMP_BAM</span><span class="s2">&quot;</span><span class="w"> </span>&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$FILTERED_BAM</span><span class="s2">&quot;</span>
+
+bedtools<span class="w"> </span>bamtobed<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$FILTERED_BAM</span><span class="s2">&quot;</span><span class="w"> </span>&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$RAW_BED</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>The AWK pairing logic then standardizes read names and writes two consecutive BED lines per valid read pair. This format is suitable for:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>profile_bins<span class="w"> </span>--paired
+</pre></div>
+</div>
+</section>
+<section id="outputs">
+<h2>Outputs<a class="headerlink" href="#outputs" title="Link to this heading"></a></h2>
+<p>Paired BED files are written to:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>${PROJECT_ROOT}/bam_to_bed/&lt;SAMPLE_ID&gt;.rmdup.blfilter.bed
+</pre></div>
+</div>
+</section>
+<section id="downstream-role">
+<h2>Downstream Role<a class="headerlink" href="#downstream-role" title="Link to this heading"></a></h2>
+<p>These paired BED files are used by both marker-specific quantification branches:</p>
+<ul class="simple">
+<li><p>CTK4me1 <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> on CPS consensus bins</p></li>
+<li><p>CTK27ac <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> on MACS3 per-sample summits</p></li>
+</ul>
+<p>This conversion step should be completed before submitting either marker’s quantification jobs.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../module2_peak_calling/step6_ctk4me1_seacr_cps.html" class="btn btn-neutral float-left" title="Step 6: CTK4me1 SEACR Peak Calling and CPS Generation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="step8_quantification.html" class="btn btn-neutral float-right" title="Step 8: Marker-Specific Quantification with profile_bins" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yizhou Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

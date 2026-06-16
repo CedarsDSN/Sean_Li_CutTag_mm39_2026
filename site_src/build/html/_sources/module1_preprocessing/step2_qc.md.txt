@@ -1,28 +1,50 @@
-# Step 2: Quality Control & Adapter Trimming
+# Step 2: FASTQ QC and Adapter Trimming
 
-## Overview
-This project utilizes a **50x50 paired-end (PE50)** sequencing strategy. In CUT&Tag experiments, the Tn5 transposase occasionally generates very short DNA fragments. If a fragment is shorter than the 50bp read length, the sequencer will "read through" and sequence the artificial adapter at the other end. Therefore, strict adapter trimming is required before alignment.
+## Purpose
 
-## Tool Selection
-We use **`cutadapt`** to robustly identify and remove adapter sequences from both forward (R1) and reverse (R2) reads.
+The maintained analysis scripts assume that adapter-trimmed paired-end FASTQ files have already been generated before alignment. This step is therefore treated as an upstream preparation step for the current script repository.
 
-## Execution Command
-Here is the core command template used for trimming across all samples:
+The alignment scripts expect trimmed FASTQs under:
 
 ```bash
-# Define the adapter sequences (e.g., Nextera/Tn5 adapters)
-PRIMERS="CTGTCTCTTATACACATCT"
-
-# Run cutadapt for PE50 reads
-cutadapt \
-  --minimum-length 30 \
-  -a $PRIMERS \
-  -A $PRIMERS \
-  -o trim_fastqs/<sample_name>_trim_R1.fastq.gz \
-  -p trim_fastqs/<sample_name>_trim_R2.fastq.gz \
-  <sample_name>.R1.fastq.gz \
-  <sample_name>.R2.fastq.gz \
-  > trim_fastqs/<sample_name>_trim.log
+${PROJECT_ROOT}/trim_fastqs
 ```
-### Output
-All the resulting trimmed FASTQ files and their corresponding trimming log files are organized and saved in the **/trim_fastqs** folder for downstream processing.
+
+with this naming pattern:
+
+```text
+<SAMPLE_ID>_R1.fastq.gz
+<SAMPLE_ID>_R2.fastq.gz
+```
+
+## Recommended QC Checks
+
+Before submitting alignment jobs, confirm:
+
+- both R1 and R2 files exist for every sample
+- file names exactly match the expected `<SAMPLE_ID>_R1.fastq.gz` and `<SAMPLE_ID>_R2.fastq.gz` pattern
+- adapter trimming completed successfully
+- read lengths and quality profiles are acceptable after trimming
+- sample names match the downstream marker/group naming convention used in the metadata files
+
+## Relationship to the Current Pipeline
+
+The current repository does not contain the trimming script itself. The first maintained executable stage in this repository is alignment:
+
+```bash
+script/01_alignment/submit_alignment.sh
+```
+
+That script discovers sample IDs by listing `*_R1.fastq.gz` files in `${FASTQ_DIR}` and removing the `_R1.fastq.gz` suffix. Any mismatch in FASTQ naming will therefore propagate immediately into alignment job names and downstream BAM names.
+
+## Output Expected by Step 3
+
+The required input for Step 3 is:
+
+```text
+trim_fastqs/
+├── <SAMPLE_ID>_R1.fastq.gz
+└── <SAMPLE_ID>_R2.fastq.gz
+```
+
+These files are consumed directly by the Bowtie2 alignment scripts.

@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Step 6: SEACR Peak Calling
 
 ## Overview

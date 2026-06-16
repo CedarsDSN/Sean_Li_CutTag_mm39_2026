@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Step 11: Result Aggregation and CPS-Based File Organization
 
 ## Overview
@@ -154,4 +158,3 @@ This step converts a large collection of comparison-level MAnorm2 outputs into a
 2. CPS-based organized comparison folders
 
 Together, these outputs make the full CUT&Tag differential analysis more auditable, easier to review, and more manageable for downstream interpretation.
-

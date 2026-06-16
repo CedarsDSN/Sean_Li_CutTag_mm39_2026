@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Step 10: Genomic Annotation (ChIPseeker)
 
 ## Overview
@@ -155,4 +159,3 @@ By annotating differential intervals directly with a custom GENCODE-matched TxDb
 - cross-modal integration with RNA-seq or other omics data
 
 without requiring a separate post hoc annotation pipeline.
-

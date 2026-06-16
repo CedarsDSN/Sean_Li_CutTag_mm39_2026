@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # A2. Comparison of SEACR Thresholds: 0.01 vs 0.005 vs 0.05
 
 ## Overview

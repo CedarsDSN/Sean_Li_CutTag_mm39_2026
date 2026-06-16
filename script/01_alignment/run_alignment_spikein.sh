@@ -7,7 +7,7 @@
 #SBATCH --mem=64GB
 #SBATCH --mail-type=FAIL,END
 #SBATCH --mail-user=yizhou.wang@cshs.org
-#SBATCH -o /common/lix5lab/Li_Xue_Cut_Tag_06162022/Analysis_WYZ/mm39/log/%x_%j.log
+#SBATCH -o /common/lix5lab/Li_Xue_Cut_Tag_06162022/Analysis_WYZ/mm39/logs/%x_%j.log
 
 set -eo pipefail
 
