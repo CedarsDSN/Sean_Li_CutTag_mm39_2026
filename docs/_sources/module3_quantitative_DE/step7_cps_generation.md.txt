@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Step 7: Consensus Peak Set (CPS) Generation
 
 ## Overview

@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Step 9: Differential Enrichment Analysis (MAnorm2)
 
 ## Overview

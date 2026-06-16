@@ -1,68 +1,97 @@
 # Step 3: Alignment
 
-## Overview
-Trimmed paired-end reads are aligned to the customized GRCm39 reference genome using **Bowtie2**. To optimize computational efficiency and save disk space, the alignment output is piped directly into `samtools sort` to generate coordinate-sorted BAM files on the fly, bypassing the creation of bulky intermediate SAM files.
+## Purpose
 
-## Script & Execution
-The core alignment commands are encapsulated in a shell script named `alignment.sh`. Since this is a compute-intensive step, the jobs are submitted to the High-Performance Computing (HPC) cluster using a Slurm submission script named `1_sub_alignment_slurm.sh`.
+Trimmed paired-end CUT&Tag reads are aligned to the mm39 reference genome with Bowtie2. The alignment output is streamed directly into `samtools sort` to create coordinate-sorted BAM files without writing intermediate SAM files.
 
-Here is the core command executed for the primary genome alignment:
+## Scripts
+
+```text
+script/01_alignment/submit_alignment.sh
+script/01_alignment/run_alignment.sh
+```
+
+Optional spike-in assessment scripts:
+
+```text
+script/01_alignment/submit_alignment_spikein.sh
+script/01_alignment/run_alignment_spikein.sh
+```
+
+## Inputs
+
+The scripts read FASTQs from:
 
 ```bash
-# Define paths (configured in the wrapper script)
-# Genome_Ref="path/to/GRCm39"
-# trim_fastq_path="path/to/trim_fastqs"
-# bam_path="path/to/alignment_bams"
+${PROJECT_ROOT}/trim_fastqs
+```
 
-# 1. Align and directly sort by coordinate
+Expected file names:
+
+```text
+<SAMPLE_ID>_R1.fastq.gz
+<SAMPLE_ID>_R2.fastq.gz
+```
+
+The mm39 Bowtie2 index is configured in:
+
+```text
+script/config/project_config.sh
+```
+
+Current reference variable:
+
+```bash
+GENOME_REF="/common/lix5lab/reference/Mus_musculus/GENCODE/mm39/Bowtie2Index/GRCm39"
+```
+
+## Main Command
+
+The primary alignment command in `run_alignment.sh` is:
+
+```bash
 bowtie2 \
-  --dovetail \
-  --very-sensitive-local \
-  -p 10 \
-  --no-unal \
-  --no-mixed \
-  --no-discordant \
-  --phred33 \
-  -I 10 \
-  -X 700 \
-  -x $Genome_Ref \
-  -1 $trim_fastq_path/${SAMPLE_ID}_R1.fastq.gz \
-  -2 $trim_fastq_path/${SAMPLE_ID}_R2.fastq.gz \
-  2> $bam_path/${SAMPLE_ID}_bowtie2.log | \
-  samtools sort -@ 4 -o $bam_path/${SAMPLE_ID}.coordsorted.bam -
+    --dovetail \
+    --very-sensitive-local \
+    -p 10 \
+    --no-unal \
+    --no-mixed \
+    --no-discordant \
+    --phred33 \
+    -I 10 \
+    -X 700 \
+    -x "$GENOME_REF" \
+    -1 "$R1" \
+    -2 "$R2" \
+    2> "$LOG_OUT" | \
+samtools sort -@ 4 -o "$BAM_OUT" -
 
-# 2. Index the sorted BAM file
-samtools index $bam_path/${SAMPLE_ID}.coordsorted.bam
+samtools index "$BAM_OUT"
 ```
 
-## Key Parameter Rationale
-The alignment parameters are specifically tailored for CUT&Tag libraries:
+## Parameter Rationale
 
-* **`--dovetail`**: Tn5 transposase can generate fragments shorter than the sequencing read length. This flag allows Bowtie2 to consider these "dovetailing" pairs as valid, concordant alignments.
-* **`--very-sensitive-local`**: Uses local alignment to softly clip adapters or low-quality bases, maximizing the mapping rate.
-* **`--no-unal`, `--no-mixed`, `--no-discordant`**: Enforces strict filtering at the alignment stage, outputting only reads where *both* mates align successfully and correctly.
-* **`-I 10 -X 700`**: Defines the valid fragment length bounds (10bp to 700bp).
+- `--dovetail`: allows short CUT&Tag fragments where mates can overlap or dovetail.
+- `--very-sensitive-local`: improves alignment sensitivity while allowing soft clipping.
+- `--no-unal`, `--no-mixed`, `--no-discordant`: keeps the BAM focused on concordant paired alignments.
+- `-I 10 -X 700`: defines the accepted fragment-size range.
 
----
+## Outputs
 
-## Spike-in Alignment Assessment
-Standard CUT&Tag protocols often introduce an exogenous spike-in DNA (e.g., *E. coli*) for downstream data normalization. To evaluate this, we performed a parallel alignment against the spike-in reference genome using a batch submission loop:
+For each sample, alignment produces:
+
+```text
+${PROJECT_ROOT}/bam/<SAMPLE_ID>.coordsorted.bam
+${PROJECT_ROOT}/bam/<SAMPLE_ID>.coordsorted.bam.bai
+${PROJECT_ROOT}/bam/<SAMPLE_ID>_bowtie2.log
+```
+
+## Spike-in Branch
+
+The repository keeps a separate spike-in alignment branch for Amp/pBlueScript and E. coli assessment. These outputs are written to:
 
 ```bash
-# Loop through all trimmed fastq files and submit spike-in alignment jobs
-SAMPLES=$(ls $FASTQ_DIR/*_R1.fastq.gz | xargs -n 1 basename | sed 's/_R1.fastq.gz//')
-
-for SAMPLE in $SAMPLES
-do
-    echo "Submitting sample: $SAMPLE"
-    sbatch --job-name="aln_$SAMPLE" ./alignment_spike.sh $SAMPLE
-done
+${PROJECT_ROOT}/bam_spike
 ```
 
-### Observation & Conclusion
-Upon reviewing the alignment logs from the `alignment_spike.sh` runs, we observed that the **spike-in alignment rates were extremely low** across the samples. 
-
-We can safely assume that the exogenous spike-in was either omitted during the experimental protocol or was present at negligible levels. Consequently, we concluded that utilizing spike-in normalization factors is biologically unsupported for this specific dataset. Downstream visualization and quantification will instead rely on highly robust within-sample normalization methods (such as CPM).
-
-## Output
-The final outputs for the primary analysis are the cleanly aligned, coordinate-sorted BAM files (`.coordsorted.bam`), their indices (`.coordsorted.bam.bai`), and the alignment logs, all stored in the designated BAM output folder.
+This branch is useful for evaluating possible exogenous signal, but the current maintained differential workflow does not depend on spike-in normalization.

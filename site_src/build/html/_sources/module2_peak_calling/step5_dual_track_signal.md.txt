@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Step 5: Dual-Track Signal Generation
 
 ## Overview

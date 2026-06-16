@@ -1,7 +1,11 @@
-Welcome to CUT&Tag Analysis Pipeline!
-=====================================
+Sean Li CUT&Tag Analysis Pipeline
+=================================
 
-This documentation covers the comprehensive workflow from raw fastq files to differential peak analysis for H3K27ac and H3K4me1.
+This documentation describes the current maintained CUT&Tag workflow implemented by the scripts in this repository.
+
+The active pipeline uses Bowtie2, filtered mm39 BAM files, CTK4me1 SEACR/CPS peak processing, CTK27ac MACS3 peak processing, profile_bins quantification, edgeR differential enrichment analysis, and edgeR-based PCA QC.
+
+Historical pages from earlier MAnorm2-centered documentation are retained under Appendix or Legacy, but the module pages below reflect the current code.
 
 .. toctree::
    :maxdepth: 2
@@ -20,29 +24,34 @@ This documentation covers the comprehensive workflow from raw fastq files to dif
 
 .. toctree::
    :maxdepth: 2
-   :caption: Module 2: Peak & Signal
+   :caption: Module 2: Peak Calling
 
-   module2_peak_calling/step5_dual_track_signal
-   module2_peak_calling/step6_seacr
+   module2_peak_calling/step5_ctk27ac_macs3
+   module2_peak_calling/step6_ctk4me1_seacr_cps
 
 .. toctree::
    :maxdepth: 2
-   :caption: Module 3: DE Analysis
+   :caption: Module 3: Quantification and Differential Analysis
 
-   module3_quantitative_DE/step7_cps_generation
+   module3_quantitative_DE/step7_bam_to_bed
    module3_quantitative_DE/step8_quantification
-   module3_quantitative_DE/step9_manorm2_de
+   module3_quantitative_DE/step9_edger_de
 
 .. toctree::
    :maxdepth: 2
    :caption: Module 4: Downstream
 
-   module4_downstream/step10_annotation
-   module4_downstream/step11_summarize_organize
-   module4_downstream/step12_PCA
+   module4_downstream/step10_summary_organize
+   module4_downstream/step11_pca_qc
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Appendix
 
    appendix/appendix_index
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Legacy
+
+   legacy/legacy_index

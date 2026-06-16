@@ -1,0 +1,219 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Step 11: PCA QC from edgeR-Normalized Counts &mdash; Cut and Tag Pipeline 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Appendix" href="../appendix/appendix_index.html" />
+    <link rel="prev" title="Step 10: edgeR Output Summary and Organization" href="step10_summary_organize.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Cut and Tag Pipeline
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_run_full_pipeline.html">Full Pipeline Run Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step2_qc.html">Step 2: FASTQ QC and Adapter Trimming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step3_alignment.html">Step 3: Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing and Filtering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak Calling</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step5_ctk27ac_macs3.html">Step 5: CTK27ac Peak Calling with MACS3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step6_ctk4me1_seacr_cps.html">Step 6: CTK4me1 SEACR Peak Calling and CPS Generation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 3: Quantification and Differential Analysis</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step7_bam_to_bed.html">Step 7: BAM to Paired BED Conversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step8_quantification.html">Step 8: Marker-Specific Quantification with profile_bins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step9_edger_de.html">Step 9: Differential Enrichment Analysis with edgeR</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="step10_summary_organize.html">Step 10: edgeR Output Summary and Organization</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Step 11: PCA QC from edgeR-Normalized Counts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#purpose">Purpose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scripts">Scripts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#inputs">Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pca-workflow">PCA Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#minimum-feature-requirement">Minimum Feature Requirement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#outputs">Outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#interpretation">Interpretation</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/appendix_index.html">Appendix</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../legacy/legacy_index.html">Legacy Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cut and Tag Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Step 11: PCA QC from edgeR-Normalized Counts</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/module4_downstream/step11_pca_qc.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="step-11-pca-qc-from-edger-normalized-counts">
+<h1>Step 11: PCA QC from edgeR-Normalized Counts<a class="headerlink" href="#step-11-pca-qc-from-edger-normalized-counts" title="Link to this heading"></a></h1>
+<section id="purpose">
+<h2>Purpose<a class="headerlink" href="#purpose" title="Link to this heading"></a></h2>
+<p>PCA is used as a sample-level quality-control and exploratory analysis step. It is not a formal differential-enrichment test.</p>
+<p>The current PCA scripts use the same <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> count matrices used by edgeR, apply edgeR filtering and TMM normalization, convert counts to logCPM, and generate PCA plots for each CPS.</p>
+</section>
+<section id="scripts">
+<h2>Scripts<a class="headerlink" href="#scripts" title="Link to this heading"></a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>script/06_summary_qc/CTK4me1/run_edgeR_PCA_all_CPS_CTK4me1.R
+script/06_summary_qc/CTK27ac/run_edgeR_PCA_all_CPS_CTK27ac.R
+</pre></div>
+</div>
+</section>
+<section id="inputs">
+<h2>Inputs<a class="headerlink" href="#inputs" title="Link to this heading"></a></h2>
+<p>CTK4me1 matrices:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>${PROJECT_ROOT}/quantification/CTK4me1/CPS*_seacr_consensus_profile_bins.xls
+</pre></div>
+</div>
+<p>CTK27ac matrices:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>${PROJECT_ROOT}/quantification/CTK27ac/CPS*_macs3_per_sample_summit_profile_bins.xls
+</pre></div>
+</div>
+</section>
+<section id="pca-workflow">
+<h2>PCA Workflow<a class="headerlink" href="#pca-workflow" title="Link to this heading"></a></h2>
+<p>For each CPS matrix, the script:</p>
+<ol class="arabic simple">
+<li><p>reads the <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> output table</p></li>
+<li><p>removes chrM, chrUn, and random chromosomes</p></li>
+<li><p>detects all <code class="docutils literal notranslate"><span class="pre">.read_cnt</span></code> columns</p></li>
+<li><p>derives group labels from sample names</p></li>
+<li><p>builds an edgeR <code class="docutils literal notranslate"><span class="pre">DGEList</span></code></p></li>
+<li><p>filters rows with <code class="docutils literal notranslate"><span class="pre">filterByExpr</span></code></p></li>
+<li><p>normalizes with edgeR TMM</p></li>
+<li><p>computes logCPM with a prior count of 2</p></li>
+<li><p>selects the top 2000 most variable retained peaks</p></li>
+<li><p>runs PCA with <code class="docutils literal notranslate"><span class="pre">prcomp</span></code></p></li>
+<li><p>writes PC1-vs-PC2, PC1-vs-PC3, and PC2-vs-PC3 plots to PDF</p></li>
+</ol>
+</section>
+<section id="minimum-feature-requirement">
+<h2>Minimum Feature Requirement<a class="headerlink" href="#minimum-feature-requirement" title="Link to this heading"></a></h2>
+<p>The current scripts require at least 2000 retained peaks after <code class="docutils literal notranslate"><span class="pre">filterByExpr</span></code>.</p>
+<p>If fewer than 2000 peaks remain for a CPS, PCA for that CPS is skipped with a warning.</p>
+</section>
+<section id="outputs">
+<h2>Outputs<a class="headerlink" href="#outputs" title="Link to this heading"></a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>${PROJECT_ROOT}/PCA_edgeR/CTK4me1/&lt;CPS&gt;_edgeR_PCA.pdf
+${PROJECT_ROOT}/PCA_edgeR/CTK27ac/&lt;CPS&gt;_edgeR_PCA.pdf
+</pre></div>
+</div>
+<p>Each PDF contains:</p>
+<ul class="simple">
+<li><p>PC1 vs PC2</p></li>
+<li><p>PC1 vs PC3</p></li>
+<li><p>PC2 vs PC3</p></li>
+</ul>
+</section>
+<section id="interpretation">
+<h2>Interpretation<a class="headerlink" href="#interpretation" title="Link to this heading"></a></h2>
+<p>Use these plots to inspect:</p>
+<ul class="simple">
+<li><p>replicate consistency</p></li>
+<li><p>group-level clustering</p></li>
+<li><p>broad tissue, sex, genotype, or treatment structure</p></li>
+<li><p>possible outliers</p></li>
+<li><p>CPS-specific differences in global signal structure</p></li>
+</ul>
+<p>PCA should be interpreted alongside alignment QC, BAM processing metrics, edgeR filter statistics, and the biological design encoded in the metadata.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="step10_summary_organize.html" class="btn btn-neutral float-left" title="Step 10: edgeR Output Summary and Organization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../appendix/appendix_index.html" class="btn btn-neutral float-right" title="Appendix" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yizhou Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

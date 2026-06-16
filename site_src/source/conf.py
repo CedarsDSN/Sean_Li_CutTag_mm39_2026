@@ -15,9 +15,14 @@ release = '1.0'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-'myst_parser',
-"sphinxcontrib.mermaid",
+    'myst_parser',
 ]
+
+try:
+    import sphinxcontrib.mermaid  # noqa: F401
+    extensions.append("sphinxcontrib.mermaid")
+except ImportError:
+    pass
 
 templates_path = ['_templates']
 exclude_patterns = []

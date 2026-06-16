@@ -1,0 +1,186 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Legacy Documentation &mdash; Cut and Tag Pipeline 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Full Pipeline Run Guide" href="../how_to_run_full_pipeline_old.html" />
+    <link rel="prev" title="C3. Pre-Flight Validation Before CPS Generation" href="../appendix/c3_preflight_validation_before_cps_generation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Cut and Tag Pipeline
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_run_full_pipeline.html">Full Pipeline Run Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step2_qc.html">Step 2: FASTQ QC and Adapter Trimming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step3_alignment.html">Step 3: Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing and Filtering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak Calling</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step5_ctk27ac_macs3.html">Step 5: CTK27ac Peak Calling with MACS3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module2_peak_calling/step6_ctk4me1_seacr_cps.html">Step 6: CTK4me1 SEACR Peak Calling and CPS Generation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 3: Quantification and Differential Analysis</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step7_bam_to_bed.html">Step 7: BAM to Paired BED Conversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step8_quantification.html">Step 8: Marker-Specific Quantification with profile_bins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module3_quantitative_DE/step9_edger_de.html">Step 9: Differential Enrichment Analysis with edgeR</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step10_summary_organize.html">Step 10: edgeR Output Summary and Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../module4_downstream/step11_pca_qc.html">Step 11: PCA QC from edgeR-Normalized Counts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/appendix_index.html">Appendix</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Legacy Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_run_full_pipeline_old.html">Full Pipeline Run Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#stage-1-alignment">Stage 1. Alignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#stage-2-bam-processing">Stage 2. BAM processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#stage-3-signal-generation">Stage 3. Signal generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#stage-4-seacr-peak-calling-and-cps-generation">Stage 4. SEACR peak calling and CPS generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#stage-5-master-count-matrix-quantification">Stage 5. Master count matrix quantification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#stage-6-manorm2-differential-enrichment-analysis">Stage 6. MAnorm2 differential enrichment analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#stage-7-summary-aggregation-and-pca">Stage 7. Summary aggregation and PCA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#recommended-full-execution-order">Recommended full execution order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#validation-strategy">Validation strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#related-files">Related files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#notes">Notes</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cut and Tag Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Legacy Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/legacy/legacy_index.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="legacy-documentation">
+<h1>Legacy Documentation<a class="headerlink" href="#legacy-documentation" title="Link to this heading"></a></h1>
+<p>This section is reserved for material from earlier versions of the project workflow.</p>
+<p>The current maintained documentation is the main module sequence:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Module 1: Preprocessing
+Module 2: Peak Calling
+Module 3: Quantification and Differential Analysis
+Module 4: Downstream
+</pre></div>
+</div>
+<p>Older notes may mention:</p>
+<ul class="simple">
+<li><p>MAnorm2 differential analysis</p></li>
+<li><p>master count matrices as the primary differential-analysis substrate</p></li>
+<li><p>BigWig generation as a maintained stage</p></li>
+<li><p>old directory numbering such as <code class="docutils literal notranslate"><span class="pre">03_signal_generation</span></code> and <code class="docutils literal notranslate"><span class="pre">07_summary_qc</span></code></p></li>
+</ul>
+<p>Those descriptions are historical and should not be used as the current run guide unless the corresponding scripts are restored or explicitly selected for a legacy analysis branch.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_run_full_pipeline_old.html">Full Pipeline Run Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#stage-1-alignment">Stage 1. Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#stage-2-bam-processing">Stage 2. BAM processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#stage-3-signal-generation">Stage 3. Signal generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#stage-4-seacr-peak-calling-and-cps-generation">Stage 4. SEACR peak calling and CPS generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#stage-5-master-count-matrix-quantification">Stage 5. Master count matrix quantification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#stage-6-manorm2-differential-enrichment-analysis">Stage 6. MAnorm2 differential enrichment analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#stage-7-summary-aggregation-and-pca">Stage 7. Summary aggregation and PCA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#recommended-full-execution-order">Recommended full execution order</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#validation-strategy">Validation strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#related-files">Related files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_run_full_pipeline_old.html#notes">Notes</a></li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../appendix/c3_preflight_validation_before_cps_generation.html" class="btn btn-neutral float-left" title="C3. Pre-Flight Validation Before CPS Generation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../how_to_run_full_pipeline_old.html" class="btn btn-neutral float-right" title="Full Pipeline Run Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yizhou Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

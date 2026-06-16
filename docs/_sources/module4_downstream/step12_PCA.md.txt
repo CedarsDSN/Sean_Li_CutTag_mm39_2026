@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Step 12: CPS-Level PCA Quality Assessment
 
 ## Overview
@@ -199,4 +203,3 @@ This PCA workflow provides a CPS-level exploratory quality-control view of the C
 - multi-panel PCA visualization
 
 It is therefore complementary to, but distinct from, the formal differential enrichment analysis performed in Step 9.
-

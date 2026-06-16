@@ -1,4 +1,22 @@
-# Appendix: Methodological Discussions and Design Decisions
+# Appendix
+
+The main documentation pages describe the current maintained workflow:
+
+```text
+Bowtie2 -> filtered BAM -> CTK4me1 SEACR/CPS or CTK27ac MACS3 -> profile_bins -> edgeR -> summary/PCA
+```
+
+Some appendix pages were written for earlier design discussions, including spike-in evaluation, signal-generation decisions, master-matrix reasoning, and the previous MAnorm2 branch. They are retained as historical methodological notes, but they should not be treated as the active run guide unless they explicitly match the current scripts.
+
+For the current-code update summary, start here:
+
+```{toctree}
+:maxdepth: 1
+
+update_notes_2026
+```
+
+Historical design notes:
 
 ```{toctree}
 :maxdepth: 1
@@ -18,3 +36,4 @@ b6_profile_bins_pairing_diagnostics
 c1_why_custom_gencode_annotation
 c2_why_restricted_gene_type_annotation
 c3_preflight_validation_before_cps_generation
+```

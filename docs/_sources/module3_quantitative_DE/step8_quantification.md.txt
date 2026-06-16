@@ -1,213 +1,136 @@
-# Step 8: Master Counts Matrix Generation
+# Step 8: Marker-Specific Quantification with profile_bins
 
-## Overview
+## Purpose
 
-To perform quantitative comparisons across multiple conditions, we must translate processed paired-end alignments into a structured numerical format. For each CPS, the goal of this step is to generate a **Master Counts Matrix** in which each row represents one genomic interval from the marker-specific Consensus Peak Set (CPS), each column represents one biological sample, and each cell records the corresponding fragment-level signal.
+This step converts processed CUT&Tag fragments and marker-specific peak definitions into tabular count matrices for downstream edgeR analysis.
 
+The current workflow uses `profile_bins` in two marker-specific ways:
 
+- CTK4me1: quantify over SEACR-derived CPS consensus bins
+- CTK27ac: quantify around MACS3 per-sample summits
 
-A separate master counts matrix is generated for each CPS. Together, these matrices provide the quantitative foundation for downstream normalization and differential enrichment analysis.
+The output matrices contain genomic coordinates, read counts, and occupancy information for the samples included in each CPS.
 
-We use the `profile_bins` module from the **MAnorm2** suite to construct these matrices.
+## Active Metadata
 
----
+Most current scripts read:
 
-## Prerequisite: Paired-End BED Conversion and Read-Name Standardization
-
-Because CUT&Tag signal is most appropriately represented at the fragment level rather than the individual read-end level, quantification should be performed using paired-end fragment coordinates whenever possible.
-
-Accordingly, `profile_bins` is run in `--paired` mode. This mode does not accept BAM files directly in the same way as many standard counting tools; instead, it requires paired BED input with perfectly matched mate names.
-
-A practical complication arises because `bedtools bamtobed` appends `/1` and `/2` suffixes to read names, whereas MAnorm2 `profile_bins --paired` expects the two mates of a fragment to have identical read names. Therefore, before matrix generation, aligned BAM files must be converted into paired BED files with standardized mate names.
-
-In this workflow, this conversion is handled using a Slurm array script.
-
-### Example Command Sequence
-
-```bash
-# Define paths
-BAM_DIR="path/to/bam"
-OUT_DIR="path/to/bam_to_bed"
-mkdir -p "$OUT_DIR"
-
-# 1. Collect BAM files, explicitly excluding IgG / nAb controls
-BAM_LIST=($(find "$BAM_DIR" -maxdepth 1 -name "*rmdup.bam" | grep -viE "IgG|nAb" | sort))
-
-CURRENT_BAM="${BAM_LIST[$((SLURM_ARRAY_TASK_ID-1))]}"
-BASE_NAME=$(basename "$CURRENT_BAM" .bam)
-
-TMP_BAM="${OUT_DIR}/${BASE_NAME}.tmp.name.bam"
-FILTERED_BAM="${OUT_DIR}/${BASE_NAME}.tmp.filtered.bam"
-OUT_BED="${OUT_DIR}/${BASE_NAME}.bed"
-
-# 2. Sort BAM by read name (required for pairing logic)
-samtools sort -n -@ 4 -o "$TMP_BAM" "$CURRENT_BAM"
-
-# 3. Retain only high-confidence proper pairs
-# -f 0x2   : keep properly paired alignments
-# -F 0x904 : remove unmapped (0x4), secondary (0x100), supplementary (0x800)
-samtools view -@ 4 -bh -f 0x2 -F 0x904 "$TMP_BAM" > "$FILTERED_BAM"
-
-# 4. Convert to BED
-bedtools bamtobed -i "$FILTERED_BAM" > "$OUT_BED.raw"
-
-# 5. Strip /1 and /2 suffixes and enforce exact mate-name pairing
-awk 'BEGIN{OFS="\t"}
-{
-    curr_name = $4
-    sub("/[12]$", "", curr_name)
-    curr_chr = $1
-    
-    if (curr_name == prev_name && curr_chr == prev_chr) {
-        $4 = curr_name
-        split(prev_line, p_arr, "\t")
-        p_arr[4] = curr_name
-        print p_arr[1], p_arr[2], p_arr[3], p_arr[4], p_arr[5], p_arr[6]
-        print $0
-        prev_name = ""
-    } else {
-        prev_line = $0
-        prev_name = curr_name
-        prev_chr = curr_chr
-    }
-}' "$OUT_BED.raw" > "$OUT_BED"
-
-# 6. Clean up intermediate files
-rm -f "$TMP_BAM" "$FILTERED_BAM" "$OUT_BED.raw"
+```text
+script/metadata_form/Metadata_Comparison.csv
 ```
 
-### Rationale
+The metadata columns are:
 
-* **Name-sorted BAM**: The pairing logic depends on mates being encountered consecutively. Therefore, BAM files must first be sorted by read name.
-* **Proper-pair filtering (`-f 0x2 -F 0x904`)**: Only high-confidence paired alignments are retained. This removes unmapped, secondary, and supplementary alignments that would otherwise distort fragment quantification.
-* **Read-name suffix stripping**: `bedtools bamtobed` appends `/1` and `/2` to mate names. These suffixes must be removed because `profile_bins --paired` requires identical mate names for the two reads belonging to the same fragment.
-* **Exact mate pairing**: The AWK step standardizes mate names and ensures that only properly paired records with matching names and chromosomes are passed forward into the final BED file.
-* **Control exclusion**: Negative control libraries (IgG/nAb) are excluded from BED generation because the master matrix is intended to quantify target-specific fragment enrichment across CPS intervals.
-
----
-
-## Metadata-Driven Matrix Generation
-
-Manually constructing `profile_bins` commands for dozens of samples would be highly error-prone. Therefore, we reuse the same metadata-driven logic established in Step 7.
-
-A single metadata file, `Metadata_Comparison.csv`, defines:
-1. The CPS identifier
-2. The biological groups participating in that CPS
-3. The associated histone marker
-
-Using this file, the script dynamically associates the correct CPS BED file (Step 7), paired BED files (generated above), and original sample-specific SEACR peak files (Step 6). This ensures that quantification is reproducible, scalable, and fully synchronized with the comparison design.
-
-### Example Command Sequence
-
-```bash
-# Define paths
-OUT_DIR="path/to/count_matrices"
-CSV_FILE="path/to/Metadata_Comparison.csv"
-PEAK_DIR="path/to/consensus_peaks"      # Output from Step 7
-BED_DIR="path/to/bam_to_bed"            # Paired BED files generated above
-RAW_PEAK_DIR="path/to/seacr_peaks"      # Output from Step 6
-
-mkdir -p "$OUT_DIR"
-
-declare -A cps_samples
-declare -A cps_marker
-
-# 1. Aggregate all samples based on metadata
-while IFS=, read -r CPS comp group1 group2 marker; do
-    CPS=$(echo "$CPS" | xargs)
-    marker=$(echo "$marker" | xargs)
-    
-    G1_SAMPLES=$(echo "$group1" | tr ';' ' ' | xargs)
-    G2_SAMPLES=$(echo "$group2" | tr ';' ' ' | xargs)
-
-    cps_samples["$CPS"]="${cps_samples["$CPS"]} $G1_SAMPLES $G2_SAMPLES"
-    cps_marker["$CPS"]="$marker"
-done < <(tail -n +2 "$CSV_FILE")
-
-# 2. Iterate through each unique CPS
-for CPS in "${!cps_samples[@]}"; do
-    marker="${cps_marker[$CPS]}"
-    CONSENSUS_PEAK="${PEAK_DIR}/${CPS}_consensus.bed"
-    
-    all_reads=()
-    all_labs=()
-    all_peaks=()
-
-    UNIQUE_SAMPLES=$(echo "${cps_samples[$CPS]}" | tr ' ' '\n' | grep -v '^$' | sort -u)
-
-    for sname in $UNIQUE_SAMPLES; do
-        READ_FILES=$(ls ${BED_DIR}/${sname}*${marker}*.bed 2>/dev/null | grep -viE "IgG|nAb")
-
-        for f in $READ_FILES; do
-            lab_name=$(basename "$f" | sed 's/\.rmdup\.bed//')
-            raw_p="${RAW_PEAK_DIR}/${lab_name}.rmdup.01.stringent.bed"
-
-            if [ -f "$raw_p" ]; then
-                all_reads+=("$f")
-                all_peaks+=("$raw_p")
-
-                # Replace hyphens with underscores for downstream R compatibility
-                lab_name_clean=$(echo "$lab_name" | sed 's/-/_/g')
-                all_labs+=("$lab_name_clean")
-            else
-                echo "### [ERROR] Raw peak not found for $lab_name: $raw_p" >&2
-            fi
-        done
-    done
-
-    if [ ${#all_reads[@]} -eq 0 ]; then
-        echo "### [SKIP] No valid files found for CPS: $CPS" >&2
-        continue
-    fi
-
-    READ_ARG=$(IFS=,; echo "${all_reads[*]}")
-    LAB_ARG=$(IFS=,; echo "${all_labs[*]}")
-    PEAK_ARG=$(IFS=,; echo "${all_peaks[*]}")
-
-    # 3. Execute MAnorm2 profile_bins
-    profile_bins \
-        --bins="$CONSENSUS_PEAK" \
-        --paired \
-        --peaks="$PEAK_ARG" \
-        --reads="$READ_ARG" \
-        --labs="$LAB_ARG" \
-        -n "${OUT_DIR}/${CPS}_master_counts"
-done
+```text
+Concensus_peak,comp,group1,group2,histone_marker
 ```
 
----
+The scripts use this file to determine:
 
-## Key Parameter Rationale
+- which CPS IDs should be processed
+- which marker branch each CPS belongs to
+- which groups and replicate sample names should be included
+- which comparison rows will later be tested by edgeR
 
-### `--bins=$CONSENSUS_PEAK`
-This argument defines the genomic feature space for quantification. Each row of the resulting master matrix corresponds exactly to one interval in the CPS BED file generated in Step 7. Because quantification is performed separately for each CPS, each output matrix is tied to one marker-specific consensus peak set.
+## CTK4me1 Quantification
 
-### `--paired`
-This flag is crucial for CUT&Tag fragment counting. Rather than counting single read ends, `profile_bins` treats identically named paired reads as one contiguous DNA fragment. This allows quantification to reflect the full fragment footprint rather than isolated read endpoints.
+Scripts:
 
-### `--peaks=$PEAK_ARG`
-By supplying the original sample-specific SEACR peak files alongside the paired BED files, `profile_bins` appends an occupancy annotation for each sample and each CPS interval.
+```text
+script/04_quantification/CTK4me1/submit_profile_bins_all_CPS_CTK4me1.sh
+script/04_quantification/CTK4me1/run_profile_bins_one_CPS_CTK4me1.sh
+```
 
-This occupancy value is binary (`1` or `0`) and indicates whether the CPS interval overlaps the original sample-specific peak set for that sample. **Importantly, this is not a re-called peak status on the CPS intervals themselves; rather, it records overlap with the original Step 6 peak calls.** This occupancy information is later used as one component of downstream feature filtering, together with count-based and variability-based criteria.
+For each CTK4me1 CPS, the script builds a manifest containing:
 
-### Label sanitization (`sed 's/-/_/g'`)
-Sample names often contain hyphens. When imported into R, hyphens in column names can be interpreted as subtraction operators and may break downstream parsing or formula-based analysis. Therefore, sample labels are sanitized by replacing hyphens with underscores before matrix generation. The original raw filenames remain traceable through the metadata structure and upstream file naming.
+- sample name
+- sanitized label
+- sample-level SEACR peak file
+- paired BED read file
 
----
+Inputs:
 
-## Output
+```text
+${PROJECT_ROOT}/consensus_peaks/CTK4me1/<CPS>_consensus.bed
+${PROJECT_ROOT}/seacr_peak_calling/CTK4me1/<sample>.0.01.stringent.bed
+${PROJECT_ROOT}/bam_to_bed/<sample>.rmdup.blfilter.bed
+script/reference/mm39.excluderanges.bed
+```
 
-For each CPS group, this workflow produces one master tab-separated text file: `*_master_counts_profile_bins.xls`
+The active `profile_bins` call is:
 
-Each file contains:
-1. The genomic coordinates of each CPS interval.
-2. The fragment-level counts for every biological sample.
-3. The binary occupancy status (`0` or `1`) for every sample.
+```bash
+profile_bins \
+  --bins="${BINS_FILE}" \
+  --peaks="${PEAKS}" \
+  --reads="${READS}" \
+  --labs="${LABS}" \
+  --paired \
+  --filter="${BLACKLIST_BED}" \
+  -n "${OUT_DIR}/${CPS}_seacr_consensus"
+```
 
-These CPS-specific master matrices serve as the definitive formatted input for statistical normalization and differential enrichment analysis in **Step 9**.
+Output:
 
-### Key Take-Home Message
+```text
+${PROJECT_ROOT}/quantification/CTK4me1/<CPS>_seacr_consensus_profile_bins.xls
+```
 
-This step converts metadata-defined CPS regions and processed paired-end CUT&Tag fragments into structured quantitative matrices suitable for downstream analysis. 
+## CTK27ac Quantification
 
-The resulting master matrix is not just a count table: it also preserves sample-specific occupancy information from the original SEACR peak calls, making it possible to combine fragment abundance and peak-support evidence in subsequent filtering and differential analysis.
+Scripts:
+
+```text
+script/04_quantification/CTK27ac/submit_profile_bins_all_CPS_CTK27ac.sh
+script/04_quantification/CTK27ac/run_profile_bins_one_CPS_CTK27ac.sh
+```
+
+For each CTK27ac CPS, the script builds a manifest containing:
+
+- sample name
+- sanitized label
+- MACS3 narrowPeak file
+- MACS3 summit file
+- paired BED read file
+
+Inputs:
+
+```text
+${PROJECT_ROOT}/macs3_peak_calls/CTK27ac/<sample>/<sample>_peaks.narrowPeak
+${PROJECT_ROOT}/macs3_peak_calls/CTK27ac/<sample>/<sample>_summits.bed
+${PROJECT_ROOT}/bam_to_bed/<sample>.rmdup.blfilter.bed
+script/reference/mm39.excluderanges.bed
+```
+
+The active `profile_bins` call is:
+
+```bash
+profile_bins \
+  --peaks="${PEAKS}" \
+  --summits="${SUMMITS}" \
+  --reads="${READS}" \
+  --labs="${LABS}" \
+  --paired \
+  --typical-bin-size 2000 \
+  --filter="${BLACKLIST_BED}" \
+  -n "${OUT_DIR}/${CPS}_macs3_per_sample_summit"
+```
+
+Output:
+
+```text
+${PROJECT_ROOT}/quantification/CTK27ac/<CPS>_macs3_per_sample_summit_profile_bins.xls
+```
+
+## Important Current-Code Note
+
+At the time of this documentation update, the checked-in `Metadata_Comparison.csv` contains CTK4me1 rows. CTK27ac scripts also read `Metadata_Comparison.csv` in the current code. Therefore, before running CTK27ac quantification, confirm that CTK27ac rows are present in the active metadata file, or update the CTK27ac scripts to read `Metadata_CTK27ac_Comparison.csv`.
+
+## Downstream Role
+
+The quantification matrices are the direct inputs to edgeR differential analysis:
+
+```text
+script/05_differential_analysis/CTK4me1/run_edgeR_one_comparison_CTK4me1.R
+script/05_differential_analysis/CTK27ac/run_edgeR_one_comparison_CTK27ac.R
+```

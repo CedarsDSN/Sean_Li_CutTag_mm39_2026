@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Step 1: Reference Genome &amp; Annotation Build Up" href="module1_preprocessing/step1_reference.html" />
-    <link rel="prev" title="Welcome to CUT&amp;Tag Analysis Pipeline!" href="index.html" /> 
+    <link rel="prev" title="Sean Li CUT&amp;Tag Analysis Pipeline" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,143 +46,41 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Full Pipeline Run Guide</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#directory-structure">Directory structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#before-starting">Before starting</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#key-configuration-file">Key configuration file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#primary-metadata-file">Primary metadata file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#important-notes">Important notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#recommended-execution-order">Recommended execution order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#notes-before-running">Notes before running</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#stage-1-alignment">Stage 1. Alignment</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#purpose">Purpose</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#scripts-used">Scripts used</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#main-genome-alignment">Main genome alignment</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#spike-in-alignment">Spike-in alignment</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#recommended-execution">Recommended execution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#main-outputs">Main outputs</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#genome-alignment">Genome alignment</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id1">Spike-in alignment</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#check-before-moving-on">Check before moving on</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#stage-2-bam-processing">Stage 2. BAM processing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id2">Purpose</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id3">Scripts used</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id4">Recommended execution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id5">Main outputs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id6">Check before moving on</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#stage-3-signal-generation">Stage 3. Signal generation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id7">Purpose</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id8">Scripts used</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id9">Recommended execution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id10">Main outputs</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#visualization">Visualization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#seacr-input">SEACR input</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#quantification-input">Quantification input</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#id11">Check before moving on</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#stage-4-seacr-peak-calling-and-cps-generation">Stage 4. SEACR peak calling and CPS generation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id12">Purpose</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id13">Scripts used</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#peak-calling">Peak calling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#validation">Validation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#cps-generation">CPS generation</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#id14">Recommended execution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id15">Main outputs</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#sample-level-seacr-peaks">Sample-level SEACR peaks</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#cps-outputs">CPS outputs</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#id16">Check before moving on</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#stage-5-master-count-matrix-quantification">Stage 5. Master count matrix quantification</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id17">Purpose</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id18">Scripts used</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id19">Recommended execution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id20">Main outputs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id21">Check before moving on</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#stage-6-manorm2-differential-enrichment-analysis">Stage 6. MAnorm2 differential enrichment analysis</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id22">Purpose</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id23">Scripts used</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id24">Recommended execution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id25">Main outputs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id26">Check before moving on</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#stage-7-summary-aggregation-and-pca">Stage 7. Summary aggregation and PCA</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id27">Purpose</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id28">Scripts used</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id29">Recommended execution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id30">Main outputs</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#aggregated-tables">Aggregated tables</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#organized-comparison-level-outputs">Organized comparison-level outputs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pca-outputs">PCA outputs</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#recommended-full-execution-order">Recommended full execution order</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#step-1">Step 1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-2">Step 2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-3">Step 3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-4">Step 4</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-5">Step 5</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-6">Step 6</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-7">Step 7</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#validation-strategy">Validation strategy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#related-files">Related files</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#metadata">Metadata</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#reference-files">Reference files</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#notes">Notes</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Module 1: Preprocessing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="module1_preprocessing/step1_reference.html">Step 1: Reference Genome &amp; Annotation Build Up</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module1_preprocessing/step2_qc.html">Step 2: Quality Control &amp; Adapter Trimming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module1_preprocessing/step2_qc.html">Step 2: FASTQ QC and Adapter Trimming</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module1_preprocessing/step3_alignment.html">Step 3: Alignment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing &amp; Quality Filtering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module1_preprocessing/step4_bam_process.html">Step 4: BAM Processing and Filtering</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Module 2: Peak &amp; Signal</span></p>
+<p class="caption" role="heading"><span class="caption-text">Module 2: Peak Calling</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="module2_peak_calling/step5_dual_track_signal.html">Step 5: Dual-Track Signal Generation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module2_peak_calling/step6_seacr.html">Step 6: SEACR Peak Calling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module2_peak_calling/step5_ctk27ac_macs3.html">Step 5: CTK27ac Peak Calling with MACS3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module2_peak_calling/step6_ctk4me1_seacr_cps.html">Step 6: CTK4me1 SEACR Peak Calling and CPS Generation</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Module 3: DE Analysis</span></p>
+<p class="caption" role="heading"><span class="caption-text">Module 3: Quantification and Differential Analysis</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="module3_quantitative_DE/step7_cps_generation.html">Step 7: Consensus Peak Set (CPS) Generation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module3_quantitative_DE/step8_quantification.html">Step 8: Master Counts Matrix Generation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module3_quantitative_DE/step9_manorm2_de.html">Step 9: Differential Enrichment Analysis (MAnorm2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module3_quantitative_DE/step7_bam_to_bed.html">Step 7: BAM to Paired BED Conversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module3_quantitative_DE/step8_quantification.html">Step 8: Marker-Specific Quantification with profile_bins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module3_quantitative_DE/step9_edger_de.html">Step 9: Differential Enrichment Analysis with edgeR</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Module 4: Downstream</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="module4_downstream/step10_annotation.html">Step 10: Genomic Annotation (ChIPseeker)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module4_downstream/step11_summarize_organize.html">Step 11: Result Aggregation and CPS-Based File Organization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module4_downstream/step12_PCA.html">Step 12: CPS-Level PCA Quality Assessment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module4_downstream/step10_summary_organize.html">Step 10: edgeR Output Summary and Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module4_downstream/step11_pca_qc.html">Step 11: PCA QC from edgeR-Normalized Counts</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="appendix/appendix_index.html">Appendix: Methodological Discussions and Design Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix/appendix_index.html">Appendix</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="legacy/legacy_index.html">Legacy Documentation</a></li>
 </ul>
 
         </div>
@@ -211,539 +109,110 @@
              
   <section id="full-pipeline-run-guide">
 <h1>Full Pipeline Run Guide<a class="headerlink" href="#full-pipeline-run-guide" title="Link to this heading"></a></h1>
-<p>This page describes how to run the maintained CUT&amp;Tag analysis pipeline from start to finish using the current production scripts under <code class="docutils literal notranslate"><span class="pre">script/</span></code>.</p>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
-<p>The maintained workflow consists of the following major stages:</p>
+<p>This page describes the current maintained CUT&amp;Tag analysis workflow for the Sean Li mm39 project.
+The scripts under <code class="docutils literal notranslate"><span class="pre">script/</span></code> are the source of truth for the active pipeline.</p>
+<p>The current workflow is:</p>
+<ul class="simple">
+<li><p>alignment to mm39 with Bowtie2</p></li>
+<li><p>BAM filtering, duplicate removal, and mm39 blacklist filtering</p></li>
+<li><p>CTK4me1 peak calling with SEACR followed by CPS consensus peak generation</p></li>
+<li><p>CTK27ac peak calling with MACS3 in BAMPE mode</p></li>
+<li><p>paired BED conversion for <code class="docutils literal notranslate"><span class="pre">profile_bins</span> <span class="pre">--paired</span></code></p></li>
+<li><p>marker-specific <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> quantification</p></li>
+<li><p>edgeR differential enrichment analysis</p></li>
+<li><p>edgeR-based summary organization and PCA QC</p></li>
+</ul>
+<p>The active implementation does not use the previous MAnorm2 differential-analysis branch as the maintained analysis path.</p>
+</section>
+<section id="recommended-execution-order">
+<h2>Recommended execution order<a class="headerlink" href="#recommended-execution-order" title="Link to this heading"></a></h2>
 <ol class="arabic simple">
-<li><p>alignment</p></li>
-<li><p>BAM processing</p></li>
-<li><p>signal generation</p></li>
-<li><p>SEACR peak calling and CPS generation</p></li>
-<li><p>master count matrix quantification</p></li>
-<li><p>MAnorm2 differential enrichment analysis</p></li>
-<li><p>summary aggregation and PCA</p></li>
+<li><p>Alignment</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">script/01_alignment/submit_alignment.sh</span></code></p></li>
+</ul>
+</li>
+<li><p>BAM processing</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">script/02_bam_processing/submit_process_bam.sh</span></code></p></li>
+</ul>
+</li>
+<li><p>CTK27ac peak calling by MACS3</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">script/03_peak_calling/CTK27ac/submit_macs3_callpeak_CTK27ac.sh</span></code></p></li>
+</ul>
+</li>
+<li><p>CTK4me1 peak calling by SEACR</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">script/03_peak_calling/CTK4me1/submit_seacr_callpeak_CTK4me1.sh</span></code></p></li>
+</ul>
+</li>
+<li><p>CTK4me1 consensus peak generation</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">script/03_peak_calling/CTK4me1/run_cps_generation.sh</span></code></p></li>
+</ul>
+</li>
+<li><p>BAM to paired-end BED conversion</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">script/04_quantification/run_bam_to_bed.sh</span></code></p></li>
+</ul>
+</li>
+<li><p>CTK27ac quantification</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">script/04_quantification/CTK27ac/submit_profile_bins_all_CPS_CTK27ac.sh</span></code></p></li>
+</ul>
+</li>
+<li><p>CTK4me1 quantification</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">script/04_quantification/CTK4me1/submit_profile_bins_all_CPS_CTK4me1.sh</span></code></p></li>
+</ul>
+</li>
+<li><p>CTK27ac differential analysis by edgeR</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">script/05_differential_analysis/CTK27ac/submit_edgeR_all_comparisons_CTK27ac.sh</span></code></p></li>
+</ul>
+</li>
+<li><p>CTK4me1 differential analysis by edgeR</p></li>
 </ol>
-<p>The pipeline is currently executed stage by stage rather than through a single workflow engine.</p>
-</section>
-<hr class="docutils" />
-<section id="directory-structure">
-<h2>Directory structure<a class="headerlink" href="#directory-structure" title="Link to this heading"></a></h2>
-<p>The maintained pipeline scripts are organized as:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>script/
-├── 01_alignment/
-├── 02_bam_processing/
-├── 03_signal_generation/
-├── 04_peak_calling/
-├── 05_quantification/
-├── 06_differential_analysis/
-├── 07_summary_qc/
-├── 08_preflight_checks/
-├── config/
-├── metadata_form/
-├── methods_comparison/
-├── legacy/
-└── reference/
-</pre></div>
-</div>
-<p>The central configuration file is:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>script/config/project_config.sh
-</pre></div>
-</div>
-<p>This file defines the project root, major data directories, metadata paths, reference paths, and common parameters.</p>
-</section>
-<hr class="docutils" />
-<section id="before-starting">
-<h2>Before starting<a class="headerlink" href="#before-starting" title="Link to this heading"></a></h2>
-<p>Make sure the following are ready before running the pipeline:</p>
 <ul class="simple">
-<li><p>trimmed FASTQ files are present in the expected input directory</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">project_config.sh</span></code> has the correct project paths</p></li>
-<li><p>the metadata file is correct</p></li>
-<li><p>the required conda environment and tools are available</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">script/05_differential_analysis/CTK4me1/submit_edgeR_all_comparisons_CTK4me1.sh</span></code></p></li>
 </ul>
-<section id="key-configuration-file">
-<h3>Key configuration file<a class="headerlink" href="#key-configuration-file" title="Link to this heading"></a></h3>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>script/config/project_config.sh
-</pre></div>
-</div>
-</section>
-<section id="primary-metadata-file">
-<h3>Primary metadata file<a class="headerlink" href="#primary-metadata-file" title="Link to this heading"></a></h3>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>script/metadata_form/Metadata_Comparison.csv
-</pre></div>
-</div>
-</section>
-<section id="important-notes">
-<h3>Important notes<a class="headerlink" href="#important-notes" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">submit_*</span></code> scripts are used to submit a batch of jobs for a stage</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">submit_*_all.sh</span></code> scripts are convenience entry points for submitting all jobs in a stage</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">run_*</span></code> scripts are the actual worker scripts</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">preflight_check_cps_peak_inputs.sh</span></code> is a validation step and should be run before CPS generation / quantification</p></li>
-</ul>
-</section>
-</section>
-</section>
-<hr class="docutils" />
-<section id="stage-1-alignment">
-<h1>Stage 1. Alignment<a class="headerlink" href="#stage-1-alignment" title="Link to this heading"></a></h1>
-<section id="purpose">
-<h2>Purpose<a class="headerlink" href="#purpose" title="Link to this heading"></a></h2>
-<p>Align trimmed paired-end FASTQ files to the mm39 genome and generate sorted BAM files.<br />
-A separate spike-in alignment stage is also available.</p>
-</section>
-<section id="scripts-used">
-<h2>Scripts used<a class="headerlink" href="#scripts-used" title="Link to this heading"></a></h2>
-<section id="main-genome-alignment">
-<h3>Main genome alignment<a class="headerlink" href="#main-genome-alignment" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">01_alignment/submit_alignment.sh</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">01_alignment/run_alignment.sh</span></code></p></li>
-</ul>
-</section>
-<section id="spike-in-alignment">
-<h3>Spike-in alignment<a class="headerlink" href="#spike-in-alignment" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">01_alignment/submit_alignment_spikein.sh</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">01_alignment/run_alignment_spikein.sh</span></code></p></li>
-</ul>
-</section>
-</section>
-<section id="recommended-execution">
-<h2>Recommended execution<a class="headerlink" href="#recommended-execution" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>script/01_alignment/submit_alignment.sh
-bash<span class="w"> </span>script/01_alignment/submit_alignment_spikein.sh
-</pre></div>
-</div>
-</section>
-<section id="main-outputs">
-<h2>Main outputs<a class="headerlink" href="#main-outputs" title="Link to this heading"></a></h2>
-<section id="genome-alignment">
-<h3>Genome alignment<a class="headerlink" href="#genome-alignment" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">bam/*.coordsorted.bam</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bam/*.coordsorted.bam.bai</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bam/*_bowtie2.log</span></code></p></li>
-</ul>
-</section>
-<section id="id1">
-<h3>Spike-in alignment<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">bam_spike/*.amp.bam</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bam_spike/*.ecoli.bam</span></code></p></li>
-</ul>
-</section>
-</section>
-<section id="check-before-moving-on">
-<h2>Check before moving on<a class="headerlink" href="#check-before-moving-on" title="Link to this heading"></a></h2>
-<p>Wait until all alignment jobs have completed successfully.</p>
-</section>
-</section>
-<hr class="docutils" />
-<section id="stage-2-bam-processing">
-<h1>Stage 2. BAM processing<a class="headerlink" href="#stage-2-bam-processing" title="Link to this heading"></a></h1>
-<section id="id2">
-<h2>Purpose<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
-<p>Filter aligned BAM files, remove mitochondrial reads, keep proper pairs, remove duplicates, index final BAMs, and generate basic QC summaries.</p>
-</section>
-<section id="id3">
-<h2>Scripts used<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">02_bam_processing/submit_process_bam.sh</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">02_bam_processing/run_process_bam.sh</span></code></p></li>
-</ul>
-</section>
-<section id="id4">
-<h2>Recommended execution<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>script/02_bam_processing/submit_process_bam.sh
-</pre></div>
-</div>
-</section>
-<section id="id5">
-<h2>Main outputs<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">bam/*.rmdup.bam</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bam/*.rmdup.bam.bai</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">qc/*.rmDups.metrics.txt</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">qc/*.rmdup.stats</span></code></p></li>
-</ul>
-</section>
-<section id="id6">
-<h2>Check before moving on<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
-<p>Wait until all BAM processing jobs have completed successfully.</p>
-</section>
-</section>
-<hr class="docutils" />
-<section id="stage-3-signal-generation">
-<h1>Stage 3. Signal generation<a class="headerlink" href="#stage-3-signal-generation" title="Link to this heading"></a></h1>
-<section id="id7">
-<h2>Purpose<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
-<p>Generate the core downstream analysis inputs from processed BAM files:</p>
-<ul class="simple">
-<li><p>CPM-normalized BigWig for visualization</p></li>
-<li><p>SEACR-compatible bedGraph</p></li>
-<li><p>paired BED for <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code></p></li>
-</ul>
-</section>
-<section id="id8">
-<h2>Scripts used<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">03_signal_generation/run_bigwig_cpm.sh</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">03_signal_generation/run_bedgraph_seacr.sh</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">03_signal_generation/run_bam_to_bed.sh</span></code></p></li>
-</ul>
-</section>
-<section id="id9">
-<h2>Recommended execution<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
-<p>First determine the number of processed BAM files:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">N</span><span class="o">=</span><span class="k">$(</span>find<span class="w"> </span>/common/lix5lab/Li_Xue_Cut_Tag_06162022/Analysis_WYZ/mm39/bam<span class="w"> </span>-maxdepth<span class="w"> </span><span class="m">1</span><span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.rmdup.bam&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="k">)</span>
-<span class="nv">M</span><span class="o">=</span><span class="k">$(</span>find<span class="w"> </span>/common/lix5lab/Li_Xue_Cut_Tag_06162022/Analysis_WYZ/mm39/bam<span class="w"> </span>-maxdepth<span class="w"> </span><span class="m">1</span><span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*rmdup*.bam&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-viE<span class="w"> </span><span class="s2">&quot;IgG|nAb|CTnAb&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="k">)</span>
-</pre></div>
-</div>
-<p>Then run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sbatch<span class="w"> </span>--array<span class="o">=</span><span class="m">1</span>-<span class="s2">&quot;</span><span class="nv">$N</span><span class="s2">&quot;</span><span class="w"> </span>script/03_signal_generation/run_bigwig_cpm.sh
-sbatch<span class="w"> </span>--array<span class="o">=</span><span class="m">1</span>-<span class="s2">&quot;</span><span class="nv">$N</span><span class="s2">&quot;</span><span class="w"> </span>script/03_signal_generation/run_bedgraph_seacr.sh
-sbatch<span class="w"> </span>--array<span class="o">=</span><span class="m">1</span>-<span class="s2">&quot;</span><span class="nv">$M</span><span class="s2">&quot;</span><span class="w"> </span>script/03_signal_generation/run_bam_to_bed.sh
-</pre></div>
-</div>
-</section>
-<section id="id10">
-<h2>Main outputs<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
-<section id="visualization">
-<h3>Visualization<a class="headerlink" href="#visualization" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">bw_bedgraph_cpm/*.cpm.bw</span></code></p></li>
-</ul>
-</section>
-<section id="seacr-input">
-<h3>SEACR input<a class="headerlink" href="#seacr-input" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">seacr_bedgraph/*.seacr.bedgraph</span></code></p></li>
-</ul>
-</section>
-<section id="quantification-input">
-<h3>Quantification input<a class="headerlink" href="#quantification-input" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">bam_to_bed/*.bed</span></code></p></li>
-</ul>
-</section>
-</section>
-<section id="id11">
-<h2>Check before moving on<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
-<p>Wait until all signal-generation jobs are complete.</p>
-</section>
-</section>
-<hr class="docutils" />
-<section id="stage-4-seacr-peak-calling-and-cps-generation">
-<h1>Stage 4. SEACR peak calling and CPS generation<a class="headerlink" href="#stage-4-seacr-peak-calling-and-cps-generation" title="Link to this heading"></a></h1>
-<section id="id12">
-<h2>Purpose<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
-<p>Call individual sample peaks with SEACR, verify that metadata-defined sample-marker peak inputs exist, and generate marker-specific consensus peak sets (CPS).</p>
-</section>
-<section id="id13">
-<h2>Scripts used<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
-<section id="peak-calling">
-<h3>Peak calling<a class="headerlink" href="#peak-calling" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">04_peak_calling/run_seacr_peak_calling.sh</span></code></p></li>
-</ul>
-</section>
-<section id="validation">
-<h3>Validation<a class="headerlink" href="#validation" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">08_preflight_checks/preflight_check_cps_peak_inputs.sh</span></code></p></li>
-</ul>
-</section>
-<section id="cps-generation">
-<h3>CPS generation<a class="headerlink" href="#cps-generation" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">04_peak_calling/run_cps_generation.sh</span></code></p></li>
-</ul>
-</section>
-</section>
-<section id="id14">
-<h2>Recommended execution<a class="headerlink" href="#id14" title="Link to this heading"></a></h2>
-<p>First determine the number of SEACR-compatible bedGraph files:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">K</span><span class="o">=</span><span class="k">$(</span>find<span class="w"> </span>/common/lix5lab/Li_Xue_Cut_Tag_06162022/Analysis_WYZ/mm39/seacr_bedgraph<span class="w"> </span>-maxdepth<span class="w"> </span><span class="m">1</span><span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.seacr.bedgraph&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-viE<span class="w"> </span><span class="s2">&quot;IgG|nAb|CTnAb&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="k">)</span>
-</pre></div>
-</div>
-<p>Run SEACR:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sbatch<span class="w"> </span>--array<span class="o">=</span><span class="m">1</span>-<span class="s2">&quot;</span><span class="nv">$K</span><span class="s2">&quot;</span><span class="w"> </span>script/04_peak_calling/run_seacr_peak_calling.sh
-</pre></div>
-</div>
-<p>After SEACR finishes, run the preflight validation:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>script/08_preflight_checks/preflight_check_cps_peak_inputs.sh
-</pre></div>
-</div>
-<p>Then generate CPS:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>script/04_peak_calling/run_cps_generation.sh
-</pre></div>
-</div>
-</section>
-<section id="id15">
-<h2>Main outputs<a class="headerlink" href="#id15" title="Link to this heading"></a></h2>
-<section id="sample-level-seacr-peaks">
-<h3>Sample-level SEACR peaks<a class="headerlink" href="#sample-level-seacr-peaks" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">seacr_peak_calling/*.stringent.bed</span></code></p></li>
-</ul>
-</section>
-<section id="cps-outputs">
-<h3>CPS outputs<a class="headerlink" href="#cps-outputs" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">consensus_peaks/CPS*_consensus.bed</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">consensus_peaks/merging_manifest.log</span></code></p></li>
-</ul>
-</section>
-</section>
-<section id="id16">
-<h2>Check before moving on<a class="headerlink" href="#id16" title="Link to this heading"></a></h2>
-<p>Make sure the preflight check passes or investigate any missing peak file warnings before continuing.</p>
-</section>
-</section>
-<hr class="docutils" />
-<section id="stage-5-master-count-matrix-quantification">
-<h1>Stage 5. Master count matrix quantification<a class="headerlink" href="#stage-5-master-count-matrix-quantification" title="Link to this heading"></a></h1>
-<section id="id17">
-<h2>Purpose<a class="headerlink" href="#id17" title="Link to this heading"></a></h2>
-<p>Quantify read counts and occupancy across CPS regions using <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code>, and generate one master matrix per CPS.</p>
-</section>
-<section id="id18">
-<h2>Scripts used<a class="headerlink" href="#id18" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">05_quantification/submit_profile_bins_all.sh</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">05_quantification/submit_profile_bins_master.sh</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">05_quantification/run_profile_bins_master.sh</span></code></p></li>
-</ul>
-</section>
-<section id="id19">
-<h2>Recommended execution<a class="headerlink" href="#id19" title="Link to this heading"></a></h2>
-<p>To submit all CPS jobs:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>script/05_quantification/submit_profile_bins_all.sh
-</pre></div>
-</div>
-</section>
-<section id="id20">
-<h2>Main outputs<a class="headerlink" href="#id20" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">manorm2_master_counts/CPS*_master_counts_profile_bins.xls</span></code></p></li>
-</ul>
-<p>These master matrices are the direct inputs to downstream MAnorm2 differential analysis and PCA generation.</p>
-</section>
-<section id="id21">
-<h2>Check before moving on<a class="headerlink" href="#id21" title="Link to this heading"></a></h2>
-<p>Wait until all <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> jobs are complete and verify that the expected <code class="docutils literal notranslate"><span class="pre">CPS*_master_counts_profile_bins.xls</span></code> files are present.</p>
-</section>
-</section>
-<hr class="docutils" />
-<section id="stage-6-manorm2-differential-enrichment-analysis">
-<h1>Stage 6. MAnorm2 differential enrichment analysis<a class="headerlink" href="#stage-6-manorm2-differential-enrichment-analysis" title="Link to this heading"></a></h1>
-<section id="id22">
-<h2>Purpose<a class="headerlink" href="#id22" title="Link to this heading"></a></h2>
-<p>Run comparison-level differential enrichment analysis using MAnorm2, with filtering, normalization, annotation, and summary table generation.</p>
-</section>
-<section id="id23">
-<h2>Scripts used<a class="headerlink" href="#id23" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">06_differential_analysis/submit_manorm2_all.sh</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">06_differential_analysis/submit_manorm2_master_count.sh</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">06_differential_analysis/run_manorm2_master_count.R</span></code></p></li>
-</ul>
-</section>
-<section id="id24">
-<h2>Recommended execution<a class="headerlink" href="#id24" title="Link to this heading"></a></h2>
-<p>To submit all comparisons:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>script/06_differential_analysis/submit_manorm2_all.sh
-</pre></div>
-</div>
-</section>
-<section id="id25">
-<h2>Main outputs<a class="headerlink" href="#id25" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">manorm2_master_results/*_results.txt</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">manorm2_master_results/*_summary.csv</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">manorm2_master_results/*_filter_stats.csv</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">manorm2_master_results/*_dist.csv</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">manorm2_master_results/QC_Plots/*.pdf</span></code></p></li>
-</ul>
-</section>
-<section id="id26">
-<h2>Check before moving on<a class="headerlink" href="#id26" title="Link to this heading"></a></h2>
-<p>Wait until all comparison-level MAnorm2 jobs have completed.</p>
-</section>
-</section>
-<hr class="docutils" />
-<section id="stage-7-summary-aggregation-and-pca">
-<h1>Stage 7. Summary aggregation and PCA<a class="headerlink" href="#stage-7-summary-aggregation-and-pca" title="Link to this heading"></a></h1>
-<section id="id27">
-<h2>Purpose<a class="headerlink" href="#id27" title="Link to this heading"></a></h2>
-<p>Aggregate comparison-level outputs into global summary tables, organize result files by marker and CPS, and generate PCA plots from CPS-level master matrices.</p>
-</section>
-<section id="id28">
-<h2>Scripts used<a class="headerlink" href="#id28" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">07_summary_qc/run_summary_master.sh</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">07_summary_qc/run_plot_pca.R</span></code></p></li>
-</ul>
-</section>
-<section id="id29">
-<h2>Recommended execution<a class="headerlink" href="#id29" title="Link to this heading"></a></h2>
-<p>After all MAnorm2 jobs have finished:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>script/07_summary_qc/run_summary_master.sh
-Rscript<span class="w"> </span>script/07_summary_qc/run_plot_pca.R
-</pre></div>
-</div>
-</section>
-<section id="id30">
-<h2>Main outputs<a class="headerlink" href="#id30" title="Link to this heading"></a></h2>
-<section id="aggregated-tables">
-<h3>Aggregated tables<a class="headerlink" href="#aggregated-tables" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">manorm2_master_results/All_Comparisons_Summary.csv</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">manorm2_master_results/All_Filter_Stats.csv</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">manorm2_master_results/All_Chromosome_Dist.csv</span></code></p></li>
-</ul>
-</section>
-<section id="organized-comparison-level-outputs">
-<h3>Organized comparison-level outputs<a class="headerlink" href="#organized-comparison-level-outputs" title="Link to this heading"></a></h3>
-<p>These are organized into marker- and CPS-specific folders, for example:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>manorm2_master_results/
-└── CTK27ac/
-    ├── All_Comparisons_Summary.csv
-    ├── All_Filter_Stats.csv
-    ├── All_Chromosome_Dist.csv
-    ├── QC_Plots/
-    └── CPS4/
-</pre></div>
-</div>
-</section>
-<section id="pca-outputs">
-<h3>PCA outputs<a class="headerlink" href="#pca-outputs" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">PCA_master/*.pdf</span></code></p></li>
-</ul>
-</section>
-</section>
-</section>
-<hr class="docutils" />
-<section id="recommended-full-execution-order">
-<h1>Recommended full execution order<a class="headerlink" href="#recommended-full-execution-order" title="Link to this heading"></a></h1>
-<p>Run the maintained pipeline in the following order:</p>
-<section id="step-1">
-<h2>Step 1<a class="headerlink" href="#step-1" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>script/01_alignment/submit_alignment.sh
-bash<span class="w"> </span>script/01_alignment/submit_alignment_spikein.sh
-</pre></div>
-</div>
-</section>
-<section id="step-2">
-<h2>Step 2<a class="headerlink" href="#step-2" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>script/02_bam_processing/submit_process_bam.sh
-</pre></div>
-</div>
-</section>
-<section id="step-3">
-<h2>Step 3<a class="headerlink" href="#step-3" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">N</span><span class="o">=</span><span class="k">$(</span>find<span class="w"> </span>/common/lix5lab/Li_Xue_Cut_Tag_06162022/Analysis_WYZ/mm39/bam<span class="w"> </span>-maxdepth<span class="w"> </span><span class="m">1</span><span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.rmdup.bam&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="k">)</span>
-<span class="nv">M</span><span class="o">=</span><span class="k">$(</span>find<span class="w"> </span>/common/lix5lab/Li_Xue_Cut_Tag_06162022/Analysis_WYZ/mm39/bam<span class="w"> </span>-maxdepth<span class="w"> </span><span class="m">1</span><span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*rmdup*.bam&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-viE<span class="w"> </span><span class="s2">&quot;IgG|nAb|CTnAb&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="k">)</span>
-
-sbatch<span class="w"> </span>--array<span class="o">=</span><span class="m">1</span>-<span class="s2">&quot;</span><span class="nv">$N</span><span class="s2">&quot;</span><span class="w"> </span>script/03_signal_generation/run_bigwig_cpm.sh
-sbatch<span class="w"> </span>--array<span class="o">=</span><span class="m">1</span>-<span class="s2">&quot;</span><span class="nv">$N</span><span class="s2">&quot;</span><span class="w"> </span>script/03_signal_generation/run_bedgraph_seacr.sh
-sbatch<span class="w"> </span>--array<span class="o">=</span><span class="m">1</span>-<span class="s2">&quot;</span><span class="nv">$M</span><span class="s2">&quot;</span><span class="w"> </span>script/03_signal_generation/run_bam_to_bed.sh
-</pre></div>
-</div>
-</section>
-<section id="step-4">
-<h2>Step 4<a class="headerlink" href="#step-4" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">K</span><span class="o">=</span><span class="k">$(</span>find<span class="w"> </span>/common/lix5lab/Li_Xue_Cut_Tag_06162022/Analysis_WYZ/mm39/seacr_bedgraph<span class="w"> </span>-maxdepth<span class="w"> </span><span class="m">1</span><span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.seacr.bedgraph&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-viE<span class="w"> </span><span class="s2">&quot;IgG|nAb|CTnAb&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="k">)</span>
-
-sbatch<span class="w"> </span>--array<span class="o">=</span><span class="m">1</span>-<span class="s2">&quot;</span><span class="nv">$K</span><span class="s2">&quot;</span><span class="w"> </span>script/04_peak_calling/run_seacr_peak_calling.sh
-bash<span class="w"> </span>script/08_preflight_checks/preflight_check_cps_peak_inputs.sh
-bash<span class="w"> </span>script/04_peak_calling/run_cps_generation.sh
-</pre></div>
-</div>
-</section>
-<section id="step-5">
-<h2>Step 5<a class="headerlink" href="#step-5" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>script/05_quantification/submit_profile_bins_all.sh
-</pre></div>
-</div>
-</section>
-<section id="step-6">
-<h2>Step 6<a class="headerlink" href="#step-6" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>script/06_differential_analysis/submit_manorm2_all.sh
-</pre></div>
-</div>
-</section>
-<section id="step-7">
-<h2>Step 7<a class="headerlink" href="#step-7" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>script/07_summary_qc/run_summary_master.sh
-Rscript<span class="w"> </span>script/07_summary_qc/run_plot_pca.R
-</pre></div>
-</div>
-</section>
-</section>
-<hr class="docutils" />
-<section id="validation-strategy">
-<h1>Validation strategy<a class="headerlink" href="#validation-strategy" title="Link to this heading"></a></h1>
-<p>For a new code update, the recommended validation strategy is:</p>
-<ol class="arabic simple">
-<li><p>run a small subset of samples</p></li>
-<li><p>verify that each stage produces the expected output files</p></li>
-<li><p>verify that downstream stages can directly consume upstream outputs</p></li>
-<li><p>run the full dataset</p></li>
-<li><p>compare the new outputs against the previous production results</p></li>
+<ol class="arabic simple" start="11">
+<li><p>PCA-based QC</p></li>
 </ol>
-<p>Key checks include:</p>
 <ul class="simple">
-<li><p>file counts per major output directory</p></li>
-<li><p>consistency of CPS generation</p></li>
-<li><p>consistency of <code class="docutils literal notranslate"><span class="pre">profile_bins</span></code> master matrices</p></li>
-<li><p>comparison-level MAnorm2 summary statistics</p></li>
-<li><p>overall PCA and QC trends</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">script/06_summary_qc/CTK27ac/run_edgeR_PCA_all_CPS_CTK27ac.R</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">script/06_summary_qc/CTK4me1/run_edgeR_PCA_all_CPS_CTK4me1.R</span></code></p></li>
+</ul>
+<ol class="arabic simple" start="12">
+<li><p>Organize outputs</p></li>
+</ol>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">script/06_summary_qc/CTK27ac/organize_edgeR_outputs_CTK27ac.sh</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">script/06_summary_qc/CTK4me1/organize_edgeR_outputs_CTK4me1.sh</span></code></p></li>
 </ul>
 </section>
-<hr class="docutils" />
-<section id="related-files">
-<h1>Related files<a class="headerlink" href="#related-files" title="Link to this heading"></a></h1>
-<section id="configuration">
-<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
+<section id="notes-before-running">
+<h2>Notes before running<a class="headerlink" href="#notes-before-running" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">script/config/project_config.sh</span></code></p></li>
+<li><p>Most scripts are designed for SLURM on the Cedars-Sinai HPC environment.</p></li>
+<li><p>Most paths are configured for <code class="docutils literal notranslate"><span class="pre">/common/lix5lab/Li_Xue_Cut_Tag_06162022/Analysis_WYZ/mm39</span></code>.</p></li>
+<li><p>The current differential analysis method is edgeR.</p></li>
+<li><p>The current maintained marker branches are CTK4me1 and CTK27ac.</p></li>
+<li><p>CTK4me1 uses SEACR plus CPS consensus peak sets.</p></li>
+<li><p>CTK27ac uses MACS3 per-sample peak and summit files.</p></li>
+<li><p>Confirm that <code class="docutils literal notranslate"><span class="pre">Metadata_Comparison.csv</span></code> contains the marker rows you intend to process.</p></li>
 </ul>
 </section>
-<section id="metadata">
-<h2>Metadata<a class="headerlink" href="#metadata" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">script/metadata_form/Metadata_Comparison.csv</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">script/metadata_form/Metadata_CTK27ac_Comparison.csv</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">script/metadata_form/Metadata_CTK4me1_Comparison.csv</span></code></p></li>
-</ul>
-</section>
-<section id="reference-files">
-<h2>Reference files<a class="headerlink" href="#reference-files" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">script/reference/mm39.excluderanges.bed</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">script/reference/mm10.Boyle.mm10-Excludable.v2.bed</span></code></p></li>
-</ul>
-</section>
-</section>
-<hr class="docutils" />
-<section id="notes">
-<h1>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h1>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">methods_comparison/</span></code> contains exploratory or comparison workflows and is not part of the default maintained production workflow.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">legacy/</span></code> contains older helper scripts retained for reference and is not part of the maintained production workflow.</p></li>
-<li><p>The current maintained pipeline is executed stage by stage rather than by a single workflow engine.</p></li>
-</ul>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to CUT&amp;Tag Analysis Pipeline!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Sean Li CUT&amp;Tag Analysis Pipeline" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="module1_preprocessing/step1_reference.html" class="btn btn-neutral float-right" title="Step 1: Reference Genome &amp; Annotation Build Up" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
